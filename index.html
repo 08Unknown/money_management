@@ -31,6 +31,11 @@
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
     }
+    /* Pastikan ikon kalendar kelihatan jelas dalam dark mode */
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+      cursor: pointer;
+    }
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.35); border-radius: 9999px; }
@@ -206,16 +211,16 @@
       </div>
     </div>
 
-    <!-- 3 BAR MENU UTAMA -->
+    <!-- 3 BAR MENU UTAMA (SENTIASA SEBARIS) -->
     <div class="glass-card bg-slate-900/85 p-2 rounded-2xl border border-slate-800 mb-7 grid grid-cols-3 gap-1.5 sm:gap-2">
-      <button onclick="switchMainMenu('summary')" id="menuBtn-summary" class="py-3 px-4 rounded-xl text-xs sm:text-sm font-extrabold transition flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md">
-        <span>📊</span> Jumlah Semua Kategori
+      <button onclick="switchMainMenu('summary')" id="menuBtn-summary" class="py-3 px-2 sm:px-4 rounded-xl text-[11px] sm:text-sm font-extrabold transition flex items-center justify-center gap-1.5 sm:gap-2 text-center leading-tight bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md">
+        <span>📊</span> <span>Jumlah Semua Kategori</span>
       </button>
-      <button onclick="switchMainMenu('record')" id="menuBtn-record" class="py-3 px-4 rounded-xl text-xs sm:text-sm font-extrabold transition flex items-center justify-center gap-2 text-slate-300 hover:bg-slate-800">
-        <span>➕</span> Rekod Perbelanjaan
+      <button onclick="switchMainMenu('record')" id="menuBtn-record" class="py-3 px-2 sm:px-4 rounded-xl text-[11px] sm:text-sm font-extrabold transition flex items-center justify-center gap-1.5 sm:gap-2 text-center leading-tight text-slate-300 hover:bg-slate-800">
+        <span>➕</span> <span>Rekod Perbelanjaan</span>
       </button>
-      <button onclick="switchMainMenu('list')" id="menuBtn-list" class="py-3 px-4 rounded-xl text-xs sm:text-sm font-extrabold transition flex items-center justify-center gap-2 text-slate-300 hover:bg-slate-800">
-        <span>📋</span> List Perbelanjaan Semua
+      <button onclick="switchMainMenu('list')" id="menuBtn-list" class="py-3 px-2 sm:px-4 rounded-xl text-[11px] sm:text-sm font-extrabold transition flex items-center justify-center gap-1.5 sm:gap-2 text-center leading-tight text-slate-300 hover:bg-slate-800">
+        <span>📋</span> <span>List Perbelanjaan Semua</span>
       </button>
     </div>
 
@@ -282,6 +287,11 @@
           <h3 class="font-extrabold text-white text-lg mb-4">+ Tambah Perbelanjaan</h3>
           <form id="transactionForm" onsubmit="addTransaction(event)" class="space-y-4">
             <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1.5">Tarikh (Klik Untuk Pilih Kalendar)</label>
+              <input type="date" id="txDate" required onclick="this.showPicker && this.showPicker()" class="w-full rounded-xl border border-slate-700 bg-slate-800 text-white px-3.5 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer" />
+            </div>
+
+            <div>
               <label class="block text-xs font-bold text-slate-300 mb-1.5">Pilih Kategori</label>
               <select id="txCategory" required class="w-full rounded-xl border border-slate-700 bg-slate-800 text-white px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
               </select>
@@ -315,18 +325,19 @@
           <div class="p-4 sm:px-6 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2">
             <div>
               <h3 class="font-extrabold text-white text-base">Urus Rekod (Edit & Padam)</h3>
-              <p class="text-xs text-slate-400">Klik Edit pada mana-mana item untuk ubah atau padam item tersebut.</p>
+              <p class="text-xs text-slate-400">Klik Edit pada mana-mana item untuk ubah tarikh, harga, atau padam item tersebut.</p>
             </div>
             <button onclick="deleteAllTransactions()" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/25 transition">
               🗑️ Padam Semua Rekod
             </button>
           </div>
 
-          <div class="overflow-x-auto max-h-[520px] overflow-y-auto">
+          <div class="overflow-x-auto max-h-[540px] overflow-y-auto">
             <table class="w-full text-sm text-left">
               <thead class="bg-slate-800/80 text-slate-300 font-bold border-b border-slate-800 sticky top-0">
                 <tr>
-                  <th class="py-3.5 px-5">Item / Perbelanjaan</th>
+                  <th class="py-3.5 px-4">Tarikh</th>
+                  <th class="py-3.5 px-4">Item / Perbelanjaan</th>
                   <th class="py-3.5 px-4">Kategori</th>
                   <th class="py-3.5 px-4">Tempat / Nota</th>
                   <th class="py-3.5 px-4 text-right">Harga (RM)</th>
@@ -347,7 +358,7 @@
         <div class="p-4 sm:px-6 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div class="flex flex-wrap gap-1.5" id="filterTabs"></div>
           <div class="flex items-center gap-2">
-            <input type="text" id="searchTxInput" oninput="renderAllListTable()" placeholder="Cari item / tempat..." class="rounded-xl border border-slate-700 bg-slate-800 text-white px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            <input type="text" id="searchTxInput" oninput="renderAllListTable()" placeholder="Cari tarikh / item / tempat..." class="rounded-xl border border-slate-700 bg-slate-800 text-white px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500" />
             <span id="recordCount" class="text-xs text-slate-400 font-bold whitespace-nowrap">0 rekod</span>
           </div>
         </div>
@@ -356,8 +367,9 @@
           <table class="w-full text-sm text-left">
             <thead class="bg-slate-800/80 text-slate-300 font-bold border-b border-slate-800 sticky top-0">
               <tr>
-                <th class="py-3.5 px-5 w-12">Bil</th>
-                <th class="py-3.5 px-5">Item / Perbelanjaan</th>
+                <th class="py-3.5 px-4 w-12">Bil</th>
+                <th class="py-3.5 px-4">Tarikh</th>
+                <th class="py-3.5 px-4">Item / Perbelanjaan</th>
                 <th class="py-3.5 px-4">Kategori</th>
                 <th class="py-3.5 px-4">Tempat / Nota</th>
                 <th class="py-3.5 px-5 text-right">Harga (RM)</th>
@@ -390,7 +402,6 @@
             </button>
           </div>
           <select id="selectSemesterDropdown" required class="w-full rounded-xl border border-slate-700 bg-slate-800 text-white px-3.5 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <!-- Dijana daripada senarai semester user -->
           </select>
         </div>
 
@@ -432,7 +443,7 @@
     </div>
   </div>
 
-  <!-- ==================== MODAL BARU: URUS SENARAI SEMESTER (TAMBAH, EDIT, PADAM) ==================== -->
+  <!-- ==================== MODAL: URUS SENARAI SEMESTER ==================== -->
   <div id="semesterManagerModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-xs z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl fade-in max-h-[88vh] flex flex-col">
       <div class="flex items-center justify-between pb-3 border-b border-slate-800">
@@ -443,9 +454,7 @@
         <button onclick="closeSemesterManagerModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center text-lg">&times;</button>
       </div>
 
-      <div id="editableSemestersList" class="py-4 space-y-2 overflow-y-auto flex-1 pr-1">
-        <!-- Dijana oleh JS -->
-      </div>
+      <div id="editableSemestersList" class="py-4 space-y-2 overflow-y-auto flex-1 pr-1"></div>
 
       <div class="pt-3 border-t border-slate-800">
         <label class="block text-xs font-bold text-slate-400 mb-1.5">+ Tambah Semester Baharu</label>
@@ -464,7 +473,7 @@
     </div>
   </div>
 
-  <!-- ==================== MODAL 1: EDIT ITEM TRANSAKSI ==================== -->
+  <!-- ==================== MODAL 1: EDIT ITEM TRANSAKSI (TERMASUK TARIKH) ==================== -->
   <div id="editTxModal" class="hidden fixed inset-0 bg-slate-950/70 backdrop-blur-xs z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl fade-in">
       <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
@@ -473,6 +482,10 @@
       </div>
       <form onsubmit="saveEditedTransaction(event)" class="space-y-4">
         <input type="hidden" id="editTxId" />
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Tarikh (Klik Untuk Pilih Kalendar)</label>
+          <input type="date" id="editTxDate" required onclick="this.showPicker && this.showPicker()" class="w-full rounded-xl border border-slate-700 bg-slate-800 text-white px-3.5 py-2.5 text-sm font-semibold cursor-pointer" />
+        </div>
         <div>
           <label class="block text-xs font-bold text-slate-300 mb-1">Kategori</label>
           <select id="editTxCategory" required class="w-full rounded-xl border border-slate-700 bg-slate-800 text-white px-3.5 py-2.5 text-sm"></select>
@@ -626,6 +639,24 @@
     window.addEventListener("resize", applyCodeBackground);
 
     // =========================================================================
+    // HELPER TARIKH (ISO YYYY-MM-DD -> DD/MM/YYYY)
+    // =========================================================================
+    function getTodayISO() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, "0");
+      const d = String(now.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
+    function formatDisplayDate(isoStr) {
+      if (!isoStr || typeof isoStr !== "string") return "-";
+      const parts = isoStr.split("-");
+      if (parts.length !== 3) return isoStr;
+      return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+
+    // =========================================================================
     // DATA DEFAULT & STATE
     // =========================================================================
     const DEFAULT_CATEGORIES = [
@@ -651,9 +682,9 @@
 
     let currentUser = null;
     let currentUserSemesters = [...DEFAULT_SEMESTERS];
-    let currentUserMonths = [];     // Senarai objek { id, semester, month, year }
+    let currentUserMonths = [];
     let currentMonthId = null;
-    let currentMonthLabel = null;   // cth: "Sem 1 • January 2026"
+    let currentMonthLabel = null;
     let currentMainMenu = "summary";
     let currentTab = "ALL";
     let currentCategories = [...DEFAULT_CATEGORIES];
@@ -883,7 +914,6 @@
       if (!currentUser) return;
 
       const updatedSemList = tempDraftSemesters.map(s => s.name);
-      // Kemas kini juga nama semester pada kad bulan sedia ada jika pengguna edit nama semester
       const updatedMonths = currentUserMonths.map(m => {
         const match = tempDraftSemesters.find(s => s.oldName && s.oldName === m.semester && s.oldName !== s.name);
         return match ? { ...m, semester: match.name } : m;
@@ -920,7 +950,6 @@
 
       populateSemesterDropdown();
       const semSelect = document.getElementById("selectSemesterDropdown");
-      // Jika semester lama tiada dalam dropdown, masukkan sementara supaya tidak hilang
       if (target.semester && !currentUserSemesters.includes(target.semester)) {
         const opt = document.createElement("option");
         opt.value = target.semester;
@@ -1007,6 +1036,9 @@
       document.getElementById("activeMonthBadge").textContent = monthLabel;
       applyAvatarToElement(document.getElementById("avatar-dash"), currentUser, userAvatars[currentUser]);
 
+      // Set tarikh lalai pada borang kepada tarikh hari ini
+      document.getElementById("txDate").value = getTodayISO();
+
       switchMainMenu("summary");
 
       if (unsubMonthDoc) unsubMonthDoc();
@@ -1029,7 +1061,13 @@
         querySnap.forEach((docItem) => {
           currentTransactions.push({ id: docItem.id, ...docItem.data() });
         });
-        currentTransactions.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        // Susun mengikut tarikh terkini dahulu, kemudian masa rekod
+        currentTransactions.sort((a, b) => {
+          const dateA = a.date || "";
+          const dateB = b.date || "";
+          if (dateA !== dateB) return dateB.localeCompare(dateA);
+          return (b.createdAt || 0) - (a.createdAt || 0);
+        });
         renderDashboard();
       });
     };
@@ -1058,7 +1096,7 @@
     };
 
     // =========================================================================
-    // 3 BAR MENU SWITCHER
+    // 3 BAR MENU SWITCHER (KEKAL SEBARIS)
     // =========================================================================
     window.switchMainMenu = function(menuKey) {
       currentMainMenu = menuKey;
@@ -1069,10 +1107,10 @@
         const btn = document.getElementById(`menuBtn-${m}`);
         if (m === menuKey) {
           sec.classList.remove("hidden");
-          btn.className = "py-3 px-4 rounded-xl text-xs sm:text-sm font-extrabold transition flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md";
+          btn.className = "py-3 px-2 sm:px-4 rounded-xl text-[11px] sm:text-sm font-extrabold transition flex items-center justify-center gap-1.5 sm:gap-2 text-center leading-tight bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md";
         } else {
           sec.classList.add("hidden");
-          btn.className = "py-3 px-4 rounded-xl text-xs sm:text-sm font-extrabold transition flex items-center justify-center gap-2 text-slate-300 hover:bg-slate-800";
+          btn.className = "py-3 px-2 sm:px-4 rounded-xl text-[11px] sm:text-sm font-extrabold transition flex items-center justify-center gap-1.5 sm:gap-2 text-center leading-tight text-slate-300 hover:bg-slate-800";
         }
       });
     };
@@ -1225,18 +1263,20 @@
     };
 
     // =========================================================================
-    // OPERASI TRANSAKSI BULANAN (TAMBAH, EDIT, PADAM SEMUA)
+    // OPERASI TRANSAKSI BULANAN (TAMBAH, EDIT, PADAM SEMUA + TARIKH)
     // =========================================================================
     window.addTransaction = async function(e) {
       e.preventDefault();
       if (!currentUser || !currentMonthId) return;
 
+      const date = document.getElementById("txDate").value || getTodayISO();
       const category = document.getElementById("txCategory").value;
       const item = document.getElementById("txItem").value.trim();
       const price = parseFloat(document.getElementById("txPrice").value);
       const place = document.getElementById("txPlace").value.trim() || "-";
 
       await addDoc(collection(db, "users", currentUser, "months", currentMonthId, "transactions"), {
+        date,
         category,
         item,
         price,
@@ -1246,6 +1286,8 @@
       });
 
       document.getElementById("transactionForm").reset();
+      // Kekalkan tarikh hari ini selepas reset
+      document.getElementById("txDate").value = date;
     };
 
     window.openEditTxModal = function(txId) {
@@ -1258,6 +1300,7 @@
       `).join("");
 
       document.getElementById("editTxId").value = tx.id;
+      document.getElementById("editTxDate").value = tx.date || getTodayISO();
       catSelect.value = tx.category;
       document.getElementById("editTxItem").value = tx.item;
       document.getElementById("editTxPrice").value = tx.price;
@@ -1275,12 +1318,14 @@
       if (!currentUser || !currentMonthId) return;
 
       const txId = document.getElementById("editTxId").value;
+      const date = document.getElementById("editTxDate").value || getTodayISO();
       const category = document.getElementById("editTxCategory").value;
       const item = document.getElementById("editTxItem").value.trim();
       const price = parseFloat(document.getElementById("editTxPrice").value);
       const place = document.getElementById("editTxPlace").value.trim() || "-";
 
       await updateDoc(doc(db, "users", currentUser, "months", currentMonthId, "transactions", txId), {
+        date,
         category,
         item,
         price,
@@ -1493,8 +1538,8 @@
       if (currentTransactions.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="5" class="py-12 text-center text-slate-400 text-sm">
-              Tiada rekod transaksi untuk ${currentMonthLabel}. Tambah rekod baharu di sebelah kiri!
+            <td colspan="6" class="py-12 text-center text-slate-400 text-sm">
+              Tiada rekod transaksi untuk ${currentMonthLabel}. Pilih tarikh & tambah rekod baharu di sebelah kiri!
             </td>
           </tr>
         `;
@@ -1503,16 +1548,17 @@
 
       tbody.innerHTML = currentTransactions.map(tx => `
         <tr class="hover:bg-slate-800/40 transition">
-          <td class="py-3.5 px-5 font-semibold text-slate-100">${tx.item}</td>
+          <td class="py-3.5 px-4 text-xs font-bold text-slate-300 whitespace-nowrap">${formatDisplayDate(tx.date)}</td>
+          <td class="py-3.5 px-4 font-semibold text-slate-100">${tx.item}</td>
           <td class="py-3.5 px-4">
-            <span class="text-xs px-2.5 py-1 rounded-lg bg-indigo-500/15 text-indigo-300 font-bold">
+            <span class="text-xs px-2.5 py-1 rounded-lg bg-indigo-500/15 text-indigo-300 font-bold whitespace-nowrap">
               ${tx.category}
             </span>
           </td>
           <td class="py-3.5 px-4 text-slate-400 text-xs uppercase font-medium">${tx.place || "-"}</td>
           <td class="py-3.5 px-4 text-right font-bold text-white">${Number(tx.price).toFixed(2)}</td>
           <td class="py-3.5 px-4 text-center">
-            <button onclick="openEditTxModal('${tx.id}')" class="text-xs text-indigo-300 hover:text-white font-bold px-3 py-1.5 rounded-lg bg-indigo-500/15 hover:bg-indigo-600 transition">
+            <button onclick="openEditTxModal('${tx.id}')" class="text-xs text-indigo-300 hover:text-white font-bold px-3 py-1.5 rounded-lg bg-indigo-500/15 hover:bg-indigo-600 transition whitespace-nowrap">
               ✏️ Edit
             </button>
           </td>
@@ -1523,8 +1569,11 @@
     window.renderAllListTable = function() {
       const searchQuery = (document.getElementById("searchTxInput")?.value || "").toLowerCase().trim();
       const filtered = currentTransactions.filter(tx => {
+        const displayDate = formatDisplayDate(tx.date);
         const matchCat = currentTab === "ALL" || tx.category === currentTab;
         const matchSearch = !searchQuery ||
+          displayDate.toLowerCase().includes(searchQuery) ||
+          (tx.date || "").toLowerCase().includes(searchQuery) ||
           (tx.item || "").toLowerCase().includes(searchQuery) ||
           (tx.place || "").toLowerCase().includes(searchQuery) ||
           (tx.category || "").toLowerCase().includes(searchQuery);
@@ -1537,7 +1586,7 @@
       if (filtered.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="5" class="py-12 text-center text-slate-400 text-sm">
+            <td colspan="6" class="py-12 text-center text-slate-400 text-sm">
               Tiada rekod perbelanjaan ditemui untuk paparan ini.
             </td>
           </tr>
@@ -1549,10 +1598,11 @@
 
       tbody.innerHTML = filtered.map((tx, index) => `
         <tr class="hover:bg-slate-800/40 transition">
-          <td class="py-3.5 px-5 text-slate-500 text-xs font-bold">${index + 1}</td>
-          <td class="py-3.5 px-5 font-semibold text-slate-100">${tx.item}</td>
+          <td class="py-3.5 px-4 text-slate-500 text-xs font-bold">${index + 1}</td>
+          <td class="py-3.5 px-4 text-xs font-bold text-slate-300 whitespace-nowrap">${formatDisplayDate(tx.date)}</td>
+          <td class="py-3.5 px-4 font-semibold text-slate-100">${tx.item}</td>
           <td class="py-3.5 px-4">
-            <span class="text-xs px-2.5 py-1 rounded-lg bg-indigo-500/15 text-indigo-300 font-bold">
+            <span class="text-xs px-2.5 py-1 rounded-lg bg-indigo-500/15 text-indigo-300 font-bold whitespace-nowrap">
               ${tx.category}
             </span>
           </td>
@@ -1561,7 +1611,7 @@
         </tr>
       `).join("") + `
         <tr class="bg-slate-800/80 font-extrabold text-white border-t border-slate-700">
-          <td colspan="4" class="py-3.5 px-5 text-right text-xs uppercase tracking-wider text-slate-300">Jumlah Dipaparkan</td>
+          <td colspan="5" class="py-3.5 px-4 text-right text-xs uppercase tracking-wider text-slate-300">Jumlah Dipaparkan</td>
           <td class="py-3.5 px-5 text-right text-rose-400">RM ${totalFiltered.toFixed(2)}</td>
         </tr>
       `;
