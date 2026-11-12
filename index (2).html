@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pengurusan Kewangan UPSI — Anisa, Alya & Bacirah</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .fade-in { animation: fadeIn 0.25s ease-in-out; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+
+  <!-- TOP NAVBAR -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30">
+    <div class="max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between">
+      <div class="flex items-center gap-3 cursor-pointer" onclick="goHome()">
+        <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+          RM
+        </div>
+        <div>
+          <h1 class="font-bold text-slate-900 text-base sm:text-lg leading-tight">UPSI Money Tracker</h1>
+          <p class="text-xs text-slate-500">SEM 1 • Pengurusan Bajet & Perbelanjaan</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <span id="dbStatusBadge" class="text-xs px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 font-medium">
+          Menyambung Firebase...
+        </span>
+        <button id="homeBtn" onclick="goHome()" class="hidden text-sm font-semibold px-3.5 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
+          ← Tukar Profil
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== VIEW 1: HOME (PILIHAN 3 PROFIL) ==================== -->
+  <main id="homeView" class="max-w-5xl mx-auto px-4 py-12 fade-in">
+    <div class="text-center max-w-xl mx-auto mb-10">
+      <span class="inline-block px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 text-xs font-semibold mb-3">
+        SISTEM KEWANGAN BERASINGAN
+      </span>
+      <h2 class="text-3xl font-extrabold text-slate-900 mb-2">Pilih Akaun Kewangan</h2>
+      <p class="text-slate-500 text-sm sm:text-base">
+        Setiap profil mempunyai rekod bajet, perbelanjaan, dan simpanan yang disimpan secara berasingan dalam Firebase.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- CARD ANISA -->
+      <div onclick="selectUser('anisa')" class="group bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-lg hover:border-indigo-400 transition cursor-pointer relative overflow-hidden">
+        <div class="w-14 h-14 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-2xl font-bold mb-4 group-hover:bg-indigo-600 group-hover:text-white transition">
+          A
+        </div>
+        <h3 class="text-xl font-bold text-slate-900">Anisa</h3>
+        <p class="text-sm text-slate-500 mt-1 mb-5">Akaun Kewangan Peribadi Anisa</p>
+        <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-sm">
+          <span class="text-slate-500">Baki Semasa</span>
+          <span id="home-balance-anisa" class="font-bold text-indigo-600">RM 0.00</span>
+        </div>
+      </div>
+
+      <!-- CARD ALYA -->
+      <div onclick="selectUser('alya')" class="group bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-lg hover:border-emerald-400 transition cursor-pointer relative overflow-hidden">
+        <div class="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl font-bold mb-4 group-hover:bg-emerald-600 group-hover:text-white transition">
+          AL
+        </div>
+        <h3 class="text-xl font-bold text-slate-900">Alya</h3>
+        <p class="text-sm text-slate-500 mt-1 mb-5">Akaun Kewangan Peribadi Alya</p>
+        <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-sm">
+          <span class="text-slate-500">Baki Semasa</span>
+          <span id="home-balance-alya" class="font-bold text-emerald-600">RM 0.00</span>
+        </div>
+      </div>
+
+      <!-- CARD BACIRAH -->
+      <div onclick="selectUser('bacirah')" class="group bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-lg hover:border-rose-400 transition cursor-pointer relative overflow-hidden">
+        <div class="w-14 h-14 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center text-2xl font-bold mb-4 group-hover:bg-rose-600 group-hover:text-white transition">
+          B
+        </div>
+        <h3 class="text-xl font-bold text-slate-900">Bacirah</h3>
+        <p class="text-sm text-slate-500 mt-1 mb-5">Akaun Kewangan Peribadi Bacirah</p>
+        <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-sm">
+          <span class="text-slate-500">Baki Semasa</span>
+          <span id="home-balance-bacirah" class="font-bold text-rose-600">RM 0.00</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panduan Ringkas Konfigurasi Firebase -->
+    <div id="firebaseWarning" class="mt-10 bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-800">
+      <strong>Nota Penting:</strong> Sila masukkan <code>firebaseConfig</code> projek Firebase anda di dalam bahagian <code>&lt;script type="module"&gt;</code> pada kod HTML ini supaya data disegerakkan secara automatik ke cloud. Buat masa ini, sistem turut menyokong sandaran automatik (LocalStorage) jika kunci Firebase belum diisi.
+    </div>
+  </main>
+
+  <!-- ==================== VIEW 2: DASHBOARD PENGGUNA ==================== -->
+  <main id="dashboardView" class="hidden max-w-6xl mx-auto px-4 py-8 fade-in">
+    
+    <!-- Header Profil -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+      <div>
+        <div class="flex items-center gap-2.5">
+          <h2 id="userTitle" class="text-2xl sm:text-3xl font-extrabold text-slate-900 capitalize">Anisa</h2>
+          <span id="userBadge" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-700">Profil Aktif</span>
+        </div>
+        <p class="text-sm text-slate-500 mt-0.5">Rekod Bajet & Perbelanjaan (Struktur UPSI SEM 1)</p>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <button onclick="seedExcelData()" class="text-xs sm:text-sm font-semibold px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white shadow-sm transition">
+          📥 Import Data Excel Asal
+        </button>
+        <button onclick="openBudgetModal()" class="text-xs sm:text-sm font-semibold px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 transition">
+          ⚙️ Ubah Bajet
+        </button>
+      </div>
+    </div>
+
+    <!-- 3 KAD RINGKASAN UTAMA -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+        <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Jumlah Bajet (RM)</p>
+        <p id="totalBudgetDisplay" class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">RM 500.00</p>
+      </div>
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+        <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Jumlah Expense (RM)</p>
+        <p id="totalExpenseDisplay" class="text-2xl sm:text-3xl font-extrabold text-rose-600 mt-1">RM 0.00</p>
+      </div>
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+        <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Baki Keseluruhan (RM)</p>
+        <p id="totalBalanceDisplay" class="text-2xl sm:text-3xl font-extrabold text-emerald-600 mt-1">RM 500.00</p>
+      </div>
+    </div>
+
+    <!-- JADUAL RINGKASAN KATEGORI (SEPERTI SHEET 'Kategori') -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-8">
+      <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+        <h3 class="font-bold text-slate-800">Ringkasan Mengikut Kategori</h3>
+        <span class="text-xs text-slate-400">Dikira secara automatik</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
+            <tr>
+              <th class="py-3 px-5">Kategori</th>
+              <th class="py-3 px-5 text-right">Bajet (RM)</th>
+              <th class="py-3 px-5 text-right">Expense (RM)</th>
+              <th class="py-3 px-5 text-right">Jumlah / Baki (RM)</th>
+              <th class="py-3 px-5 w-44">Status Bajet</th>
+            </tr>
+          </thead>
+          <tbody id="categorySummaryBody" class="divide-y divide-slate-100">
+            <!-- Dijana oleh JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- BAHAGIAN TAMBAH TRANSAKSI & SENARAI REKOD -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- BORANG TAMBAH TRANSAKSI -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm h-fit">
+        <h3 class="font-bold text-slate-900 text-lg mb-4">+ Tambah Perbelanjaan</h3>
+        <form id="transactionForm" onsubmit="addTransaction(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Kategori</label>
+            <select id="txCategory" onchange="toggleTempatField()" required class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <option value="Makan & Minum">Makan & Minum</option>
+              <option value="Pengangkutan">Pengangkutan</option>
+              <option value="Keperluan & Dobi">Keperluan & Dobi</option>
+              <option value="Saving">Saving (Guna / Keluar)</option>
+              <option value="Emergency">Emergency (Guna / Keluar)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Butiran / Item</label>
+            <input type="text" id="txItem" required placeholder="Contoh: nasi ayam, dobi washer, ktm..." class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Harga (RM)</label>
+              <input type="number" step="0.01" min="0.01" id="txPrice" required placeholder="0.00" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            </div>
+
+            <div id="tempatWrapper">
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Tempat</label>
+              <input type="text" id="txPlace" placeholder="khar, kz, pt, 7e..." class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            </div>
+          </div>
+
+          <button type="submit" id="submitBtn" class="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm shadow-sm transition">
+            Simpan Rekod
+          </button>
+        </form>
+      </div>
+
+      <!-- SENARAI TRANSAKSI (TABS MENGIKUT SHEET EXCEL) -->
+      <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex flex-wrap gap-1.5" id="filterTabs">
+            <button onclick="setTab('ALL')" data-tab="ALL" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white">Semua</button>
+            <button onclick="setTab('Makan & Minum')" data-tab="Makan & Minum" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200">Makan & Minum</button>
+            <button onclick="setTab('Pengangkutan')" data-tab="Pengangkutan" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200">Pengangkutan</button>
+            <button onclick="setTab('Keperluan & Dobi')" data-tab="Keperluan & Dobi" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200">Keperluan & Dobi</button>
+            <button onclick="setTab('Lain-lain')" data-tab="Lain-lain" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200">Saving / Emergency</button>
+          </div>
+          <span id="recordCount" class="text-xs text-slate-400 font-medium">0 rekod</span>
+        </div>
+
+        <div class="overflow-x-auto max-h-[520px] overflow-y-auto">
+          <table class="w-full text-sm text-left">
+            <thead class="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 sticky top-0">
+              <tr>
+                <th class="py-3 px-4">Item / Perbelanjaan</th>
+                <th class="py-3 px-4">Kategori</th>
+                <th class="py-3 px-4">Tempat</th>
+                <th class="py-3 px-4 text-right">Harga (RM)</th>
+                <th class="py-3 px-4 text-center">Tindakan</th>
+              </tr>
+            </thead>
+            <tbody id="transactionTableBody" class="divide-y divide-slate-100">
+              <!-- Dijana oleh JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ==================== MODAL UBAH BAJET ==================== -->
+  <div id="budgetModal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl fade-in">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-bold text-slate-900">Tetapan Bajet (<span id="modalUserName" class="capitalize"></span>)</h3>
+        <button onclick="closeBudgetModal()" class="text-slate-400 hover:text-slate-600 text-xl leading-none">&times;</button>
+      </div>
+      <form onsubmit="saveBudgets(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Makan & Minum (RM)</label>
+          <input type="number" step="0.01" id="b-makan" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Pengangkutan (RM)</label>
+          <input type="number" step="0.01" id="b-pengangkutan" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Keperluan & Dobi (RM)</label>
+          <input type="number" step="0.01" id="b-keperluan" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Saving (RM)</label>
+          <input type="number" step="0.01" id="b-saving" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Emergency (RM)</label>
+          <input type="number" step="0.01" id="b-emergency" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm" />
+        </div>
+
+        <div class="pt-3 flex justify-end gap-2">
+          <button type="button" onclick="closeBudgetModal()" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100">Batal</button>
+          <button type="submit" class="px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white">Simpan Bajet</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== FIREBASE & LOGIC ==================== -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      getDoc,
+      collection,
+      addDoc,
+      deleteDoc,
+      onSnapshot,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // =========================================================================
+    // 1. GANTIKAN KONFIGURASI FIREBASE ANDA DI SINI
+    // =========================================================================
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const isFirebaseConfigured = firebaseConfig.apiKey !== "YOUR_API_KEY";
+    let db = null;
+
+    if (isFirebaseConfigured) {
+      const app = initializeApp(firebaseConfig);
+      db = getFirestore(app);
+      document.getElementById("dbStatusBadge").textContent = "Firebase Connected";
+      document.getElementById("dbStatusBadge").className = "text-xs px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-medium";
+      document.getElementById("firebaseWarning").classList.add("hidden");
+    } else {
+      document.getElementById("dbStatusBadge").textContent = "Mod Demo (LocalStorage)";
+    }
+
+    // =========================================================================
+    // 2. DATA DEFAULT & DATA ASAL DARIPADA FAIL EXCEL ANDA
+    // =========================================================================
+    const DEFAULT_BUDGETS = {
+      "Makan & Minum": 300,
+      "Pengangkutan": 50,
+      "Keperluan & Dobi": 50,
+      "Saving": 70,
+      "Emergency": 30
+    };
+
+    const EXCEL_INITIAL_TRANSACTIONS = [
+      // Sheet: Makan & Minum (40 rekod)
+      { category: "Makan & Minum", item: "nasi ayam", price: 5.50, place: "kz" },
+      { category: "Makan & Minum", item: "nasi goreng Pattaya", price: 6.00, place: "khar" },
+      { category: "Makan & Minum", item: "air kosong sejuk", price: 1.50, place: "khar" },
+      { category: "Makan & Minum", item: "roti tuna", price: 4.90, place: "7e" },
+      { category: "Makan & Minum", item: "roti tuna & slurpee", price: 5.99, place: "7e" },
+      { category: "Makan & Minum", item: "air tembikai", price: 2.50, place: "khar" },
+      { category: "Makan & Minum", item: "nasi telur", price: 3.00, place: "kz" },
+      { category: "Makan & Minum", item: "air lemon blue", price: 2.00, place: "kz" },
+      { category: "Makan & Minum", item: "bihun goreng", price: 5.00, place: "khar" },
+      { category: "Makan & Minum", item: "kuey teow + telur mata", price: 4.50, place: "pt" },
+      { category: "Makan & Minum", item: "fotokopi", price: 23.00, place: "pt" },
+      { category: "Makan & Minum", item: "nasi ayam + ice", price: 7.00, place: "khar" },
+      { category: "Makan & Minum", item: "pattaya tomyum", price: 5.50, place: "kz" },
+      { category: "Makan & Minum", item: "air lemon blue, fresh orange, ice, air kosong", price: 6.00, place: "kz" },
+      { category: "Makan & Minum", item: "air kelapa", price: 2.00, place: "kab" },
+      { category: "Makan & Minum", item: "nasi ayam + tofu telur", price: 7.00, place: "khar" },
+      { category: "Makan & Minum", item: "ice", price: 0.50, place: "khar" },
+      { category: "Makan & Minum", item: "kueyteow kung fu", price: 6.00, place: "khar" },
+      { category: "Makan & Minum", item: "kueyteow + telur mata", price: 4.00, place: "pt" },
+      { category: "Makan & Minum", item: "tomyum", price: 14.50, place: "pt" },
+      { category: "Makan & Minum", item: "kueyteow+ telur mata", price: 2.50, place: "khar" },
+      { category: "Makan & Minum", item: "nasi ayam", price: 7.00, place: "khar" },
+      { category: "Makan & Minum", item: "momoyo air tembikai", price: 8.70, place: "pt" },
+      { category: "Makan & Minum", item: "kueyteow", price: 5.00, place: "pt" },
+      { category: "Makan & Minum", item: "sundae momoyo", price: 5.30, place: "pt" },
+      { category: "Makan & Minum", item: "takoyaki", price: 10.00, place: "pasar malam" },
+      { category: "Makan & Minum", item: "sandwich", price: 7.00, place: "pasar malam" },
+      { category: "Makan & Minum", item: "nugget cucuk", price: 3.00, place: "pasar malam" },
+      { category: "Makan & Minum", item: "air tembikai", price: 3.50, place: "pasar malam" },
+      { category: "Makan & Minum", item: "nasi telur enoki", price: 5.00, place: "khar" },
+      { category: "Makan & Minum", item: "air kosong ice", price: 0.50, place: "khar" },
+      { category: "Makan & Minum", item: "ice cream kitkat", price: 5.90, place: "khar" },
+      { category: "Makan & Minum", item: "corndog", price: 8.00, place: "cu mart" },
+      { category: "Makan & Minum", item: "roti tuna + air kosong", price: 5.99, place: "pt" },
+      { category: "Makan & Minum", item: "nasi ayam enoki", price: 6.50, place: "khar" },
+      { category: "Makan & Minum", item: "air kosong ice", price: 0.50, place: "khar" },
+      { category: "Makan & Minum", item: "bihun goreng", price: 5.00, place: "khar" },
+      { category: "Makan & Minum", item: "nasi lemak + air kosong", price: 4.00, place: "khar" },
+      { category: "Makan & Minum", item: "nasi ayam + air kosong", price: 8.00, place: "khar" },
+      { category: "Makan & Minum", item: "kuih muih", price: 5.30, place: "mrt kajey" },
+
+      // Sheet: Pengangkutan (5 rekod)
+      { category: "Pengangkutan", item: "dtc ke khar 4", price: 5.00, place: "-" },
+      { category: "Pengangkutan", item: "khar4 ke ktmb tm", price: 10.00, place: "-" },
+      { category: "Pengangkutan", item: "ktm tm ke kl sentral", price: 10.40, place: "-" },
+      { category: "Pengangkutan", item: "ktm kl sentral ke ktm tm", price: 10.40, place: "-" },
+      { category: "Pengangkutan", item: "ktmb tm ke khar4", price: 10.00, place: "-" },
+
+      // Sheet: Keperluan (3 rekod)
+      { category: "Keperluan & Dobi", item: "dobi washer", price: 3.00, place: "-" },
+      { category: "Keperluan & Dobi", item: "pertandingan sajak", price: 2.00, place: "-" },
+      { category: "Keperluan & Dobi", item: "pertandingan fotografi", price: 2.00, place: "-" }
+    ];
+
+    // =========================================================================
+    // 3. STATE & NAVIGATION
+    // =========================================================================
+    let currentUser = null;
+    let currentTab = "ALL";
+    let currentBudgets = { ...DEFAULT_BUDGETS };
+    let currentTransactions = [];
+    let unsubBudgets = null;
+    let unsubTx = null;
+
+    const USERS = ["anisa", "alya", "bacirah"];
+
+    // Muatkan ringkasan baki di halaman Home untuk ketiga-tiga profil
+    function refreshHomeBalances() {
+      USERS.forEach(async (u) => {
+        if (isFirebaseConfigured) {
+          const bSnap = await getDoc(doc(db, "users", u));
+          const budgets = bSnap.exists() ? bSnap.data().budgets : DEFAULT_BUDGETS;
+          onSnapshot(collection(db, "users", u, "transactions"), (snap) => {
+            let exp = 0;
+            snap.forEach(d => exp += Number(d.data().price || 0));
+            const totB = Object.values(budgets).reduce((a, b) => a + Number(b), 0);
+            document.getElementById(`home-balance-${u}`).textContent = `RM ${(totB - exp).toFixed(2)}`;
+          });
+        } else {
+          const localData = getLocalUserData(u);
+          const totB = Object.values(localData.budgets).reduce((a, b) => a + Number(b), 0);
+          const exp = localData.transactions.reduce((a, b) => a + Number(b.price), 0);
+          document.getElementById(`home-balance-${u}`).textContent = `RM ${(totB - exp).toFixed(2)}`;
+        }
+      });
+    }
+
+    function getLocalUserData(user) {
+      const raw = localStorage.getItem(`upsi_money_${user}`);
+      if (raw) return JSON.parse(raw);
+      const init = { budgets: { ...DEFAULT_BUDGETS }, transactions: [] };
+      localStorage.setItem(`upsi_money_${user}`, JSON.stringify(init));
+      return init;
+    }
+
+    function saveLocalUserData(user, data) {
+      localStorage.setItem(`upsi_money_${user}`, JSON.stringify(data));
+    }
+
+    window.selectUser = async function(userId) {
+      currentUser = userId;
+      currentTab = "ALL";
+
+      document.getElementById("homeView").classList.add("hidden");
+      document.getElementById("dashboardView").classList.remove("hidden");
+      document.getElementById("homeBtn").classList.remove("hidden");
+      document.getElementById("userTitle").textContent = userId;
+
+      if (unsubBudgets) unsubBudgets();
+      if (unsubTx) unsubTx();
+
+      if (isFirebaseConfigured) {
+        const userDocRef = doc(db, "users", userId);
+        const snap = await getDoc(userDocRef);
+        if (!snap.exists()) {
+          await setDoc(userDocRef, { budgets: DEFAULT_BUDGETS });
+        }
+
+        unsubBudgets = onSnapshot(userDocRef, (docSnap) => {
+          currentBudgets = docSnap.exists() ? docSnap.data().budgets : { ...DEFAULT_BUDGETS };
+          renderDashboard();
+        });
+
+        unsubTx = onSnapshot(collection(db, "users", userId, "transactions"), (querySnap) => {
+          currentTransactions = [];
+          querySnap.forEach((docItem) => {
+            currentTransactions.push({ id: docItem.id, ...docItem.data() });
+          });
+          renderDashboard();
+        });
+      } else {
+        const data = getLocalUserData(userId);
+        currentBudgets = data.budgets;
+        currentTransactions = data.transactions;
+        renderDashboard();
+      }
+    };
+
+    window.goHome = function() {
+      currentUser = null;
+      if (unsubBudgets) unsubBudgets();
+      if (unsubTx) unsubTx();
+      document.getElementById("dashboardView").classList.add("hidden");
+      document.getElementById("homeView").classList.remove("hidden");
+      document.getElementById("homeBtn").classList.add("hidden");
+      refreshHomeBalances();
+    };
+
+    // =========================================================================
+    // 4. OPERASI CRUD (TAMBAH, PADAM, IMPORT EXCEL, UBAH BAJET)
+    // =========================================================================
+    window.addTransaction = async function(e) {
+      e.preventDefault();
+      if (!currentUser) return;
+
+      const category = document.getElementById("txCategory").value;
+      const item = document.getElementById("txItem").value.trim();
+      const price = parseFloat(document.getElementById("txPrice").value);
+      const place = category === "Makan & Minum"
+        ? (document.getElementById("txPlace").value.trim() || "-")
+        : "-";
+
+      const newTx = { category, item, price, place, createdAt: Date.now() };
+
+      if (isFirebaseConfigured) {
+        await addDoc(collection(db, "users", currentUser, "transactions"), {
+          ...newTx,
+          timestamp: serverTimestamp()
+        });
+      } else {
+        const data = getLocalUserData(currentUser);
+        newTx.id = "tx_" + Date.now();
+        data.transactions.unshift(newTx);
+        saveLocalUserData(currentUser, data);
+        currentTransactions = data.transactions;
+        renderDashboard();
+      }
+
+      document.getElementById("transactionForm").reset();
+      toggleTempatField();
+    };
+
+    window.deleteTransaction = async function(txId) {
+      if (!confirm("Padam rekod perbelanjaan ini?")) return;
+
+      if (isFirebaseConfigured) {
+        await deleteDoc(doc(db, "users", currentUser, "transactions", txId));
+      } else {
+        const data = getLocalUserData(currentUser);
+        data.transactions = data.transactions.filter(t => t.id !== txId);
+        saveLocalUserData(currentUser, data);
+        currentTransactions = data.transactions;
+        renderDashboard();
+      }
+    };
+
+    window.seedExcelData = async function() {
+      if (!currentUser) return;
+      const confirmImport = confirm(
+        `Muatkan 48 rekod asal daripada fail Excel (UPSI SEM1) ke dalam akaun ${currentUser.toUpperCase()}?`
+      );
+      if (!confirmImport) return;
+
+      if (isFirebaseConfigured) {
+        await setDoc(doc(db, "users", currentUser), { budgets: DEFAULT_BUDGETS }, { merge: true });
+        for (const row of EXCEL_INITIAL_TRANSACTIONS) {
+          await addDoc(collection(db, "users", currentUser, "transactions"), {
+            ...row,
+            createdAt: Date.now()
+          });
+        }
+      } else {
+        const data = getLocalUserData(currentUser);
+        data.budgets = { ...DEFAULT_BUDGETS };
+        const seeded = EXCEL_INITIAL_TRANSACTIONS.map((row, idx) => ({
+          ...row,
+          id: "excel_" + Date.now() + "_" + idx,
+          createdAt: Date.now()
+        }));
+        data.transactions = [...seeded, ...data.transactions];
+        saveLocalUserData(currentUser, data);
+        currentBudgets = data.budgets;
+        currentTransactions = data.transactions;
+        renderDashboard();
+      }
+      alert("Data Excel berjaya diimport!");
+    };
+
+    // Modal Bajet
+    window.openBudgetModal = function() {
+      document.getElementById("modalUserName").textContent = currentUser;
+      document.getElementById("b-makan").value = currentBudgets["Makan & Minum"] || 0;
+      document.getElementById("b-pengangkutan").value = currentBudgets["Pengangkutan"] || 0;
+      document.getElementById("b-keperluan").value = currentBudgets["Keperluan & Dobi"] || 0;
+      document.getElementById("b-saving").value = currentBudgets["Saving"] || 0;
+      document.getElementById("b-emergency").value = currentBudgets["Emergency"] || 0;
+      document.getElementById("budgetModal").classList.remove("hidden");
+    };
+
+    window.closeBudgetModal = function() {
+      document.getElementById("budgetModal").classList.add("hidden");
+    };
+
+    window.saveBudgets = async function(e) {
+      e.preventDefault();
+      const updatedBudgets = {
+        "Makan & Minum": parseFloat(document.getElementById("b-makan").value) || 0,
+        "Pengangkutan": parseFloat(document.getElementById("b-pengangkutan").value) || 0,
+        "Keperluan & Dobi": parseFloat(document.getElementById("b-keperluan").value) || 0,
+        "Saving": parseFloat(document.getElementById("b-saving").value) || 0,
+        "Emergency": parseFloat(document.getElementById("b-emergency").value) || 0
+      };
+
+      if (isFirebaseConfigured) {
+        await setDoc(doc(db, "users", currentUser), { budgets: updatedBudgets }, { merge: true });
+      } else {
+        const data = getLocalUserData(currentUser);
+        data.budgets = updatedBudgets;
+        saveLocalUserData(currentUser, data);
+        currentBudgets = updatedBudgets;
+        renderDashboard();
+      }
+      closeBudgetModal();
+    };
+
+    // =========================================================================
+    // 5. PAPARAN UI (RENDER TABLES & SUMMARY)
+    // =========================================================================
+    window.setTab = function(tabName) {
+      currentTab = tabName;
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        if (btn.dataset.tab === tabName) {
+          btn.className = "tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white";
+        } else {
+          btn.className = "tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200";
+        }
+      });
+      renderTransactionsTable();
+    };
+
+    window.toggleTempatField = function() {
+      const cat = document.getElementById("txCategory").value;
+      const tempatInput = document.getElementById("txPlace");
+      if (cat === "Makan & Minum") {
+        tempatInput.disabled = false;
+        tempatInput.placeholder = "khar, kz, pt, 7e...";
+      } else {
+        tempatInput.disabled = true;
+        tempatInput.value = "";
+        tempatInput.placeholder = "Tidak perlu";
+      }
+    };
+
+    function renderDashboard() {
+      const categories = ["Makan & Minum", "Pengangkutan", "Keperluan & Dobi", "Saving", "Emergency"];
+      const expenseByCat = {
+        "Makan & Minum": 0,
+        "Pengangkutan": 0,
+        "Keperluan & Dobi": 0,
+        "Saving": 0,
+        "Emergency": 0
+      };
+
+      currentTransactions.forEach(tx => {
+        if (expenseByCat[tx.category] !== undefined) {
+          expenseByCat[tx.category] += Number(tx.price || 0);
+        }
+      });
+
+      let totalBudget = 0;
+      let totalExpense = 0;
+      let summaryHTML = "";
+
+      categories.forEach(cat => {
+        const bajet = Number(currentBudgets[cat] || 0);
+        const expense = Number(expenseByCat[cat] || 0);
+        const baki = bajet - expense;
+        totalBudget += bajet;
+        totalExpense += expense;
+
+        const pct = bajet > 0 ? Math.min(100, Math.round((expense / bajet) * 100)) : 0;
+        const barColor = baki < 0 ? "bg-rose-500" : pct > 80 ? "bg-amber-500" : "bg-emerald-500";
+        const bakiColor = baki < 0 ? "text-rose-600 font-bold" : "text-emerald-600 font-bold";
+
+        summaryHTML += `
+          <tr class="hover:bg-slate-50/70">
+            <td class="py-3.5 px-5 font-semibold text-slate-800">${cat}</td>
+            <td class="py-3.5 px-5 text-right text-slate-600">${bajet.toFixed(2)}</td>
+            <td class="py-3.5 px-5 text-right text-slate-800 font-medium">${expense.toFixed(2)}</td>
+            <td class="py-3.5 px-5 text-right ${bakiColor}">${baki.toFixed(2)}</td>
+            <td class="py-3.5 px-5">
+              <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                <div class="${barColor} h-2 rounded-full" style="width: ${pct}%"></div>
+              </div>
+              <span class="text-[11px] text-slate-400">${pct}% digunakan</span>
+            </td>
+          </tr>
+        `;
+      });
+
+      const totalBalance = totalBudget - totalExpense;
+      summaryHTML += `
+        <tr class="bg-slate-100/80 font-extrabold text-slate-900 border-t-2 border-slate-300">
+          <td class="py-3.5 px-5">JUMLAH</td>
+          <td class="py-3.5 px-5 text-right">${totalBudget.toFixed(2)}</td>
+          <td class="py-3.5 px-5 text-right text-rose-600">${totalExpense.toFixed(2)}</td>
+          <td class="py-3.5 px-5 text-right ${totalBalance < 0 ? 'text-rose-600' : 'text-emerald-700'}">${totalBalance.toFixed(2)}</td>
+          <td class="py-3.5 px-5 text-xs text-slate-500">Keseluruhan</td>
+        </tr>
+      `;
+
+      document.getElementById("categorySummaryBody").innerHTML = summaryHTML;
+      document.getElementById("totalBudgetDisplay").textContent = `RM ${totalBudget.toFixed(2)}`;
+      document.getElementById("totalExpenseDisplay").textContent = `RM ${totalExpense.toFixed(2)}`;
+      document.getElementById("totalBalanceDisplay").textContent = `RM ${totalBalance.toFixed(2)}`;
+
+      renderTransactionsTable();
+    }
+
+    function renderTransactionsTable() {
+      const filtered = currentTransactions.filter(tx => {
+        if (currentTab === "ALL") return true;
+        if (currentTab === "Lain-lain") return tx.category === "Saving" || tx.category === "Emergency";
+        return tx.category === currentTab;
+      });
+
+      document.getElementById("recordCount").textContent = `${filtered.length} rekod`;
+      const tbody = document.getElementById("transactionTableBody");
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="py-10 text-center text-slate-400 text-sm">
+              Tiada rekod transaksi untuk kategori ini. Klik <strong>"Import Data Excel Asal"</strong> atau tambah rekod baharu.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(tx => `
+        <tr class="hover:bg-slate-50 transition">
+          <td class="py-3 px-4 font-medium text-slate-800">${tx.item}</td>
+          <td class="py-3 px-4">
+            <span class="text-xs px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 font-medium">${tx.category}</span>
+          </td>
+          <td class="py-3 px-4 text-slate-500 text-xs uppercase">${tx.place || "-"}</td>
+          <td class="py-3 px-4 text-right font-semibold text-slate-800">${Number(tx.price).toFixed(2)}</td>
+          <td class="py-3 px-4 text-center">
+            <button onclick="deleteTransaction('${tx.id}')" class="text-xs text-rose-500 hover:text-rose-700 font-semibold px-2 py-1 rounded hover:bg-rose-50">
+              Padam
+            </button>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    // Init Home
+    refreshHomeBalances();
+  </script>
+</body>
+</html>
