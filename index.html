@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ms" class="light">
+<html lang="ms" class="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Money Management — Anisa, Alya & Bacirah</title>
+  <title>Money Management</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -21,54 +21,46 @@
   <style>
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      transition: background-color 0.3s ease, color 0.3s ease;
     }
-    .fade-in { animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+    .fade-in { animation: fadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1); }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
     }
     .glass-card {
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
     }
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.45); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.35); border-radius: 9999px; }
   </style>
 </head>
-<body class="bg-gradient-to-br from-indigo-50/90 via-rose-50/70 to-amber-50/80 text-slate-800 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 dark:text-slate-100 min-h-screen relative selection:bg-indigo-500 selection:text-white">
+<body class="bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-slate-100 min-h-screen relative selection:bg-indigo-500 selection:text-white">
 
   <!-- LAPISAN GAMBAR LATAR BELAKANG (DIKAWAL DALAM KOD) -->
   <div id="customBgLayer" class="fixed inset-0 pointer-events-none z-0 bg-cover bg-center"></div>
 
   <!-- TOP NAVBAR -->
-  <header class="glass-card bg-white/80 dark:bg-slate-900/80 border-b border-white/60 dark:border-slate-800 sticky top-0 z-30 shadow-xs">
+  <header class="glass-card bg-slate-900/80 border-b border-slate-800/90 sticky top-0 z-30 shadow-md">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between">
       <div class="flex items-center gap-3 cursor-pointer group" onclick="goHome()">
         <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 text-white flex items-center justify-center font-extrabold text-base shadow-md shadow-indigo-500/25 group-hover:scale-105 transition-transform">
           RM
         </div>
         <div>
-          <h1 class="font-extrabold text-slate-900 dark:text-white text-base sm:text-lg tracking-tight leading-tight">
+          <h1 class="font-extrabold text-white text-base sm:text-lg tracking-tight leading-tight">
             Money Management
           </h1>
-          <p class="text-[11px] font-medium text-slate-500 dark:text-slate-400">Ruang Kewangan Anisa, Alya & Bacirah</p>
+          <p class="text-[11px] font-medium text-slate-400">Ruang Kewangan Anisa, Alya & Bacirah</p>
         </div>
       </div>
 
       <div class="flex items-center gap-2">
-        <!-- Theme Toggle Button -->
-        <button onclick="toggleTheme()" title="Tukar Tema (Cerahkan / Gelapkan)" class="p-2.5 rounded-xl bg-white/90 hover:bg-amber-50 dark:bg-slate-800 dark:hover:bg-slate-700 text-amber-500 dark:text-amber-300 border border-slate-200/70 dark:border-slate-700 transition shadow-2xs">
-          <svg class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
-          </svg>
-          <svg class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
-          </svg>
+        <button id="backToMonthsBtn" onclick="backToMonths()" class="hidden text-xs sm:text-sm font-bold px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
+          📅 Tukar Bulan
         </button>
-
-        <button id="homeBtn" onclick="goHome()" class="hidden text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:opacity-95 shadow-sm transition">
+        <button id="homeBtn" onclick="goHome()" class="hidden text-xs sm:text-sm font-bold px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:opacity-95 shadow-sm transition">
           ← Tukar Profil
         </button>
       </div>
@@ -78,260 +70,335 @@
   <!-- ==================== VIEW 1: HOME (PILIHAN 3 PROFIL) ==================== -->
   <main id="homeView" class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-12 fade-in">
     <div class="text-center max-w-xl mx-auto mb-12">
-      <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-white/90 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-300 text-xs font-bold tracking-wide uppercase mb-4 shadow-2xs border border-indigo-100 dark:border-indigo-500/20">
+      <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-indigo-500/15 text-indigo-300 text-xs font-bold tracking-wide uppercase mb-4 border border-indigo-500/25">
         ✨ Selamat Datang ke Money Management
       </span>
-      <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-3">
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-3">
         Pilih Akaun Kewangan Anda
       </h2>
-      <p class="text-slate-600 dark:text-slate-300 text-sm sm:text-base leading-relaxed">
-        Klik pada kad profil di bawah untuk mula mengurus bajet, merekod perbelanjaan harian, atau kemas kini gambar profil masing-masing.
+      <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+        Klik pada kad profil di bawah untuk memilih bulan dan mengurus bajet serta perbelanjaan masing-masing.
       </p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <!-- CARD ANISA -->
-      <div onclick="selectUser('anisa')" class="group relative glass-card bg-white/85 dark:bg-slate-900/85 rounded-3xl border border-white dark:border-slate-800 p-7 shadow-lg shadow-indigo-500/5 hover:shadow-xl hover:shadow-blue-500/15 hover:-translate-y-1.5 transition-all duration-300 cursor-pointer overflow-hidden">
+      <!-- CARD ANISA (BIRU) -->
+      <div onclick="selectUser('anisa')" class="group relative glass-card bg-slate-900/80 rounded-3xl border border-slate-800 p-7 shadow-lg hover:shadow-xl hover:shadow-blue-500/15 hover:border-blue-500/40 hover:-translate-y-1.5 transition-all duration-300 cursor-pointer overflow-hidden">
         <div class="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-gradient-to-br from-blue-400/20 to-sky-400/20 blur-2xl"></div>
         <div class="relative w-20 h-20 mb-5">
           <div id="avatar-home-anisa" class="w-20 h-20 rounded-3xl bg-gradient-to-br from-blue-500 via-sky-500 to-cyan-500 text-white flex items-center justify-center text-2xl font-extrabold shadow-lg shadow-blue-500/25 overflow-hidden bg-cover bg-center">
             AN
           </div>
-          <button type="button" onclick="openAvatarCropper(event, 'anisa')" title="Tukar & Crop Gambar Profil" class="absolute -bottom-1.5 -right-1.5 w-8 h-8 rounded-full bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-300 shadow-md border border-slate-100 dark:border-slate-700 flex items-center justify-center hover:scale-110 transition">
+          <button type="button" onclick="openAvatarCropper(event, 'anisa')" title="Tukar & Crop Gambar Profil" class="absolute -bottom-1.5 -right-1.5 w-8 h-8 rounded-full bg-slate-800 text-blue-300 shadow-md border border-slate-700 flex items-center justify-center hover:scale-110 transition">
             📷
           </button>
         </div>
-        <h3 class="text-2xl font-extrabold text-slate-900 dark:text-white">Anisa</h3>
-        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 mb-6">Akaun Bajet & Perbelanjaan Anisa</p>
-        <div class="pt-4 border-t border-slate-200/60 dark:border-slate-800 flex items-center justify-between">
-          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Baki Semasa</span>
-          <span id="home-balance-anisa" class="text-base font-extrabold text-blue-600 dark:text-blue-400">RM 0.00</span>
+        <h3 class="text-2xl font-extrabold text-white">Anisa</h3>
+        <p class="text-sm text-slate-400 mt-1 mb-5">Akaun Bajet & Perbelanjaan Anisa</p>
+        <div class="pt-4 border-t border-slate-800 flex items-center justify-between">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Status</span>
+          <span class="text-xs font-extrabold text-blue-400">Buka Rekod →</span>
         </div>
       </div>
 
-      <!-- CARD ALYA -->
-      <div onclick="selectUser('alya')" class="group relative glass-card bg-white/85 dark:bg-slate-900/85 rounded-3xl border border-white dark:border-slate-800 p-7 shadow-lg shadow-emerald-500/5 hover:shadow-xl hover:shadow-purple-500/15 hover:-translate-y-1.5 transition-all duration-300 cursor-pointer overflow-hidden">
+      <!-- CARD ALYA (UNGU) -->
+      <div onclick="selectUser('alya')" class="group relative glass-card bg-slate-900/80 rounded-3xl border border-slate-800 p-7 shadow-lg hover:shadow-xl hover:shadow-purple-500/15 hover:border-purple-500/40 hover:-translate-y-1.5 transition-all duration-300 cursor-pointer overflow-hidden">
         <div class="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-gradient-to-br from-purple-400/20 to-violet-400/20 blur-2xl"></div>
         <div class="relative w-20 h-20 mb-5">
           <div id="avatar-home-alya" class="w-20 h-20 rounded-3xl bg-gradient-to-br from-purple-400 via-violet-500 to-fuchsia-600 text-white flex items-center justify-center text-2xl font-extrabold shadow-lg shadow-purple-500/25 overflow-hidden bg-cover bg-center">
             AL
           </div>
-          <button type="button" onclick="openAvatarCropper(event, 'alya')" title="Tukar & Crop Gambar Profil" class="absolute -bottom-1.5 -right-1.5 w-8 h-8 rounded-full bg-white dark:bg-slate-800 text-purple-600 dark:text-purple-300 shadow-md border border-slate-100 dark:border-slate-700 flex items-center justify-center hover:scale-110 transition">
+          <button type="button" onclick="openAvatarCropper(event, 'alya')" title="Tukar & Crop Gambar Profil" class="absolute -bottom-1.5 -right-1.5 w-8 h-8 rounded-full bg-slate-800 text-purple-300 shadow-md border border-slate-700 flex items-center justify-center hover:scale-110 transition">
             📷
           </button>
         </div>
-        <h3 class="text-2xl font-extrabold text-slate-900 dark:text-white">Alya</h3>
-        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 mb-6">Akaun Bajet & Perbelanjaan Alya</p>
-        <div class="pt-4 border-t border-slate-200/60 dark:border-slate-800 flex items-center justify-between">
-          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Baki Semasa</span>
-          <span id="home-balance-alya" class="text-base font-extrabold text-purple-600 dark:text-purple-400">RM 0.00</span>
+        <h3 class="text-2xl font-extrabold text-white">Alya</h3>
+        <p class="text-sm text-slate-400 mt-1 mb-5">Akaun Bajet & Perbelanjaan Alya</p>
+        <div class="pt-4 border-t border-slate-800 flex items-center justify-between">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Status</span>
+          <span class="text-xs font-extrabold text-purple-400">Buka Rekod →</span>
         </div>
       </div>
 
-      <!-- CARD BACIRAH -->
-      <div onclick="selectUser('bacirah')" class="group relative glass-card bg-white/85 dark:bg-slate-900/85 rounded-3xl border border-white dark:border-slate-800 p-7 shadow-lg shadow-rose-500/5 hover:shadow-xl hover:shadow-rose-500/15 hover:-translate-y-1.5 transition-all duration-300 cursor-pointer overflow-hidden">
+      <!-- CARD BACIRAH (MERAH) -->
+      <div onclick="selectUser('bacirah')" class="group relative glass-card bg-slate-900/80 rounded-3xl border border-slate-800 p-7 shadow-lg hover:shadow-xl hover:shadow-rose-500/15 hover:border-rose-500/40 hover:-translate-y-1.5 transition-all duration-300 cursor-pointer overflow-hidden">
         <div class="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-gradient-to-br from-rose-400/20 to-amber-400/20 blur-2xl"></div>
         <div class="relative w-20 h-20 mb-5">
           <div id="avatar-home-bacirah" class="w-20 h-20 rounded-3xl bg-gradient-to-br from-rose-500 via-pink-500 to-orange-400 text-white flex items-center justify-center text-2xl font-extrabold shadow-lg shadow-rose-500/25 overflow-hidden bg-cover bg-center">
             BC
           </div>
-          <button type="button" onclick="openAvatarCropper(event, 'bacirah')" title="Tukar & Crop Gambar Profil" class="absolute -bottom-1.5 -right-1.5 w-8 h-8 rounded-full bg-white dark:bg-slate-800 text-rose-600 dark:text-rose-300 shadow-md border border-slate-100 dark:border-slate-700 flex items-center justify-center hover:scale-110 transition">
+          <button type="button" onclick="openAvatarCropper(event, 'bacirah')" title="Tukar & Crop Gambar Profil" class="absolute -bottom-1.5 -right-1.5 w-8 h-8 rounded-full bg-slate-800 text-rose-300 shadow-md border border-slate-700 flex items-center justify-center hover:scale-110 transition">
             📷
           </button>
         </div>
-        <h3 class="text-2xl font-extrabold text-slate-900 dark:text-white">Bacirah</h3>
-        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 mb-6">Akaun Bajet & Perbelanjaan Bacirah</p>
-        <div class="pt-4 border-t border-slate-200/60 dark:border-slate-800 flex items-center justify-between">
-          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Baki Semasa</span>
-          <span id="home-balance-bacirah" class="text-base font-extrabold text-rose-600 dark:text-rose-400">RM 0.00</span>
+        <h3 class="text-2xl font-extrabold text-white">Bacirah</h3>
+        <p class="text-sm text-slate-400 mt-1 mb-5">Akaun Bajet & Perbelanjaan Bacirah</p>
+        <div class="pt-4 border-t border-slate-800 flex items-center justify-between">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Status</span>
+          <span class="text-xs font-extrabold text-rose-400">Buka Rekod →</span>
         </div>
       </div>
     </div>
   </main>
 
-  <!-- ==================== VIEW 2: DASHBOARD PENGGUNA ==================== -->
-  <main id="dashboardView" class="hidden relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-8 fade-in">
-    
-    <!-- Header Profil -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 glass-card bg-white/80 dark:bg-slate-900/80 p-5 rounded-3xl border border-white dark:border-slate-800 shadow-sm">
+  <!-- ==================== VIEW 2: PILIHAN BULAN ==================== -->
+  <main id="monthSelectView" class="hidden relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-10 fade-in">
+    <div class="glass-card bg-slate-900/80 border border-slate-800 rounded-3xl p-6 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div class="flex items-center gap-4">
-        <div class="relative w-16 h-16 shrink-0">
-          <div id="avatar-dash" class="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-pink-500 text-white flex items-center justify-center text-xl font-extrabold shadow-md overflow-hidden bg-cover bg-center">
-            AN
-          </div>
-          <button type="button" onclick="openAvatarCropper(event, currentUser)" title="Edit Gambar Profil" class="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-white dark:bg-slate-800 text-indigo-600 shadow-md border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs hover:scale-110 transition">
-            📷
-          </button>
+        <div id="avatar-month-view" class="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-pink-500 text-white flex items-center justify-center text-xl font-extrabold shadow-md overflow-hidden bg-cover bg-center">
+          AN
         </div>
         <div>
-          <div class="flex items-center gap-2.5">
-            <h2 id="userTitle" class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white capitalize tracking-tight">Anisa</h2>
-            <span class="px-3 py-0.5 rounded-full text-xs font-bold bg-gradient-to-r from-indigo-500/10 to-pink-500/10 text-indigo-600 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-500/20">
-              Akaun Peribadi
+          <span class="text-xs font-bold uppercase tracking-wider text-indigo-400">Ruang Kewangan</span>
+          <h2 id="monthViewUserTitle" class="text-2xl sm:text-3xl font-extrabold text-white capitalize">Anisa</h2>
+          <p class="text-xs sm:text-sm text-slate-400">Pilih bulan untuk melihat atau mengurus kewangan bulan tersebut.</p>
+        </div>
+      </div>
+
+      <!-- Pilihan Tahun -->
+      <div class="flex items-center gap-2">
+        <label class="text-xs font-bold text-slate-400">Tahun:</label>
+        <select id="yearSelector" onchange="renderMonthCards()" class="rounded-xl border border-slate-700 bg-slate-800 text-white px-4 py-2 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <option value="2026" selected>2026</option>
+          <option value="2027">2027</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Grid 12 Bulan -->
+    <div id="monthsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <!-- Dijana oleh JS -->
+    </div>
+  </main>
+
+  <!-- ==================== VIEW 3: DASHBOARD BULANAN (3 BAR MENU) ==================== -->
+  <main id="dashboardView" class="hidden relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-8 fade-in">
+    
+    <!-- Header Profil & Bulan Aktif -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 glass-card bg-slate-900/85 p-5 rounded-3xl border border-slate-800 shadow-sm">
+      <div class="flex items-center gap-4">
+        <div class="relative w-14 h-14 shrink-0">
+          <div id="avatar-dash" class="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-pink-500 text-white flex items-center justify-center text-lg font-extrabold shadow-md overflow-hidden bg-cover bg-center">
+            AN
+          </div>
+        </div>
+        <div>
+          <div class="flex flex-wrap items-center gap-2.5">
+            <h2 id="userTitle" class="text-2xl sm:text-3xl font-extrabold text-white capitalize tracking-tight">Anisa</h2>
+            <span id="activeMonthBadge" class="px-3.5 py-1 rounded-full text-xs font-extrabold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+              Januari 2026
             </span>
           </div>
-          <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">Urus kategori bajet, tambah rekod, atau kemas kini perbelanjaan anda.</p>
+          <p class="text-xs sm:text-sm text-slate-400 mt-0.5">Pengurusan bajet & perbelanjaan khusus untuk bulan ini.</p>
         </div>
       </div>
 
       <div class="flex flex-wrap items-center gap-2.5">
-        <button onclick="deleteAllTransactions()" class="text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-500/15 dark:hover:bg-rose-500/25 text-rose-600 dark:text-rose-300 border border-rose-200/80 dark:border-rose-500/20 transition">
-          🗑️ Padam Semua
-        </button>
         <button onclick="openCategoryModal()" class="text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:opacity-95 text-white shadow-md shadow-indigo-500/20 transition">
           ⚙️ Urus Kategori & Bajet
         </button>
       </div>
     </div>
 
-    <!-- 3 KAD RINGKASAN UTAMA -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
-      <div class="glass-card bg-white/85 dark:bg-slate-900/85 rounded-3xl border border-white dark:border-slate-800 p-6 shadow-sm">
-        <div class="flex items-center justify-between mb-2">
-          <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Jumlah Bajet</p>
-          <span class="w-9 h-9 rounded-2xl bg-indigo-100/80 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-base">💰</span>
-        </div>
-        <p id="totalBudgetDisplay" class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">RM 0.00</p>
-      </div>
-
-      <div class="glass-card bg-white/85 dark:bg-slate-900/85 rounded-3xl border border-white dark:border-slate-800 p-6 shadow-sm">
-        <div class="flex items-center justify-between mb-2">
-          <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Jumlah Expense</p>
-          <span class="w-9 h-9 rounded-2xl bg-rose-100/80 dark:bg-rose-500/15 text-rose-600 dark:text-rose-400 flex items-center justify-center text-base">💸</span>
-        </div>
-        <p id="totalExpenseDisplay" class="text-2xl sm:text-3xl font-extrabold text-rose-600 dark:text-rose-400">RM 0.00</p>
-      </div>
-
-      <div class="glass-card bg-white/85 dark:bg-slate-900/85 rounded-3xl border border-white dark:border-slate-800 p-6 shadow-sm">
-        <div class="flex items-center justify-between mb-2">
-          <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Baki Keseluruhan</p>
-          <span class="w-9 h-9 rounded-2xl bg-emerald-100/80 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-base">✨</span>
-        </div>
-        <p id="totalBalanceDisplay" class="text-2xl sm:text-3xl font-extrabold text-emerald-600 dark:text-emerald-400">RM 0.00</p>
-      </div>
+    <!-- 3 BAR MENU UTAMA -->
+    <div class="glass-card bg-slate-900/85 p-2 rounded-2xl border border-slate-800 mb-7 grid grid-cols-1 sm:grid-cols-3 gap-2">
+      <button onclick="switchMainMenu('summary')" id="menuBtn-summary" class="py-3 px-4 rounded-xl text-xs sm:text-sm font-extrabold transition flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md">
+        <span>📊</span> Jumlah Semua Kategori
+      </button>
+      <button onclick="switchMainMenu('record')" id="menuBtn-record" class="py-3 px-4 rounded-xl text-xs sm:text-sm font-extrabold transition flex items-center justify-center gap-2 text-slate-300 hover:bg-slate-800">
+        <span>➕</span> Rekod Perbelanjaan
+      </button>
+      <button onclick="switchMainMenu('list')" id="menuBtn-list" class="py-3 px-4 rounded-xl text-xs sm:text-sm font-extrabold transition flex items-center justify-center gap-2 text-slate-300 hover:bg-slate-800">
+        <span>📋</span> List Perbelanjaan Semua
+      </button>
     </div>
 
-    <!-- JADUAL RINGKASAN KATEGORI -->
-    <div class="glass-card bg-white/85 dark:bg-slate-900/85 rounded-3xl border border-white dark:border-slate-800 shadow-sm overflow-hidden mb-8">
-      <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-        <h3 class="font-extrabold text-slate-900 dark:text-white">Ringkasan Mengikut Kategori</h3>
-        <button onclick="openCategoryModal()" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">
-          + Tambah / Edit Kategori
-        </button>
+    <!-- ==================== SECTION 1: JUMLAH SEMUA KATEGORI ==================== -->
+    <section id="section-summary" class="fade-in">
+      <!-- 3 Kad Ringkasan Utama -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-7">
+        <div class="glass-card bg-slate-900/85 rounded-3xl border border-slate-800 p-6 shadow-sm">
+          <div class="flex items-center justify-between mb-2">
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Jumlah Bajet</p>
+            <span class="w-9 h-9 rounded-2xl bg-indigo-500/15 text-indigo-400 flex items-center justify-center text-base">💰</span>
+          </div>
+          <p id="totalBudgetDisplay" class="text-2xl sm:text-3xl font-extrabold text-white">RM 0.00</p>
+        </div>
+
+        <div class="glass-card bg-slate-900/85 rounded-3xl border border-slate-800 p-6 shadow-sm">
+          <div class="flex items-center justify-between mb-2">
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Jumlah Expense</p>
+            <span class="w-9 h-9 rounded-2xl bg-rose-500/15 text-rose-400 flex items-center justify-center text-base">💸</span>
+          </div>
+          <p id="totalExpenseDisplay" class="text-2xl sm:text-3xl font-extrabold text-rose-400">RM 0.00</p>
+        </div>
+
+        <div class="glass-card bg-slate-900/85 rounded-3xl border border-slate-800 p-6 shadow-sm">
+          <div class="flex items-center justify-between mb-2">
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Baki Keseluruhan</p>
+            <span class="w-9 h-9 rounded-2xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center text-base">✨</span>
+          </div>
+          <p id="totalBalanceDisplay" class="text-2xl sm:text-3xl font-extrabold text-emerald-400">RM 0.00</p>
+        </div>
       </div>
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm text-left">
-          <thead class="bg-indigo-50/50 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 font-bold border-b border-slate-100 dark:border-slate-800">
-            <tr>
-              <th class="py-3.5 px-6">Kategori</th>
-              <th class="py-3.5 px-6 text-right">Bajet (RM)</th>
-              <th class="py-3.5 px-6 text-right">Expense (RM)</th>
-              <th class="py-3.5 px-6 text-right">Baki (RM)</th>
-              <th class="py-3.5 px-6 w-48">Penggunaan</th>
-            </tr>
-          </thead>
-          <tbody id="categorySummaryBody" class="divide-y divide-slate-100 dark:divide-slate-800">
-          </tbody>
-        </table>
-      </div>
-    </div>
 
-    <!-- BAHAGIAN TAMBAH TRANSAKSI & SENARAI REKOD -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      
-      <!-- BORANG TAMBAH TRANSAKSI -->
-      <div class="glass-card bg-white/85 dark:bg-slate-900/85 rounded-3xl border border-white dark:border-slate-800 p-6 shadow-sm h-fit">
-        <h3 class="font-extrabold text-slate-900 dark:text-white text-lg mb-4">+ Rekod Perbelanjaan</h3>
-        <form id="transactionForm" onsubmit="addTransaction(event)" class="space-y-4">
-          <div>
-            <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1.5">Pilih Kategori</label>
-            <select id="txCategory" required class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            </select>
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1.5">Butiran / Item</label>
-            <input type="text" id="txItem" required placeholder="Contoh: nasi ayam, dobi, buku..." class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-          </div>
-
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1.5">Harga (RM)</label>
-              <input type="number" step="0.01" min="0.01" id="txPrice" required placeholder="0.00" class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1.5">Tempat / Nota</label>
-              <input type="text" id="txPlace" placeholder="khar, kz, pt, 7e..." class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-            </div>
-          </div>
-
-          <button type="submit" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:opacity-95 text-white font-bold text-sm shadow-md shadow-indigo-500/20 transition">
-            Simpan Rekod
+      <!-- Jadual Ringkasan Kategori -->
+      <div class="glass-card bg-slate-900/85 rounded-3xl border border-slate-800 shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+          <h3 class="font-extrabold text-white">Jumlah Mengikut Kategori</h3>
+          <button onclick="openCategoryModal()" class="text-xs font-bold text-indigo-400 hover:underline">
+            + Tambah / Edit Kategori
           </button>
-        </form>
-      </div>
-
-      <!-- SENARAI TRANSAKSI -->
-      <div class="lg:col-span-2 glass-card bg-white/85 dark:bg-slate-900/85 rounded-3xl border border-white dark:border-slate-800 shadow-sm overflow-hidden">
-        <div class="p-4 sm:px-6 border-b border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2">
-          <div class="flex flex-wrap gap-1.5" id="filterTabs"></div>
-          <span id="recordCount" class="text-xs text-slate-400 font-bold">0 rekod</span>
         </div>
-
-        <div class="overflow-x-auto max-h-[540px] overflow-y-auto">
+        <div class="overflow-x-auto">
           <table class="w-full text-sm text-left">
-            <thead class="bg-indigo-50/60 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 font-bold border-b border-slate-100 dark:border-slate-800 sticky top-0 backdrop-blur-xs">
+            <thead class="bg-slate-800/70 text-slate-300 font-bold border-b border-slate-800">
               <tr>
-                <th class="py-3.5 px-5">Item / Perbelanjaan</th>
-                <th class="py-3.5 px-4">Kategori</th>
-                <th class="py-3.5 px-4">Tempat / Nota</th>
-                <th class="py-3.5 px-4 text-right">Harga (RM)</th>
-                <th class="py-3.5 px-4 text-center">Tindakan</th>
+                <th class="py-3.5 px-6">Kategori</th>
+                <th class="py-3.5 px-6 text-right">Bajet (RM)</th>
+                <th class="py-3.5 px-6 text-right">Expense (RM)</th>
+                <th class="py-3.5 px-6 text-right">Baki (RM)</th>
+                <th class="py-3.5 px-6 w-48">Penggunaan</th>
               </tr>
             </thead>
-            <tbody id="transactionTableBody" class="divide-y divide-slate-100 dark:divide-slate-800">
+            <tbody id="categorySummaryBody" class="divide-y divide-slate-800">
             </tbody>
           </table>
         </div>
       </div>
+    </section>
 
-    </div>
+    <!-- ==================== SECTION 2: REKOD PERBELANJAAN (TAMBAH, EDIT, PADAM) ==================== -->
+    <section id="section-record" class="hidden fade-in">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Borang Tambah Transaksi -->
+        <div class="glass-card bg-slate-900/85 rounded-3xl border border-slate-800 p-6 shadow-sm h-fit">
+          <h3 class="font-extrabold text-white text-lg mb-4">+ Tambah Perbelanjaan</h3>
+          <form id="transactionForm" onsubmit="addTransaction(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1.5">Pilih Kategori</label>
+              <select id="txCategory" required class="w-full rounded-xl border border-slate-700 bg-slate-800 text-white px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1.5">Butiran / Item</label>
+              <input type="text" id="txItem" required placeholder="Contoh: nasi ayam, dobi, buku..." class="w-full rounded-xl border border-slate-700 bg-slate-800 text-white px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-bold text-slate-300 mb-1.5">Harga (RM)</label>
+                <input type="number" step="0.01" min="0.01" id="txPrice" required placeholder="0.00" class="w-full rounded-xl border border-slate-700 bg-slate-800 text-white px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-300 mb-1.5">Tempat / Nota</label>
+                <input type="text" id="txPlace" placeholder="khar, kz, pt, 7e..." class="w-full rounded-xl border border-slate-700 bg-slate-800 text-white px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              </div>
+            </div>
+
+            <button type="submit" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:opacity-95 text-white font-bold text-sm shadow-md shadow-indigo-500/20 transition">
+              Simpan Rekod
+            </button>
+          </form>
+        </div>
+
+        <!-- Panel Urus & Edit Rekod Bulan Ini -->
+        <div class="lg:col-span-2 glass-card bg-slate-900/85 rounded-3xl border border-slate-800 shadow-sm overflow-hidden">
+          <div class="p-4 sm:px-6 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 class="font-extrabold text-white text-base">Urus Rekod (Edit & Padam)</h3>
+              <p class="text-xs text-slate-400">Klik Edit pada mana-mana item untuk ubah atau padam item tersebut.</p>
+            </div>
+            <button onclick="deleteAllTransactions()" class="text-xs font-bold px-3.5 py-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/25 transition">
+              🗑️ Padam Semua Rekod
+            </button>
+          </div>
+
+          <div class="overflow-x-auto max-h-[520px] overflow-y-auto">
+            <table class="w-full text-sm text-left">
+              <thead class="bg-slate-800/80 text-slate-300 font-bold border-b border-slate-800 sticky top-0">
+                <tr>
+                  <th class="py-3.5 px-5">Item / Perbelanjaan</th>
+                  <th class="py-3.5 px-4">Kategori</th>
+                  <th class="py-3.5 px-4">Tempat / Nota</th>
+                  <th class="py-3.5 px-4 text-right">Harga (RM)</th>
+                  <th class="py-3.5 px-4 text-center">Tindakan</th>
+                </tr>
+              </thead>
+              <tbody id="recordManageTableBody" class="divide-y divide-slate-800">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SECTION 3: LIST PERBELANJAAN SEMUA ==================== -->
+    <section id="section-list" class="hidden fade-in">
+      <div class="glass-card bg-slate-900/85 rounded-3xl border border-slate-800 shadow-sm overflow-hidden">
+        <div class="p-4 sm:px-6 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex flex-wrap gap-1.5" id="filterTabs"></div>
+          <div class="flex items-center gap-2">
+            <input type="text" id="searchTxInput" oninput="renderAllListTable()" placeholder="Cari item / tempat..." class="rounded-xl border border-slate-700 bg-slate-800 text-white px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            <span id="recordCount" class="text-xs text-slate-400 font-bold whitespace-nowrap">0 rekod</span>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto max-h-[580px] overflow-y-auto">
+          <table class="w-full text-sm text-left">
+            <thead class="bg-slate-800/80 text-slate-300 font-bold border-b border-slate-800 sticky top-0">
+              <tr>
+                <th class="py-3.5 px-5 w-12">Bil</th>
+                <th class="py-3.5 px-5">Item / Perbelanjaan</th>
+                <th class="py-3.5 px-4">Kategori</th>
+                <th class="py-3.5 px-4">Tempat / Nota</th>
+                <th class="py-3.5 px-5 text-right">Harga (RM)</th>
+              </tr>
+            </thead>
+            <tbody id="allListTableBody" class="divide-y divide-slate-800">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <!-- ==================== MODAL 1: EDIT ITEM TRANSAKSI ==================== -->
-  <div id="editTxModal" class="hidden fixed inset-0 bg-slate-950/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl fade-in">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 mb-4">
-        <h3 class="text-lg font-extrabold text-slate-900 dark:text-white">Edit Rekod Perbelanjaan</h3>
-        <button onclick="closeEditTxModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center text-lg">&times;</button>
+  <div id="editTxModal" class="hidden fixed inset-0 bg-slate-950/70 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl fade-in">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+        <h3 class="text-lg font-extrabold text-white">Edit Rekod Perbelanjaan</h3>
+        <button onclick="closeEditTxModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center text-lg">&times;</button>
       </div>
       <form onsubmit="saveEditedTransaction(event)" class="space-y-4">
         <input type="hidden" id="editTxId" />
         <div>
-          <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Kategori</label>
-          <select id="editTxCategory" required class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3.5 py-2.5 text-sm"></select>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Kategori</label>
+          <select id="editTxCategory" required class="w-full rounded-xl border border-slate-700 bg-slate-800 text-white px-3.5 py-2.5 text-sm"></select>
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Butiran / Item</label>
-          <input type="text" id="editTxItem" required class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3.5 py-2.5 text-sm" />
+          <label class="block text-xs font-bold text-slate-300 mb-1">Butiran / Item</label>
+          <input type="text" id="editTxItem" required class="w-full rounded-xl border border-slate-700 bg-slate-800 text-white px-3.5 py-2.5 text-sm" />
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Harga (RM)</label>
-            <input type="number" step="0.01" min="0.01" id="editTxPrice" required class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3.5 py-2.5 text-sm" />
+            <label class="block text-xs font-bold text-slate-300 mb-1">Harga (RM)</label>
+            <input type="number" step="0.01" min="0.01" id="editTxPrice" required class="w-full rounded-xl border border-slate-700 bg-slate-800 text-white px-3.5 py-2.5 text-sm" />
           </div>
           <div>
-            <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Tempat / Nota</label>
-            <input type="text" id="editTxPlace" class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3.5 py-2.5 text-sm" />
+            <label class="block text-xs font-bold text-slate-300 mb-1">Tempat / Nota</label>
+            <input type="text" id="editTxPlace" class="w-full rounded-xl border border-slate-700 bg-slate-800 text-white px-3.5 py-2.5 text-sm" />
           </div>
         </div>
-        <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-          <button type="button" onclick="deleteSingleFromEditModal()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-rose-50 text-rose-600 hover:bg-rose-100 dark:bg-rose-500/15 dark:text-rose-300">
+        <div class="pt-4 border-t border-slate-800 flex items-center justify-between">
+          <button type="button" onclick="deleteSingleFromEditModal()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-rose-500/15 text-rose-300 hover:bg-rose-500/25">
             🗑️ Padam Item Ini
           </button>
           <div class="flex gap-2">
-            <button type="button" onclick="closeEditTxModal()" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">Batal</button>
+            <button type="button" onclick="closeEditTxModal()" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800">Batal</button>
             <button type="submit" class="px-5 py-2 rounded-xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm">Simpan</button>
           </div>
         </div>
@@ -340,70 +407,69 @@
   </div>
 
   <!-- ==================== MODAL 2: URUS KATEGORI & BAJET ==================== -->
-  <div id="categoryModal" class="hidden fixed inset-0 bg-slate-950/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl fade-in max-h-[90vh] flex flex-col">
-      <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+  <div id="categoryModal" class="hidden fixed inset-0 bg-slate-950/70 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl fade-in max-h-[90vh] flex flex-col">
+      <div class="flex items-center justify-between pb-4 border-b border-slate-800">
         <div>
-          <h3 class="text-lg font-extrabold text-slate-900 dark:text-white">Urus Kategori (<span id="modalUserName" class="capitalize"></span>)</h3>
-          <p class="text-xs text-slate-500 dark:text-slate-400">Ubah nama kategori, tetapkan bajet, atau tambah kategori baharu.</p>
+          <h3 class="text-lg font-extrabold text-white">Urus Kategori (<span id="modalMonthLabel"></span>)</h3>
+          <p class="text-xs text-slate-400">Ubah nama kategori, tetapkan bajet, atau tambah kategori baharu.</p>
         </div>
-        <button onclick="closeCategoryModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center text-lg">&times;</button>
+        <button onclick="closeCategoryModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center text-lg">&times;</button>
       </div>
 
       <div id="editableCategoriesList" class="py-4 space-y-2.5 overflow-y-auto flex-1 pr-1"></div>
 
-      <div class="pt-3 border-t border-slate-100 dark:border-slate-800">
-        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-2">+ Tambah Kategori Baharu</label>
+      <div class="pt-3 border-t border-slate-800">
+        <label class="block text-xs font-bold text-slate-400 mb-2">+ Tambah Kategori Baharu</label>
         <div class="flex gap-2">
-          <input type="text" id="newCatName" placeholder="Nama kategori (cth: Alat Tulis)" class="flex-1 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 text-sm" />
-          <input type="number" step="0.01" id="newCatBudget" placeholder="Bajet RM" class="w-28 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-3 py-2 text-sm" />
+          <input type="text" id="newCatName" placeholder="Nama kategori (cth: Alat Tulis)" class="flex-1 rounded-xl border border-slate-700 bg-slate-800 text-white px-3 py-2 text-sm" />
+          <input type="number" step="0.01" id="newCatBudget" placeholder="Bajet RM" class="w-28 rounded-xl border border-slate-700 bg-slate-800 text-white px-3 py-2 text-sm" />
           <button type="button" onclick="addNewCategoryRow()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold transition">
             Tambah
           </button>
         </div>
       </div>
 
-      <div class="pt-5 mt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-2.5">
-        <button type="button" onclick="closeCategoryModal()" class="px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">Batal</button>
+      <div class="pt-5 mt-4 border-t border-slate-800 flex justify-end gap-2.5">
+        <button type="button" onclick="closeCategoryModal()" class="px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800">Batal</button>
         <button type="button" onclick="saveCategoryChanges()" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md">Simpan Perubahan</button>
       </div>
     </div>
   </div>
 
   <!-- ==================== MODAL 3: CROP GAMBAR PROFIL ==================== -->
-  <div id="avatarCropModal" class="hidden fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl fade-in">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 mb-4">
-        <h3 class="text-lg font-extrabold text-slate-900 dark:text-white">Gambar Profil (<span id="cropUserName" class="capitalize"></span>)</h3>
-        <button onclick="closeAvatarCropper()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center text-lg">&times;</button>
+  <div id="avatarCropModal" class="hidden fixed inset-0 bg-slate-950/75 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl fade-in">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+        <h3 class="text-lg font-extrabold text-white">Gambar Profil (<span id="cropUserName" class="capitalize"></span>)</h3>
+        <button onclick="closeAvatarCropper()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center text-lg">&times;</button>
       </div>
 
       <div class="space-y-4">
-        <label class="block w-full text-center py-2.5 px-4 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-300 text-xs font-bold cursor-pointer border border-dashed border-indigo-300 dark:border-indigo-500/40 transition">
+        <label class="block w-full text-center py-2.5 px-4 rounded-xl bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-300 text-xs font-bold cursor-pointer border border-dashed border-indigo-500/40 transition">
           📁 Pilih Gambar Dari Telefon / Komputer
           <input type="file" id="avatarFileInput" accept="image/*" onchange="handleAvatarFileSelect(event)" class="hidden" />
         </label>
 
-        <!-- Canvas Pratinjau Crop -->
         <div class="flex flex-col items-center">
-          <div class="relative w-52 h-52 rounded-3xl overflow-hidden border-4 border-indigo-500/30 bg-slate-100 dark:bg-slate-800 shadow-inner cursor-move" id="cropBox">
+          <div class="relative w-52 h-52 rounded-3xl overflow-hidden border-4 border-indigo-500/30 bg-slate-800 shadow-inner cursor-move" id="cropBox">
             <canvas id="avatarCanvas" width="240" height="240" class="w-full h-full"></canvas>
           </div>
           <p class="text-[11px] text-slate-400 mt-2">Seret gambar di dalam kotak untuk laras posisi & guna slider zum di bawah.</p>
         </div>
 
         <div class="space-y-2">
-          <div class="flex justify-between text-xs font-bold text-slate-500">
+          <div class="flex justify-between text-xs font-bold text-slate-400">
             <span>Zum (Crop)</span>
             <span id="zoomLabel">1.0x</span>
           </div>
-          <input type="range" id="cropZoomRange" min="0.5" max="3" step="0.05" value="1" oninput="updateCropZoom(this.value)" class="w-full accent-indigo-600" />
+          <input type="range" id="cropZoomRange" min="0.5" max="3" step="0.05" value="1" oninput="updateCropZoom(this.value)" class="w-full accent-indigo-500" />
         </div>
 
-        <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between gap-2">
-          <button type="button" onclick="removeAvatar()" class="px-3.5 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10">Buang Gambar</button>
+        <div class="pt-3 border-t border-slate-800 flex justify-between gap-2">
+          <button type="button" onclick="removeAvatar()" class="px-3.5 py-2 rounded-xl text-xs font-bold text-rose-400 hover:bg-rose-500/10">Buang Gambar</button>
           <div class="flex gap-2">
-            <button type="button" onclick="closeAvatarCropper()" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300">Batal</button>
+            <button type="button" onclick="closeAvatarCropper()" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-300">Batal</button>
             <button type="button" onclick="saveCroppedAvatar()" class="px-5 py-2 rounded-xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm">Simpan Gambar</button>
           </div>
         </div>
@@ -441,16 +507,15 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-// =========================================================================
+    // =========================================================================
     // TETAPAN GAMBAR LATAR BELAKANG (AUTO TUKAR IKUT PC ATAU PHONE)
     // =========================================================================
-    const BG_PC_URL = "pc.jpg";       // Gambar melintang (16:9) untuk PC / Laptop
-    const BG_PHONE_URL = "phone.jpg"; // Gambar menegak (9:16) untuk Telefon
-    const CUSTOM_BG_OPACITY = 0.18;      // Tahap kelegapan (0.10 hingga 0.30)
+    const BG_PC_URL = "pc.jpg";
+    const BG_PHONE_URL = "phone.jpg";
+    const CUSTOM_BG_OPACITY = 0.16;
 
     function applyCodeBackground() {
       const bgLayer = document.getElementById("customBgLayer");
-      // Semak saiz skrin: jika lebar <= 768px dianggap Phone, selain itu PC
       const isMobile = window.innerWidth <= 768;
       const selectedBg = isMobile ? BG_PHONE_URL : BG_PC_URL;
 
@@ -459,36 +524,11 @@
         bgLayer.style.opacity = CUSTOM_BG_OPACITY;
       }
     }
-
-    // Jalankan semasa web dibuka & bila saiz tetingkap berubah
     applyCodeBackground();
     window.addEventListener("resize", applyCodeBackground);
 
     // =========================================================================
-    // PENGURUSAN TEMA (CERAH / GELAP)
-    // =========================================================================
-    function initTheme() {
-      const savedTheme = localStorage.getItem("upsi_wallet_theme");
-      if (savedTheme === "dark") {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
-    }
-    window.toggleTheme = function() {
-      const htmlEl = document.documentElement;
-      if (htmlEl.classList.contains("dark")) {
-        htmlEl.classList.remove("dark");
-        localStorage.setItem("upsi_wallet_theme", "light");
-      } else {
-        htmlEl.classList.add("dark");
-        localStorage.setItem("upsi_wallet_theme", "dark");
-      }
-    };
-    initTheme();
-
-    // =========================================================================
-    // DATA DEFAULT & STATE
+    // DATA DEFAULT & SENARAI BULAN
     // =========================================================================
     const DEFAULT_CATEGORIES = [
       { name: "Makan & Minum", budget: 300 },
@@ -498,27 +538,39 @@
       { name: "Emergency", budget: 30 }
     ];
 
+    const MONTHS_LIST = [
+      { key: "01", label: "Januari" },
+      { key: "02", label: "Februari" },
+      { key: "03", label: "Mac" },
+      { key: "04", label: "April" },
+      { key: "05", label: "Mei" },
+      { key: "06", label: "Jun" },
+      { key: "07", label: "Julai" },
+      { key: "08", label: "Ogos" },
+      { key: "09", label: "September" },
+      { key: "10", label: "Oktober" },
+      { key: "11", label: "November" },
+      { key: "12", label: "Disember" }
+    ];
+
     const INITIALS = { anisa: "AN", alya: "AL", bacirah: "BC" };
     const USERS = ["anisa", "alya", "bacirah"];
 
     let currentUser = null;
+    let currentMonthId = null;     // cth: "2026-01"
+    let currentMonthLabel = null;  // cth: "Januari 2026"
+    let currentMainMenu = "summary"; // "summary" | "record" | "list"
     let currentTab = "ALL";
     let currentCategories = [...DEFAULT_CATEGORIES];
     let currentTransactions = [];
     let userAvatars = { anisa: null, alya: null, bacirah: null };
     let tempDraftCategories = [];
-    let unsubUserDoc = null;
+    let unsubMonthDoc = null;
     let unsubTx = null;
 
     function extractCategoriesFromDoc(data) {
       if (data && Array.isArray(data.categories) && data.categories.length > 0) {
         return data.categories;
-      }
-      if (data && data.budgets) {
-        return Object.entries(data.budgets).map(([name, budget]) => ({
-          name,
-          budget: Number(budget) || 0
-        }));
       }
       return JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
     }
@@ -534,58 +586,114 @@
       }
     }
 
-    function refreshHomeData() {
+    function refreshHomeAvatars() {
       USERS.forEach((u) => {
-        const userRef = doc(db, "users", u);
-        onSnapshot(userRef, (uSnap) => {
+        onSnapshot(doc(db, "users", u), (uSnap) => {
           const data = uSnap.exists() ? uSnap.data() : {};
-          const cats = extractCategoriesFromDoc(data);
-          const totB = cats.reduce((sum, c) => sum + Number(c.budget || 0), 0);
-
           userAvatars[u] = data.avatar || null;
           applyAvatarToElement(document.getElementById(`avatar-home-${u}`), u, userAvatars[u]);
           if (currentUser === u) {
+            applyAvatarToElement(document.getElementById("avatar-month-view"), u, userAvatars[u]);
             applyAvatarToElement(document.getElementById("avatar-dash"), u, userAvatars[u]);
           }
-
-          onSnapshot(collection(db, "users", u, "transactions"), (txSnap) => {
-            let exp = 0;
-            txSnap.forEach(d => exp += Number(d.data().price || 0));
-            const el = document.getElementById(`home-balance-${u}`);
-            if (el) el.textContent = `RM ${(totB - exp).toFixed(2)}`;
-          });
         });
       });
     }
 
-    window.selectUser = async function(userId) {
+    // =========================================================================
+    // NAVIGASI: HOME -> PILIH BULAN -> DASHBOARD BULANAN
+    // =========================================================================
+    window.selectUser = function(userId) {
       currentUser = userId;
-      currentTab = "ALL";
+      currentMonthId = null;
 
-      document.getElementById("homeView").classList.add("hidden");
-      document.getElementById("dashboardView").classList.remove("hidden");
-      document.getElementById("homeBtn").classList.remove("hidden");
-      document.getElementById("userTitle").textContent = userId;
-      applyAvatarToElement(document.getElementById("avatar-dash"), userId, userAvatars[userId]);
-
-      if (unsubUserDoc) unsubUserDoc();
+      if (unsubMonthDoc) unsubMonthDoc();
       if (unsubTx) unsubTx();
 
-      const userDocRef = doc(db, "users", userId);
-      const snap = await getDoc(userDocRef);
+      document.getElementById("homeView").classList.add("hidden");
+      document.getElementById("dashboardView").classList.add("hidden");
+      document.getElementById("monthSelectView").classList.remove("hidden");
+
+      document.getElementById("homeBtn").classList.remove("hidden");
+      document.getElementById("backToMonthsBtn").classList.add("hidden");
+
+      document.getElementById("monthViewUserTitle").textContent = userId;
+      applyAvatarToElement(document.getElementById("avatar-month-view"), userId, userAvatars[userId]);
+
+      renderMonthCards();
+    };
+
+    window.renderMonthCards = async function() {
+      const year = document.getElementById("yearSelector").value;
+      const grid = document.getElementById("monthsGrid");
+
+      grid.innerHTML = MONTHS_LIST.map(m => {
+        const monthId = `${year}-${m.key}`;
+        const label = `${m.label} ${year}`;
+        return `
+          <div onclick="selectMonth('${monthId}', '${label}')" class="group glass-card bg-slate-900/80 hover:bg-slate-800/90 rounded-2xl border border-slate-800 hover:border-indigo-500/50 p-5 cursor-pointer transition-all hover:-translate-y-1 shadow-sm">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-extrabold px-2.5 py-1 rounded-lg bg-indigo-500/15 text-indigo-300">
+                ${m.key}/${year}
+              </span>
+              <span class="text-slate-500 group-hover:text-indigo-400 transition text-sm font-bold">→</span>
+            </div>
+            <h3 class="text-lg font-extrabold text-white">${m.label} ${year}</h3>
+            <p id="month-preview-${monthId}" class="text-xs text-slate-400 mt-1.5 font-medium">Klik untuk urus bajet</p>
+          </div>
+        `;
+      }).join("");
+
+      // Paparkan ringkasan baki bagi setiap bulan jika data sudah wujud
+      for (const m of MONTHS_LIST) {
+        const monthId = `${year}-${m.key}`;
+        const mSnap = await getDoc(doc(db, "users", currentUser, "months", monthId));
+        if (mSnap.exists()) {
+          const cats = extractCategoriesFromDoc(mSnap.data());
+          const totB = cats.reduce((sum, c) => sum + Number(c.budget || 0), 0);
+          const txSnap = await getDocs(collection(db, "users", currentUser, "months", monthId, "transactions"));
+          let exp = 0;
+          txSnap.forEach(d => exp += Number(d.data().price || 0));
+          const previewEl = document.getElementById(`month-preview-${monthId}`);
+          if (previewEl) {
+            previewEl.innerHTML = `Baki: <span class="text-emerald-400 font-bold">RM ${(totB - exp).toFixed(2)}</span>`;
+          }
+        }
+      }
+    };
+
+    window.selectMonth = async function(monthId, monthLabel) {
+      currentMonthId = monthId;
+      currentMonthLabel = monthLabel;
+      currentTab = "ALL";
+
+      document.getElementById("monthSelectView").classList.add("hidden");
+      document.getElementById("dashboardView").classList.remove("hidden");
+      document.getElementById("backToMonthsBtn").classList.remove("hidden");
+      document.getElementById("homeBtn").classList.remove("hidden");
+
+      document.getElementById("userTitle").textContent = currentUser;
+      document.getElementById("activeMonthBadge").textContent = monthLabel;
+      applyAvatarToElement(document.getElementById("avatar-dash"), currentUser, userAvatars[currentUser]);
+
+      switchMainMenu("summary");
+
+      if (unsubMonthDoc) unsubMonthDoc();
+      if (unsubTx) unsubTx();
+
+      const monthDocRef = doc(db, "users", currentUser, "months", monthId);
+      const snap = await getDoc(monthDocRef);
       if (!snap.exists()) {
-        await setDoc(userDocRef, { categories: DEFAULT_CATEGORIES });
+        await setDoc(monthDocRef, { categories: DEFAULT_CATEGORIES });
       }
 
-      unsubUserDoc = onSnapshot(userDocRef, (docSnap) => {
+      unsubMonthDoc = onSnapshot(monthDocRef, (docSnap) => {
         const data = docSnap.exists() ? docSnap.data() : {};
         currentCategories = extractCategoriesFromDoc(data);
-        userAvatars[userId] = data.avatar || null;
-        applyAvatarToElement(document.getElementById("avatar-dash"), userId, userAvatars[userId]);
         renderDashboard();
       });
 
-      unsubTx = onSnapshot(collection(db, "users", userId, "transactions"), (querySnap) => {
+      unsubTx = onSnapshot(collection(db, "users", currentUser, "months", monthId, "transactions"), (querySnap) => {
         currentTransactions = [];
         querySnap.forEach((docItem) => {
           currentTransactions.push({ id: docItem.id, ...docItem.data() });
@@ -595,17 +703,50 @@
       });
     };
 
+    window.backToMonths = function() {
+      if (unsubMonthDoc) unsubMonthDoc();
+      if (unsubTx) unsubTx();
+      currentMonthId = null;
+      document.getElementById("dashboardView").classList.add("hidden");
+      document.getElementById("monthSelectView").classList.remove("hidden");
+      document.getElementById("backToMonthsBtn").classList.add("hidden");
+      renderMonthCards();
+    };
+
     window.goHome = function() {
       currentUser = null;
-      if (unsubUserDoc) unsubUserDoc();
+      currentMonthId = null;
+      if (unsubMonthDoc) unsubMonthDoc();
       if (unsubTx) unsubTx();
       document.getElementById("dashboardView").classList.add("hidden");
+      document.getElementById("monthSelectView").classList.add("hidden");
       document.getElementById("homeView").classList.remove("hidden");
       document.getElementById("homeBtn").classList.add("hidden");
+      document.getElementById("backToMonthsBtn").classList.add("hidden");
     };
 
     // =========================================================================
-    // CROP GAMBAR PROFIL (CANVAS DRAG + ZOOM)
+    // 3 BAR MENU SWITCHER
+    // =========================================================================
+    window.switchMainMenu = function(menuKey) {
+      currentMainMenu = menuKey;
+      const menus = ["summary", "record", "list"];
+
+      menus.forEach(m => {
+        const sec = document.getElementById(`section-${m}`);
+        const btn = document.getElementById(`menuBtn-${m}`);
+        if (m === menuKey) {
+          sec.classList.remove("hidden");
+          btn.className = "py-3 px-4 rounded-xl text-xs sm:text-sm font-extrabold transition flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md";
+        } else {
+          sec.classList.add("hidden");
+          btn.className = "py-3 px-4 rounded-xl text-xs sm:text-sm font-extrabold transition flex items-center justify-center gap-2 text-slate-300 hover:bg-slate-800";
+        }
+      });
+    };
+
+    // =========================================================================
+    // CROP GAMBAR PROFIL
     // =========================================================================
     let cropTargetUser = null;
     let cropImg = null;
@@ -640,9 +781,9 @@
         };
         existing.src = userAvatars[userId];
       } else {
-        ctx.fillStyle = "#e0e7ff";
+        ctx.fillStyle = "#1e293b";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#4f46e5";
+        ctx.fillStyle = "#818cf8";
         ctx.font = "bold 48px Plus Jakarta Sans, sans-serif";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
@@ -752,18 +893,18 @@
     };
 
     // =========================================================================
-    // OPERASI TRANSAKSI (TAMBAH, EDIT ITEM, PADAM SEMUA)
+    // OPERASI TRANSAKSI BULANAN (TAMBAH, EDIT, PADAM SEMUA)
     // =========================================================================
     window.addTransaction = async function(e) {
       e.preventDefault();
-      if (!currentUser) return;
+      if (!currentUser || !currentMonthId) return;
 
       const category = document.getElementById("txCategory").value;
       const item = document.getElementById("txItem").value.trim();
       const price = parseFloat(document.getElementById("txPrice").value);
       const place = document.getElementById("txPlace").value.trim() || "-";
 
-      await addDoc(collection(db, "users", currentUser, "transactions"), {
+      await addDoc(collection(db, "users", currentUser, "months", currentMonthId, "transactions"), {
         category,
         item,
         price,
@@ -799,7 +940,7 @@
 
     window.saveEditedTransaction = async function(e) {
       e.preventDefault();
-      if (!currentUser) return;
+      if (!currentUser || !currentMonthId) return;
 
       const txId = document.getElementById("editTxId").value;
       const category = document.getElementById("editTxCategory").value;
@@ -807,7 +948,7 @@
       const price = parseFloat(document.getElementById("editTxPrice").value);
       const place = document.getElementById("editTxPlace").value.trim() || "-";
 
-      await updateDoc(doc(db, "users", currentUser, "transactions", txId), {
+      await updateDoc(doc(db, "users", currentUser, "months", currentMonthId, "transactions", txId), {
         category,
         item,
         price,
@@ -820,32 +961,32 @@
     window.deleteSingleFromEditModal = async function() {
       const txId = document.getElementById("editTxId").value;
       if (!txId || !confirm("Padam item perbelanjaan ini?")) return;
-      await deleteDoc(doc(db, "users", currentUser, "transactions", txId));
+      await deleteDoc(doc(db, "users", currentUser, "months", currentMonthId, "transactions", txId));
       closeEditTxModal();
     };
 
     window.deleteAllTransactions = async function() {
-      if (!currentUser) return;
+      if (!currentUser || !currentMonthId) return;
       if (currentTransactions.length === 0) {
         alert("Tiada rekod untuk dipadam.");
         return;
       }
       const ok = confirm(
-        `AMARAN: Semua (${currentTransactions.length}) rekod perbelanjaan milik ${currentUser.toUpperCase()} akan dipadamkan. Teruskan?`
+        `AMARAN: Semua (${currentTransactions.length}) rekod perbelanjaan bagi ${currentMonthLabel} akan dipadamkan. Teruskan?`
       );
       if (!ok) return;
 
-      const snap = await getDocs(collection(db, "users", currentUser, "transactions"));
+      const snap = await getDocs(collection(db, "users", currentUser, "months", currentMonthId, "transactions"));
       for (const docSnap of snap.docs) {
-        await deleteDoc(doc(db, "users", currentUser, "transactions", docSnap.id));
+        await deleteDoc(doc(db, "users", currentUser, "months", currentMonthId, "transactions", docSnap.id));
       }
     };
 
     // =========================================================================
-    // MODAL URUS KATEGORI & BAJET
+    // MODAL URUS KATEGORI & BAJET BULANAN
     // =========================================================================
     window.openCategoryModal = function() {
-      document.getElementById("modalUserName").textContent = currentUser;
+      document.getElementById("modalMonthLabel").textContent = `${currentUser} • ${currentMonthLabel}`;
       tempDraftCategories = JSON.parse(JSON.stringify(currentCategories));
       renderEditableCategories();
       document.getElementById("categoryModal").classList.remove("hidden");
@@ -858,17 +999,17 @@
     function renderEditableCategories() {
       const container = document.getElementById("editableCategoriesList");
       container.innerHTML = tempDraftCategories.map((cat, idx) => `
-        <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-800/70 p-2.5 rounded-2xl border border-slate-200/70 dark:border-slate-700/70">
+        <div class="flex items-center gap-2 bg-slate-800/70 p-2.5 rounded-2xl border border-slate-700/70">
           <input type="text" value="${cat.name.replace(/"/g, '&quot;')}"
             onchange="updateDraftCatName(${idx}, this.value)"
-            class="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-semibold text-slate-800 dark:text-white" />
+            class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm font-semibold text-white" />
           <div class="relative w-28">
             <span class="absolute left-2.5 top-2 text-xs font-bold text-slate-400">RM</span>
             <input type="number" step="0.01" value="${cat.budget}"
               onchange="updateDraftCatBudget(${idx}, this.value)"
-              class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl pl-8 pr-2.5 py-2 text-sm font-bold text-right text-slate-800 dark:text-white" />
+              class="w-full bg-slate-900 border border-slate-700 rounded-xl pl-8 pr-2.5 py-2 text-sm font-bold text-right text-white" />
           </div>
-          <button type="button" onclick="removeDraftCategory(${idx})" class="p-2 rounded-xl text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10">🗑️</button>
+          <button type="button" onclick="removeDraftCategory(${idx})" class="p-2 rounded-xl text-rose-400 hover:bg-rose-500/10">🗑️</button>
         </div>
       `).join("");
     }
@@ -907,28 +1048,28 @@
     };
 
     window.saveCategoryChanges = async function() {
-      if (!currentUser) return;
+      if (!currentUser || !currentMonthId) return;
       for (const cat of tempDraftCategories) {
         if (cat.oldName && cat.oldName !== cat.name) {
           const matchingTxs = currentTransactions.filter(t => t.category === cat.oldName);
           for (const tx of matchingTxs) {
-            await updateDoc(doc(db, "users", currentUser, "transactions", tx.id), { category: cat.name });
+            await updateDoc(doc(db, "users", currentUser, "months", currentMonthId, "transactions", tx.id), { category: cat.name });
           }
         }
         delete cat.oldName;
       }
-      await setDoc(doc(db, "users", currentUser), { categories: tempDraftCategories }, { merge: true });
+      await setDoc(doc(db, "users", currentUser, "months", currentMonthId), { categories: tempDraftCategories }, { merge: true });
       currentTab = "ALL";
       closeCategoryModal();
     };
 
     // =========================================================================
-    // PAPARAN UI
+    // PAPARAN UI (RENDER 3 MENU SECTIONS)
     // =========================================================================
     window.setTab = function(tabName) {
       currentTab = tabName;
       renderTabs();
-      renderTransactionsTable();
+      renderAllListTable();
     };
 
     function renderTabs() {
@@ -938,7 +1079,7 @@
         const isActive = currentTab === tab;
         const label = tab === "ALL" ? "Semua" : tab;
         const activeClass = "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-xs";
-        const inactiveClass = "bg-white/80 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-700 border border-slate-200/70 dark:border-slate-700";
+        const inactiveClass = "bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700";
         return `<button onclick="setTab('${tab.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition ${isActive ? activeClass : inactiveClass}">${label}</button>`;
       }).join("");
     }
@@ -977,16 +1118,16 @@
 
         const pct = bajet > 0 ? Math.min(100, Math.round((expense / bajet) * 100)) : (expense > 0 ? 100 : 0);
         const barColor = baki < 0 ? "bg-rose-500" : pct > 80 ? "bg-amber-500" : "bg-gradient-to-r from-emerald-400 to-teal-500";
-        const bakiColor = baki < 0 ? "text-rose-600 dark:text-rose-400 font-extrabold" : "text-emerald-600 dark:text-emerald-400 font-extrabold";
+        const bakiColor = baki < 0 ? "text-rose-400 font-extrabold" : "text-emerald-400 font-extrabold";
 
         summaryHTML += `
-          <tr class="hover:bg-indigo-50/30 dark:hover:bg-slate-800/40 transition">
-            <td class="py-4 px-6 font-bold text-slate-800 dark:text-slate-100">${cat.name}</td>
-            <td class="py-4 px-6 text-right text-slate-600 dark:text-slate-400 font-medium">${bajet.toFixed(2)}</td>
-            <td class="py-4 px-6 text-right text-slate-900 dark:text-white font-semibold">${expense.toFixed(2)}</td>
+          <tr class="hover:bg-slate-800/40 transition">
+            <td class="py-4 px-6 font-bold text-slate-100">${cat.name}</td>
+            <td class="py-4 px-6 text-right text-slate-400 font-medium">${bajet.toFixed(2)}</td>
+            <td class="py-4 px-6 text-right text-white font-semibold">${expense.toFixed(2)}</td>
             <td class="py-4 px-6 text-right ${bakiColor}">${baki.toFixed(2)}</td>
             <td class="py-4 px-6">
-              <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden mb-1">
+              <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden mb-1">
                 <div class="${barColor} h-2 rounded-full transition-all duration-500" style="width: ${pct}%"></div>
               </div>
               <span class="text-[11px] font-medium text-slate-400">${pct}% digunakan</span>
@@ -997,11 +1138,11 @@
 
       const totalBalance = totalBudget - totalExpense;
       summaryHTML += `
-        <tr class="bg-indigo-50/50 dark:bg-slate-800/70 font-extrabold text-slate-900 dark:text-white border-t-2 border-indigo-100 dark:border-slate-700">
+        <tr class="bg-slate-800/80 font-extrabold text-white border-t-2 border-slate-700">
           <td class="py-4 px-6">JUMLAH KESELURUHAN</td>
           <td class="py-4 px-6 text-right">${totalBudget.toFixed(2)}</td>
-          <td class="py-4 px-6 text-right text-rose-600 dark:text-rose-400">${totalExpense.toFixed(2)}</td>
-          <td class="py-4 px-6 text-right ${totalBalance < 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}">${totalBalance.toFixed(2)}</td>
+          <td class="py-4 px-6 text-right text-rose-400">${totalExpense.toFixed(2)}</td>
+          <td class="py-4 px-6 text-right ${totalBalance < 0 ? 'text-rose-400' : 'text-emerald-400'}">${totalBalance.toFixed(2)}</td>
           <td class="py-4 px-6 text-xs text-slate-400 font-semibold">Semua Kategori</td>
         </tr>
       `;
@@ -1011,41 +1152,36 @@
       document.getElementById("totalExpenseDisplay").textContent = `RM ${totalExpense.toFixed(2)}`;
       document.getElementById("totalBalanceDisplay").textContent = `RM ${totalBalance.toFixed(2)}`;
 
-      renderTransactionsTable();
+      renderRecordManageTable();
+      renderAllListTable();
     }
 
-    function renderTransactionsTable() {
-      const filtered = currentTransactions.filter(tx => {
-        if (currentTab === "ALL") return true;
-        return tx.category === currentTab;
-      });
-
-      document.getElementById("recordCount").textContent = `${filtered.length} rekod`;
-      const tbody = document.getElementById("transactionTableBody");
-
-      if (filtered.length === 0) {
+    // Menu 2: Jadual Urus Rekod (dengan butang Edit & Padam)
+    function renderRecordManageTable() {
+      const tbody = document.getElementById("recordManageTableBody");
+      if (currentTransactions.length === 0) {
         tbody.innerHTML = `
           <tr>
             <td colspan="5" class="py-12 text-center text-slate-400 text-sm">
-              Tiada rekod transaksi buat masa ini. Isi borang di sebelah kiri untuk mula merekod!
+              Tiada rekod transaksi untuk ${currentMonthLabel}. Tambah rekod baharu di sebelah kiri!
             </td>
           </tr>
         `;
         return;
       }
 
-      tbody.innerHTML = filtered.map(tx => `
-        <tr class="hover:bg-indigo-50/30 dark:hover:bg-slate-800/40 transition">
-          <td class="py-3.5 px-5 font-semibold text-slate-800 dark:text-slate-100">${tx.item}</td>
+      tbody.innerHTML = currentTransactions.map(tx => `
+        <tr class="hover:bg-slate-800/40 transition">
+          <td class="py-3.5 px-5 font-semibold text-slate-100">${tx.item}</td>
           <td class="py-3.5 px-4">
-            <span class="text-xs px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-300 font-bold">
+            <span class="text-xs px-2.5 py-1 rounded-lg bg-indigo-500/15 text-indigo-300 font-bold">
               ${tx.category}
             </span>
           </td>
-          <td class="py-3.5 px-4 text-slate-500 dark:text-slate-400 text-xs uppercase font-medium">${tx.place || "-"}</td>
-          <td class="py-3.5 px-4 text-right font-bold text-slate-900 dark:text-white">${Number(tx.price).toFixed(2)}</td>
+          <td class="py-3.5 px-4 text-slate-400 text-xs uppercase font-medium">${tx.place || "-"}</td>
+          <td class="py-3.5 px-4 text-right font-bold text-white">${Number(tx.price).toFixed(2)}</td>
           <td class="py-3.5 px-4 text-center">
-            <button onclick="openEditTxModal('${tx.id}')" class="text-xs text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 font-bold px-3 py-1.5 rounded-lg bg-indigo-50/80 hover:bg-indigo-100 dark:bg-indigo-500/15 transition">
+            <button onclick="openEditTxModal('${tx.id}')" class="text-xs text-indigo-300 hover:text-white font-bold px-3 py-1.5 rounded-lg bg-indigo-500/15 hover:bg-indigo-600 transition">
               ✏️ Edit
             </button>
           </td>
@@ -1053,7 +1189,55 @@
       `).join("");
     }
 
-    refreshHomeData();
+    // Menu 3: List Perbelanjaan Semua (bersih, dengan penapis kategori & carian)
+    window.renderAllListTable = function() {
+      const searchQuery = (document.getElementById("searchTxInput")?.value || "").toLowerCase().trim();
+      const filtered = currentTransactions.filter(tx => {
+        const matchCat = currentTab === "ALL" || tx.category === currentTab;
+        const matchSearch = !searchQuery ||
+          (tx.item || "").toLowerCase().includes(searchQuery) ||
+          (tx.place || "").toLowerCase().includes(searchQuery) ||
+          (tx.category || "").toLowerCase().includes(searchQuery);
+        return matchCat && matchSearch;
+      });
+
+      document.getElementById("recordCount").textContent = `${filtered.length} rekod`;
+      const tbody = document.getElementById("allListTableBody");
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="py-12 text-center text-slate-400 text-sm">
+              Tiada rekod perbelanjaan ditemui untuk paparan ini.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      const totalFiltered = filtered.reduce((sum, t) => sum + Number(t.price || 0), 0);
+
+      tbody.innerHTML = filtered.map((tx, index) => `
+        <tr class="hover:bg-slate-800/40 transition">
+          <td class="py-3.5 px-5 text-slate-500 text-xs font-bold">${index + 1}</td>
+          <td class="py-3.5 px-5 font-semibold text-slate-100">${tx.item}</td>
+          <td class="py-3.5 px-4">
+            <span class="text-xs px-2.5 py-1 rounded-lg bg-indigo-500/15 text-indigo-300 font-bold">
+              ${tx.category}
+            </span>
+          </td>
+          <td class="py-3.5 px-4 text-slate-400 text-xs uppercase font-medium">${tx.place || "-"}</td>
+          <td class="py-3.5 px-5 text-right font-bold text-white">${Number(tx.price).toFixed(2)}</td>
+        </tr>
+      `).join("") + `
+        <tr class="bg-slate-800/80 font-extrabold text-white border-t border-slate-700">
+          <td colspan="4" class="py-3.5 px-5 text-right text-xs uppercase tracking-wider text-slate-300">Jumlah Dipaparkan</td>
+          <td class="py-3.5 px-5 text-right text-rose-400">RM ${totalFiltered.toFixed(2)}</td>
+        </tr>
+      `;
+    };
+
+    refreshHomeAvatars();
   </script>
 </body>
 </html>
