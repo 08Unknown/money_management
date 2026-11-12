@@ -441,20 +441,28 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+// =========================================================================
+    // TETAPAN GAMBAR LATAR BELAKANG (AUTO TUKAR IKUT PC ATAU PHONE)
     // =========================================================================
-    // TETAPAN GAMBAR LATAR BELAKANG (KAWALAN DALAM KOD SAHAJA)
-    // =========================================================================
-    const CUSTOM_BG_URL = "https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&w=1600&q=80";
-    const CUSTOM_BG_OPACITY = 0.14; // Ubah antara 0.05 (sangat pudar) hingga 0.30
+    const BG_PC_URL = "pc.jpg";       // Gambar melintang (16:9) untuk PC / Laptop
+    const BG_PHONE_URL = "phone.jpg"; // Gambar menegak (9:16) untuk Telefon
+    const CUSTOM_BG_OPACITY = 0.18;      // Tahap kelegapan (0.10 hingga 0.30)
 
     function applyCodeBackground() {
       const bgLayer = document.getElementById("customBgLayer");
-      if (CUSTOM_BG_URL) {
-        bgLayer.style.backgroundImage = `url('${CUSTOM_BG_URL}')`;
+      // Semak saiz skrin: jika lebar <= 768px dianggap Phone, selain itu PC
+      const isMobile = window.innerWidth <= 768;
+      const selectedBg = isMobile ? BG_PHONE_URL : BG_PC_URL;
+
+      if (selectedBg) {
+        bgLayer.style.backgroundImage = `url('${selectedBg}')`;
         bgLayer.style.opacity = CUSTOM_BG_OPACITY;
       }
     }
+
+    // Jalankan semasa web dibuka & bila saiz tetingkap berubah
     applyCodeBackground();
+    window.addEventListener("resize", applyCodeBackground);
 
     // =========================================================================
     // PENGURUSAN TEMA (CERAH / GELAP)
