@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ms" class="dark">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Money Management</title>
+  <title>University Money Management</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -46,19 +46,19 @@
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between">
       <div class="flex items-center gap-3 cursor-pointer group" onclick="goHome()">
         <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 text-white flex items-center justify-center font-extrabold text-base shadow-md shadow-indigo-500/25 group-hover:scale-105 transition-transform">
-          RM
+          🎓
         </div>
         <div>
           <h1 class="font-extrabold text-white text-base sm:text-lg tracking-tight leading-tight">
-            Money Management
+            University Money Management
           </h1>
-          <p class="text-[11px] font-medium text-slate-400">Ruang Kewangan Anisa, Alya & Bacirah</p>
+          <p class="text-[11px] font-medium text-slate-400">Student Budget & Semester Expense Tracker</p>
         </div>
       </div>
 
       <div class="flex items-center gap-2">
         <button id="backToMonthsBtn" onclick="backToMonths()" class="hidden text-xs sm:text-sm font-bold px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
-          📅 Tukar Bulan
+          📅 Tukar Semester / Bulan
         </button>
         <button id="homeBtn" onclick="goHome()" class="hidden text-xs sm:text-sm font-bold px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:opacity-95 shadow-sm transition">
           ← Tukar Profil
@@ -71,13 +71,13 @@
   <main id="homeView" class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-12 fade-in">
     <div class="text-center max-w-xl mx-auto mb-12">
       <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-indigo-500/15 text-indigo-300 text-xs font-bold tracking-wide uppercase mb-4 border border-indigo-500/25">
-        ✨ Selamat Datang ke Money Management
+        🎓 University Money Management
       </span>
       <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-3">
-        Pilih Akaun Kewangan Anda
+        Pilih Profil Pelajar Anda
       </h2>
       <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
-        Klik pada kad profil di bawah untuk memilih bulan dan mengurus bajet serta perbelanjaan masing-masing.
+        Klik pada kad profil di bawah untuk mengurus bajet semester, elaun, dan perbelanjaan bulanan di universiti.
       </p>
     </div>
 
@@ -94,7 +94,7 @@
           </button>
         </div>
         <h3 class="text-2xl font-extrabold text-white">Anisa</h3>
-        <p class="text-sm text-slate-400 mt-1 mb-5">Akaun Bajet & Perbelanjaan Anisa</p>
+        <p class="text-sm text-slate-400 mt-1 mb-5">Student Wallet & Semester Tracker</p>
         <div class="pt-4 border-t border-slate-800 flex items-center justify-between">
           <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Status</span>
           <span class="text-xs font-extrabold text-blue-400">Buka Rekod →</span>
@@ -113,7 +113,7 @@
           </button>
         </div>
         <h3 class="text-2xl font-extrabold text-white">Alya</h3>
-        <p class="text-sm text-slate-400 mt-1 mb-5">Akaun Bajet & Perbelanjaan Alya</p>
+        <p class="text-sm text-slate-400 mt-1 mb-5">Student Wallet & Semester Tracker</p>
         <div class="pt-4 border-t border-slate-800 flex items-center justify-between">
           <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Status</span>
           <span class="text-xs font-extrabold text-purple-400">Buka Rekod →</span>
@@ -132,7 +132,7 @@
           </button>
         </div>
         <h3 class="text-2xl font-extrabold text-white">Bacirah</h3>
-        <p class="text-sm text-slate-400 mt-1 mb-5">Akaun Bajet & Perbelanjaan Bacirah</p>
+        <p class="text-sm text-slate-400 mt-1 mb-5">Student Wallet & Semester Tracker</p>
         <div class="pt-4 border-t border-slate-800 flex items-center justify-between">
           <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Status</span>
           <span class="text-xs font-extrabold text-rose-400">Buka Rekod →</span>
@@ -141,7 +141,7 @@
     </div>
   </main>
 
-  <!-- ==================== VIEW 2: PILIHAN & PENGURUSAN BULAN / TAHUN ==================== -->
+  <!-- ==================== VIEW 2: PILIHAN & PENGURUSAN SEMESTER / BULAN ==================== -->
   <main id="monthSelectView" class="hidden relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-10 fade-in">
     <div class="glass-card bg-slate-900/80 border border-slate-800 rounded-3xl p-6 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div class="flex items-center gap-4">
@@ -149,25 +149,25 @@
           AN
         </div>
         <div>
-          <span class="text-xs font-bold uppercase tracking-wider text-indigo-400">Ruang Kewangan</span>
+          <span class="text-xs font-bold uppercase tracking-wider text-indigo-400">University Money Management</span>
           <h2 id="monthViewUserTitle" class="text-2xl sm:text-3xl font-extrabold text-white capitalize">Anisa</h2>
-          <p class="text-xs sm:text-sm text-slate-400">Pilih bulan, atau tambah & edit tahun/bulan mengikut keperluan anda.</p>
+          <p class="text-xs sm:text-sm text-slate-400">Pilih semester & bulan, atau tambah rekod semester baharu anda.</p>
         </div>
       </div>
 
       <div class="flex flex-wrap items-center gap-2.5">
-        <!-- Penapis Tahun Dinamik -->
-        <select id="yearFilterSelect" onchange="renderMonthCards()" class="rounded-xl border border-slate-700 bg-slate-800 text-white px-3.5 py-2.5 text-xs sm:text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
-          <option value="ALL">Semua Tahun</option>
+        <!-- Penapis Semester Dinamik -->
+        <select id="semFilterSelect" onchange="renderMonthCards()" class="rounded-xl border border-slate-700 bg-slate-800 text-white px-3.5 py-2.5 text-xs sm:text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <option value="ALL">Semua Semester</option>
         </select>
 
         <button onclick="openAddMonthModal()" class="text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:opacity-95 text-white shadow-md shadow-indigo-500/20 transition">
-          + Tambah Bulan / Tahun
+          + Tambah Semester & Bulan
         </button>
       </div>
     </div>
 
-    <!-- Grid Senarai Kad Bulan -->
+    <!-- Grid Senarai Kad Semester & Bulan -->
     <div id="monthsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       <!-- Dijana oleh JS -->
     </div>
@@ -176,7 +176,7 @@
   <!-- ==================== VIEW 3: DASHBOARD BULANAN (3 BAR MENU) ==================== -->
   <main id="dashboardView" class="hidden relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-8 fade-in">
     
-    <!-- Header Profil & Bulan Aktif -->
+    <!-- Header Profil & Semester/Bulan Aktif -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 glass-card bg-slate-900/85 p-5 rounded-3xl border border-slate-800 shadow-sm">
       <div class="flex items-center gap-4">
         <div class="relative w-14 h-14 shrink-0">
@@ -188,10 +188,10 @@
           <div class="flex flex-wrap items-center gap-2.5">
             <h2 id="userTitle" class="text-2xl sm:text-3xl font-extrabold text-white capitalize tracking-tight">Anisa</h2>
             <span id="activeMonthBadge" class="px-3.5 py-1 rounded-full text-xs font-extrabold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-              Januari 2026
+              Sem 1 • January 2026
             </span>
           </div>
-          <p class="text-xs sm:text-sm text-slate-400 mt-0.5">Pengurusan bajet & perbelanjaan khusus untuk bulan ini.</p>
+          <p class="text-xs sm:text-sm text-slate-400 mt-0.5">University Money Management • Pengurusan bajet & perbelanjaan bulanan.</p>
         </div>
       </div>
 
@@ -296,7 +296,7 @@
 
               <div>
                 <label class="block text-xs font-bold text-slate-300 mb-1.5">Tempat / Nota</label>
-                <input type="text" id="txPlace" placeholder="khar, kz, pt, 7e..." class="w-full rounded-xl border border-slate-700 bg-slate-800 text-white px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                <input type="text" id="txPlace" placeholder="kafe, kz, pt, 7e..." class="w-full rounded-xl border border-slate-700 bg-slate-800 text-white px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
               </div>
             </div>
 
@@ -368,51 +368,49 @@
 
   </main>
 
-  <!-- ==================== MODAL BARU: TAMBAH / EDIT BULAN & TAHUN ==================== -->
+  <!-- ==================== MODAL: TAMBAH / EDIT SEMESTER, BULAN & TAHUN ==================== -->
   <div id="monthFormModal" class="hidden fixed inset-0 bg-slate-950/75 backdrop-blur-xs z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl fade-in">
       <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
-        <h3 id="monthModalTitle" class="text-lg font-extrabold text-white">Tambah Bulan & Tahun</h3>
+        <h3 id="monthModalTitle" class="text-lg font-extrabold text-white">Tambah Semester & Bulan</h3>
         <button onclick="closeMonthModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center text-lg">&times;</button>
       </div>
       <form onsubmit="saveMonthItem(event)" class="space-y-4">
         <input type="hidden" id="editMonthId" />
 
         <div>
-          <label class="block text-xs font-bold text-slate-300 mb-1.5">Tahun (Boleh Taip Sendiri)</label>
-          <input type="text" id="inputMonthYear" required placeholder="Contoh: 2026, 2027, 2028..." class="w-full rounded-xl border border-slate-700 bg-slate-800 text-white px-3.5 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          <label class="block text-xs font-bold text-slate-300 mb-1.5">Semester Berapa</label>
+          <input type="text" id="inputSemester" required placeholder="Contoh: Sem 1, Sem 2, Semester 3..." class="w-full rounded-xl border border-slate-700 bg-slate-800 text-white px-3.5 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500" />
         </div>
 
-        <div>
-          <label class="block text-xs font-bold text-slate-300 mb-1.5">Nama Bulan (Pilih atau Taip Sendiri)</label>
-          <input type="text" id="inputMonthName" list="monthSuggestions" required placeholder="Contoh: Januari, Februari, Raya..." class="w-full rounded-xl border border-slate-700 bg-slate-800 text-white px-3.5 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-          <datalist id="monthSuggestions">
-            <option value="Januari"></option>
-            <option value="Februari"></option>
-            <option value="Mac"></option>
-            <option value="April"></option>
-            <option value="Mei"></option>
-            <option value="Jun"></option>
-            <option value="Julai"></option>
-            <option value="Ogos"></option>
-            <option value="September"></option>
-            <option value="Oktober"></option>
-            <option value="November"></option>
-            <option value="Disember"></option>
-          </datalist>
-        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1.5">Month (Bulan)</label>
+            <select id="selectMonthName" required class="w-full rounded-xl border border-slate-700 bg-slate-800 text-white px-3.5 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <option value="January">January</option>
+              <option value="February">February</option>
+              <option value="March">March</option>
+              <option value="April">April</option>
+              <option value="May">May</option>
+              <option value="June">June</option>
+              <option value="July">July</option>
+              <option value="August">August</option>
+              <option value="September">September</option>
+              <option value="October">October</option>
+              <option value="November">November</option>
+              <option value="December">December</option>
+            </select>
+          </div>
 
-        <!-- Butang Jana 12 Bulan Pantas untuk Tahun yang Ditaip (hanya masa tambah baharu) -->
-        <div id="bulkAddYearBox" class="p-3 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-between gap-2">
-          <span class="text-xs text-indigo-300">Nak terus cipta semua 12 bulan untuk tahun di atas?</span>
-          <button type="button" onclick="generateFullYearMonths()" class="shrink-0 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition">
-            Jana 12 Bulan
-          </button>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1.5">Year (Tahun)</label>
+            <input type="text" id="inputMonthYear" required placeholder="Contoh: 2026" class="w-full rounded-xl border border-slate-700 bg-slate-800 text-white px-3.5 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
         </div>
 
         <div class="pt-4 border-t border-slate-800 flex items-center justify-between">
           <button type="button" id="deleteMonthBtn" onclick="deleteMonthFromModal()" class="hidden px-3.5 py-2 rounded-xl text-xs font-bold bg-rose-500/15 text-rose-300 hover:bg-rose-500/25">
-            🗑️ Padam Bulan Ini
+            🗑️ Padam Rekod Ini
           </button>
           <div class="flex gap-2 ml-auto">
             <button type="button" onclick="closeMonthModal()" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800">Batal</button>
@@ -585,7 +583,7 @@
     window.addEventListener("resize", applyCodeBackground);
 
     // =========================================================================
-    // DATA DEFAULT & SENARAI BULAN ASAS
+    // DATA DEFAULT & STATE
     // =========================================================================
     const DEFAULT_CATEGORIES = [
       { name: "Makan & Minum", budget: 300 },
@@ -595,26 +593,19 @@
       { name: "Emergency", budget: 30 }
     ];
 
-    const MONTH_NAMES = [
-      "Januari", "Februari", "Mac", "April", "Mei", "Jun",
-      "Julai", "Ogos", "September", "Oktober", "November", "Disember"
-    ];
-
-    function getDefaultMonths2026() {
-      return MONTH_NAMES.map((name, idx) => ({
-        id: `2026-${String(idx + 1).padStart(2, "0")}`,
-        month: name,
-        year: "2026"
-      }));
+    function getInitialStudentMonths() {
+      return [
+        { id: "sem1_jan_2026", semester: "Sem 1", month: "January", year: "2026" }
+      ];
     }
 
     const INITIALS = { anisa: "AN", alya: "AL", bacirah: "BC" };
     const USERS = ["anisa", "alya", "bacirah"];
 
     let currentUser = null;
-    let currentUserMonths = [];     // Senarai objek { id, month, year } bagi user aktif
-    let currentMonthId = null;      // cth: "2026-01" atau "m_17123456"
-    let currentMonthLabel = null;   // cth: "Januari 2026"
+    let currentUserMonths = [];     // Senarai objek { id, semester, month, year }
+    let currentMonthId = null;
+    let currentMonthLabel = null;   // cth: "Sem 1 • January 2026"
     let currentMainMenu = "summary";
     let currentTab = "ALL";
     let currentCategories = [...DEFAULT_CATEGORIES];
@@ -658,7 +649,7 @@
     }
 
     // =========================================================================
-    // NAVIGASI: HOME -> PILIH & URUS BULAN -> DASHBOARD BULANAN
+    // NAVIGASI: HOME -> PILIH & URUS SEMESTER/BULAN -> DASHBOARD BULANAN
     // =========================================================================
     window.selectUser = async function(userId) {
       currentUser = userId;
@@ -680,27 +671,27 @@
 
       const userRef = doc(db, "users", userId);
       const snap = await getDoc(userRef);
-      if (!snap.exists() || !Array.isArray(snap.data().customMonths)) {
-        await setDoc(userRef, { customMonths: getDefaultMonths2026() }, { merge: true });
+      if (!snap.exists() || !Array.isArray(snap.data().uniMonths)) {
+        await setDoc(userRef, { uniMonths: getInitialStudentMonths() }, { merge: true });
       }
 
       unsubUserMonths = onSnapshot(userRef, (docSnap) => {
         const data = docSnap.exists() ? docSnap.data() : {};
-        currentUserMonths = Array.isArray(data.customMonths) ? data.customMonths : getDefaultMonths2026();
-        updateYearFilterDropdown();
+        currentUserMonths = Array.isArray(data.uniMonths) ? data.uniMonths : getInitialStudentMonths();
+        updateSemFilterDropdown();
         renderMonthCards();
       });
     };
 
-    function updateYearFilterDropdown() {
-      const select = document.getElementById("yearFilterSelect");
+    function updateSemFilterDropdown() {
+      const select = document.getElementById("semFilterSelect");
       const prevVal = select.value;
-      const years = [...new Set(currentUserMonths.map(m => String(m.year || "").trim()).filter(Boolean))];
+      const semesters = [...new Set(currentUserMonths.map(m => String(m.semester || "").trim()).filter(Boolean))];
 
-      select.innerHTML = `<option value="ALL">Semua Tahun (${currentUserMonths.length})</option>` +
-        years.map(y => `<option value="${y.replace(/"/g, '&quot;')}">Tahun ${y}</option>`).join("");
+      select.innerHTML = `<option value="ALL">Semua Semester (${currentUserMonths.length})</option>` +
+        semesters.map(s => `<option value="${s.replace(/"/g, '&quot;')}">${s}</option>`).join("");
 
-      if (prevVal === "ALL" || years.includes(prevVal)) {
+      if (prevVal === "ALL" || semesters.includes(prevVal)) {
         select.value = prevVal;
       } else {
         select.value = "ALL";
@@ -708,35 +699,36 @@
     }
 
     window.renderMonthCards = async function() {
-      const selectedYear = document.getElementById("yearFilterSelect").value;
+      const selectedSem = document.getElementById("semFilterSelect").value;
       const grid = document.getElementById("monthsGrid");
 
-      const visibleMonths = selectedYear === "ALL"
+      const visibleMonths = selectedSem === "ALL"
         ? currentUserMonths
-        : currentUserMonths.filter(m => String(m.year) === selectedYear);
+        : currentUserMonths.filter(m => String(m.semester) === selectedSem);
 
       if (visibleMonths.length === 0) {
         grid.innerHTML = `
           <div class="col-span-full glass-card bg-slate-900/80 border border-slate-800 rounded-3xl p-10 text-center">
-            <p class="text-slate-400 text-sm mb-3">Tiada rekod bulan dijumpai. Klik butang di atas untuk tambah bulan & tahun baharu.</p>
+            <p class="text-slate-400 text-sm mb-3">Tiada rekod semester & bulan dijumpai. Klik <strong>+ Tambah Semester & Bulan</strong> di atas.</p>
           </div>
         `;
         return;
       }
 
       grid.innerHTML = visibleMonths.map(m => {
-        const fullLabel = `${m.month} ${m.year}`.trim();
+        const semText = m.semester || "Semester";
+        const fullLabel = `${semText} • ${m.month} ${m.year}`.trim();
         return `
           <div onclick="selectMonth('${m.id}', '${fullLabel.replace(/'/g, "\\'")}')" class="group relative glass-card bg-slate-900/80 hover:bg-slate-800/90 rounded-2xl border border-slate-800 hover:border-indigo-500/50 p-5 cursor-pointer transition-all hover:-translate-y-1 shadow-sm">
-            <div class="flex items-center justify-between mb-3">
-              <span class="text-xs font-extrabold px-2.5 py-1 rounded-lg bg-indigo-500/15 text-indigo-300">
-                ${m.year}
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <span class="text-xs font-extrabold px-2.5 py-1 rounded-lg bg-indigo-500/15 text-indigo-300 truncate">
+                ${semText}
               </span>
-              <button type="button" onclick="openEditMonthModal(event, '${m.id}')" title="Edit Tahun / Bulan" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-indigo-600 text-slate-300 hover:text-white flex items-center justify-center text-xs transition border border-slate-700">
+              <button type="button" onclick="openEditMonthModal(event, '${m.id}')" title="Edit Semester / Bulan / Tahun" class="w-7 h-7 shrink-0 rounded-lg bg-slate-800 hover:bg-indigo-600 text-slate-300 hover:text-white flex items-center justify-center text-xs transition border border-slate-700">
                 ✏️
               </button>
             </div>
-            <h3 class="text-lg font-extrabold text-white">${m.month}</h3>
+            <h3 class="text-lg font-extrabold text-white leading-snug">${m.month} ${m.year}</h3>
             <p id="month-preview-${m.id}" class="text-xs text-slate-400 mt-1.5 font-medium">Klik untuk urus bajet</p>
           </div>
         `;
@@ -759,14 +751,14 @@
     };
 
     // =========================================================================
-    // MODAL TAMBAH / EDIT / PADAM TAHUN & BULAN
+    // MODAL TAMBAH / EDIT / PADAM SEMESTER, BULAN & TAHUN
     // =========================================================================
     window.openAddMonthModal = function() {
-      document.getElementById("monthModalTitle").textContent = "Tambah Bulan & Tahun Baharu";
+      document.getElementById("monthModalTitle").textContent = "Tambah Semester & Bulan";
       document.getElementById("editMonthId").value = "";
+      document.getElementById("inputSemester").value = "";
+      document.getElementById("selectMonthName").value = "January";
       document.getElementById("inputMonthYear").value = new Date().getFullYear();
-      document.getElementById("inputMonthName").value = "";
-      document.getElementById("bulkAddYearBox").classList.remove("hidden");
       document.getElementById("deleteMonthBtn").classList.add("hidden");
       document.getElementById("monthFormModal").classList.remove("hidden");
     };
@@ -776,11 +768,11 @@
       const target = currentUserMonths.find(m => m.id === monthId);
       if (!target) return;
 
-      document.getElementById("monthModalTitle").textContent = "Edit Tahun & Bulan";
+      document.getElementById("monthModalTitle").textContent = "Edit Semester, Bulan & Tahun";
       document.getElementById("editMonthId").value = target.id;
-      document.getElementById("inputMonthYear").value = target.year;
-      document.getElementById("inputMonthName").value = target.month;
-      document.getElementById("bulkAddYearBox").classList.add("hidden");
+      document.getElementById("inputSemester").value = target.semester || "";
+      document.getElementById("selectMonthName").value = target.month || "January";
+      document.getElementById("inputMonthYear").value = target.year || "";
       document.getElementById("deleteMonthBtn").classList.remove("hidden");
       document.getElementById("monthFormModal").classList.remove("hidden");
     };
@@ -794,56 +786,24 @@
       if (!currentUser) return;
 
       const editId = document.getElementById("editMonthId").value;
+      const semester = document.getElementById("inputSemester").value.trim();
+      const month = document.getElementById("selectMonthName").value;
       const year = document.getElementById("inputMonthYear").value.trim();
-      const month = document.getElementById("inputMonthName").value.trim();
-      if (!year || !month) return;
+      if (!semester || !month || !year) return;
 
       const updatedList = [...currentUserMonths];
 
       if (editId) {
         const idx = updatedList.findIndex(m => m.id === editId);
         if (idx !== -1) {
-          updatedList[idx] = { ...updatedList[idx], year, month };
+          updatedList[idx] = { ...updatedList[idx], semester, month, year };
         }
       } else {
         const newId = `m_${Date.now()}`;
-        updatedList.push({ id: newId, month, year });
+        updatedList.push({ id: newId, semester, month, year });
       }
 
-      await setDoc(doc(db, "users", currentUser), { customMonths: updatedList }, { merge: true });
-      closeMonthModal();
-    };
-
-    window.generateFullYearMonths = async function() {
-      if (!currentUser) return;
-      const year = document.getElementById("inputMonthYear").value.trim();
-      if (!year) return alert("Sila taip tahun terlebih dahulu (contoh: 2027).");
-
-      const updatedList = [...currentUserMonths];
-      let addedCount = 0;
-
-      MONTH_NAMES.forEach((mName, idx) => {
-        const exists = updatedList.some(item =>
-          String(item.year).toLowerCase() === year.toLowerCase() &&
-          String(item.month).toLowerCase() === mName.toLowerCase()
-        );
-        if (!exists) {
-          updatedList.push({
-            id: `m_${year}_${idx + 1}_${Date.now()}`,
-            month: mName,
-            year: year
-          });
-          addedCount++;
-        }
-      });
-
-      if (addedCount === 0) {
-        alert(`Semua 12 bulan untuk tahun ${year} sudah wujud.`);
-        return;
-      }
-
-      await setDoc(doc(db, "users", currentUser), { customMonths: updatedList }, { merge: true });
-      document.getElementById("yearFilterSelect").value = year;
+      await setDoc(doc(db, "users", currentUser), { uniMonths: updatedList }, { merge: true });
       closeMonthModal();
     };
 
@@ -852,14 +812,14 @@
       if (!editId || !currentUser) return;
 
       if (currentUserMonths.length <= 1) {
-        alert("Sekurang-kurangnya 1 bulan perlu dikekalkan.");
+        alert("Sekurang-kurangnya 1 rekod bulan perlu dikekalkan.");
         return;
       }
 
-      if (!confirm("Padam kad bulan ini daripada senarai? (Rekod transaksi di dalamnya juga akan dipadam)")) return;
+      if (!confirm("Padam kad semester & bulan ini? (Semua transaksi di dalamnya juga akan dipadam)")) return;
 
       const updatedList = currentUserMonths.filter(m => m.id !== editId);
-      await setDoc(doc(db, "users", currentUser), { customMonths: updatedList }, { merge: true });
+      await setDoc(doc(db, "users", currentUser), { uniMonths: updatedList }, { merge: true });
 
       const txSnap = await getDocs(collection(db, "users", currentUser, "months", editId, "transactions"));
       for (const d of txSnap.docs) {
