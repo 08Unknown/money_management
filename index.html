@@ -143,7 +143,7 @@
 
   <!-- ==================== VIEW 2: PILIHAN & PENGURUSAN SEMESTER / BULAN ==================== -->
   <main id="monthSelectView" class="hidden relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-10 fade-in">
-    <div class="glass-card bg-slate-900/80 border border-slate-800 rounded-3xl p-6 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div class="glass-card bg-slate-900/80 border border-slate-800 rounded-3xl p-6 mb-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
       <div class="flex items-center gap-4">
         <div id="avatar-month-view" class="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-pink-500 text-white flex items-center justify-center text-xl font-extrabold shadow-md overflow-hidden bg-cover bg-center">
           AN
@@ -151,7 +151,7 @@
         <div>
           <span class="text-xs font-bold uppercase tracking-wider text-indigo-400">University Money Management</span>
           <h2 id="monthViewUserTitle" class="text-2xl sm:text-3xl font-extrabold text-white capitalize">Anisa</h2>
-          <p class="text-xs sm:text-sm text-slate-400">Pilih semester & bulan, atau tambah rekod semester baharu anda.</p>
+          <p class="text-xs sm:text-sm text-slate-400">Pilih rekod bulanan, atau urus senarai semester & bulan anda.</p>
         </div>
       </div>
 
@@ -161,8 +161,12 @@
           <option value="ALL">Semua Semester</option>
         </select>
 
+        <button onclick="openSemesterManagerModal()" class="text-xs sm:text-sm font-bold px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
+          ⚙️ Urus Senarai Semester
+        </button>
+
         <button onclick="openAddMonthModal()" class="text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:opacity-95 text-white shadow-md shadow-indigo-500/20 transition">
-          + Tambah Semester & Bulan
+          + Tambah Bulan
         </button>
       </div>
     </div>
@@ -368,19 +372,26 @@
 
   </main>
 
-  <!-- ==================== MODAL: TAMBAH / EDIT SEMESTER, BULAN & TAHUN ==================== -->
+  <!-- ==================== MODAL: TAMBAH / EDIT BULAN (DROPDOWN SEMESTER) ==================== -->
   <div id="monthFormModal" class="hidden fixed inset-0 bg-slate-950/75 backdrop-blur-xs z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl fade-in">
       <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
-        <h3 id="monthModalTitle" class="text-lg font-extrabold text-white">Tambah Semester & Bulan</h3>
+        <h3 id="monthModalTitle" class="text-lg font-extrabold text-white">Tambah Bulan Baharu</h3>
         <button onclick="closeMonthModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center text-lg">&times;</button>
       </div>
       <form onsubmit="saveMonthItem(event)" class="space-y-4">
         <input type="hidden" id="editMonthId" />
 
         <div>
-          <label class="block text-xs font-bold text-slate-300 mb-1.5">Semester Berapa</label>
-          <input type="text" id="inputSemester" required placeholder="Contoh: Sem 1, Sem 2, Semester 3..." class="w-full rounded-xl border border-slate-700 bg-slate-800 text-white px-3.5 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block text-xs font-bold text-slate-300">Pilih Semester</label>
+            <button type="button" onclick="openSemesterManagerModal()" class="text-[11px] font-bold text-indigo-400 hover:underline">
+              ⚙️ + Tambah / Edit Semester
+            </button>
+          </div>
+          <select id="selectSemesterDropdown" required class="w-full rounded-xl border border-slate-700 bg-slate-800 text-white px-3.5 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <!-- Dijana daripada senarai semester user -->
+          </select>
         </div>
 
         <div class="grid grid-cols-2 gap-3">
@@ -418,6 +429,38 @@
           </div>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL BARU: URUS SENARAI SEMESTER (TAMBAH, EDIT, PADAM) ==================== -->
+  <div id="semesterManagerModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl fade-in max-h-[88vh] flex flex-col">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div>
+          <h3 class="text-lg font-extrabold text-white">Urus Senarai Semester</h3>
+          <p class="text-xs text-slate-400">Tambah, edit nama, atau padam pilihan semester dalam dropdown.</p>
+        </div>
+        <button onclick="closeSemesterManagerModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center text-lg">&times;</button>
+      </div>
+
+      <div id="editableSemestersList" class="py-4 space-y-2 overflow-y-auto flex-1 pr-1">
+        <!-- Dijana oleh JS -->
+      </div>
+
+      <div class="pt-3 border-t border-slate-800">
+        <label class="block text-xs font-bold text-slate-400 mb-1.5">+ Tambah Semester Baharu</label>
+        <div class="flex gap-2">
+          <input type="text" id="newSemesterInput" placeholder="Contoh: Sem 9, Short Sem..." class="flex-1 rounded-xl border border-slate-700 bg-slate-800 text-white px-3 py-2 text-sm" />
+          <button type="button" onclick="addSemesterOption()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold transition">
+            Tambah
+          </button>
+        </div>
+      </div>
+
+      <div class="pt-4 mt-4 border-t border-slate-800 flex justify-end gap-2">
+        <button type="button" onclick="closeSemesterManagerModal()" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800">Batal</button>
+        <button type="button" onclick="saveSemesterOptions()" class="px-5 py-2 rounded-xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md">Simpan Senarai</button>
+      </div>
     </div>
   </div>
 
@@ -593,6 +636,10 @@
       { name: "Emergency", budget: 30 }
     ];
 
+    const DEFAULT_SEMESTERS = [
+      "Sem 1", "Sem 2", "Sem 3", "Sem 4", "Sem 5", "Sem 6", "Sem 7", "Sem 8"
+    ];
+
     function getInitialStudentMonths() {
       return [
         { id: "sem1_jan_2026", semester: "Sem 1", month: "January", year: "2026" }
@@ -603,6 +650,7 @@
     const USERS = ["anisa", "alya", "bacirah"];
 
     let currentUser = null;
+    let currentUserSemesters = [...DEFAULT_SEMESTERS];
     let currentUserMonths = [];     // Senarai objek { id, semester, month, year }
     let currentMonthId = null;
     let currentMonthLabel = null;   // cth: "Sem 1 • January 2026"
@@ -612,7 +660,8 @@
     let currentTransactions = [];
     let userAvatars = { anisa: null, alya: null, bacirah: null };
     let tempDraftCategories = [];
-    let unsubUserMonths = null;
+    let tempDraftSemesters = [];
+    let unsubUserDoc = null;
     let unsubMonthDoc = null;
     let unsubTx = null;
 
@@ -655,7 +704,7 @@
       currentUser = userId;
       currentMonthId = null;
 
-      if (unsubUserMonths) unsubUserMonths();
+      if (unsubUserDoc) unsubUserDoc();
       if (unsubMonthDoc) unsubMonthDoc();
       if (unsubTx) unsubTx();
 
@@ -671,22 +720,49 @@
 
       const userRef = doc(db, "users", userId);
       const snap = await getDoc(userRef);
+      const updates = {};
       if (!snap.exists() || !Array.isArray(snap.data().uniMonths)) {
-        await setDoc(userRef, { uniMonths: getInitialStudentMonths() }, { merge: true });
+        updates.uniMonths = getInitialStudentMonths();
+      }
+      if (!snap.exists() || !Array.isArray(snap.data().semesterOptions) || snap.data().semesterOptions.length === 0) {
+        updates.semesterOptions = [...DEFAULT_SEMESTERS];
+      }
+      if (Object.keys(updates).length > 0) {
+        await setDoc(userRef, updates, { merge: true });
       }
 
-      unsubUserMonths = onSnapshot(userRef, (docSnap) => {
+      unsubUserDoc = onSnapshot(userRef, (docSnap) => {
         const data = docSnap.exists() ? docSnap.data() : {};
         currentUserMonths = Array.isArray(data.uniMonths) ? data.uniMonths : getInitialStudentMonths();
+        currentUserSemesters = (Array.isArray(data.semesterOptions) && data.semesterOptions.length > 0)
+          ? data.semesterOptions
+          : [...DEFAULT_SEMESTERS];
+
+        populateSemesterDropdown();
         updateSemFilterDropdown();
         renderMonthCards();
       });
     };
 
+    function populateSemesterDropdown() {
+      const select = document.getElementById("selectSemesterDropdown");
+      if (!select) return;
+      const prevVal = select.value;
+      select.innerHTML = currentUserSemesters.map(sem =>
+        `<option value="${sem.replace(/"/g, '&quot;')}">${sem}</option>`
+      ).join("");
+      if (currentUserSemesters.includes(prevVal)) {
+        select.value = prevVal;
+      }
+    }
+
     function updateSemFilterDropdown() {
       const select = document.getElementById("semFilterSelect");
       const prevVal = select.value;
-      const semesters = [...new Set(currentUserMonths.map(m => String(m.semester || "").trim()).filter(Boolean))];
+      const semesters = [...new Set([
+        ...currentUserSemesters,
+        ...currentUserMonths.map(m => String(m.semester || "").trim()).filter(Boolean)
+      ])];
 
       select.innerHTML = `<option value="ALL">Semua Semester (${currentUserMonths.length})</option>` +
         semesters.map(s => `<option value="${s.replace(/"/g, '&quot;')}">${s}</option>`).join("");
@@ -709,14 +785,14 @@
       if (visibleMonths.length === 0) {
         grid.innerHTML = `
           <div class="col-span-full glass-card bg-slate-900/80 border border-slate-800 rounded-3xl p-10 text-center">
-            <p class="text-slate-400 text-sm mb-3">Tiada rekod semester & bulan dijumpai. Klik <strong>+ Tambah Semester & Bulan</strong> di atas.</p>
+            <p class="text-slate-400 text-sm mb-3">Tiada rekod semester & bulan dijumpai. Klik <strong>+ Tambah Bulan</strong> di atas.</p>
           </div>
         `;
         return;
       }
 
       grid.innerHTML = visibleMonths.map(m => {
-        const semText = m.semester || "Semester";
+        const semText = m.semester || "Sem 1";
         const fullLabel = `${semText} • ${m.month} ${m.year}`.trim();
         return `
           <div onclick="selectMonth('${m.id}', '${fullLabel.replace(/'/g, "\\'")}')" class="group relative glass-card bg-slate-900/80 hover:bg-slate-800/90 rounded-2xl border border-slate-800 hover:border-indigo-500/50 p-5 cursor-pointer transition-all hover:-translate-y-1 shadow-sm">
@@ -751,12 +827,86 @@
     };
 
     // =========================================================================
-    // MODAL TAMBAH / EDIT / PADAM SEMESTER, BULAN & TAHUN
+    // MODAL URUS SENARAI SEMESTER (TAMBAH, EDIT, PADAM PILIHAN DROPDOWN)
+    // =========================================================================
+    window.openSemesterManagerModal = function() {
+      tempDraftSemesters = currentUserSemesters.map(s => ({ oldName: s, name: s }));
+      renderEditableSemesters();
+      document.getElementById("semesterManagerModal").classList.remove("hidden");
+    };
+
+    window.closeSemesterManagerModal = function() {
+      document.getElementById("semesterManagerModal").classList.add("hidden");
+    };
+
+    function renderEditableSemesters() {
+      const container = document.getElementById("editableSemestersList");
+      container.innerHTML = tempDraftSemesters.map((item, idx) => `
+        <div class="flex items-center gap-2 bg-slate-800/70 p-2 rounded-2xl border border-slate-700/70">
+          <input type="text" value="${item.name.replace(/"/g, '&quot;')}"
+            onchange="updateDraftSemesterName(${idx}, this.value)"
+            class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm font-semibold text-white" />
+          <button type="button" onclick="removeDraftSemester(${idx})" title="Padam Semester" class="p-2 rounded-xl text-rose-400 hover:bg-rose-500/10">🗑️</button>
+        </div>
+      `).join("");
+    }
+
+    window.updateDraftSemesterName = function(idx, val) {
+      const trimmed = val.trim();
+      if (trimmed) {
+        tempDraftSemesters[idx].name = trimmed;
+      }
+    };
+
+    window.removeDraftSemester = function(idx) {
+      if (tempDraftSemesters.length <= 1) {
+        alert("Sekurang-kurangnya 1 pilihan semester perlu dikekalkan.");
+        return;
+      }
+      tempDraftSemesters.splice(idx, 1);
+      renderEditableSemesters();
+    };
+
+    window.addSemesterOption = function() {
+      const input = document.getElementById("newSemesterInput");
+      const val = input.value.trim();
+      if (!val) return alert("Sila masukkan nama semester baharu.");
+      if (tempDraftSemesters.some(s => s.name.toLowerCase() === val.toLowerCase())) {
+        return alert("Nama semester ini sudah ada dalam senarai.");
+      }
+      tempDraftSemesters.push({ oldName: null, name: val });
+      input.value = "";
+      renderEditableSemesters();
+    };
+
+    window.saveSemesterOptions = async function() {
+      if (!currentUser) return;
+
+      const updatedSemList = tempDraftSemesters.map(s => s.name);
+      // Kemas kini juga nama semester pada kad bulan sedia ada jika pengguna edit nama semester
+      const updatedMonths = currentUserMonths.map(m => {
+        const match = tempDraftSemesters.find(s => s.oldName && s.oldName === m.semester && s.oldName !== s.name);
+        return match ? { ...m, semester: match.name } : m;
+      });
+
+      await setDoc(doc(db, "users", currentUser), {
+        semesterOptions: updatedSemList,
+        uniMonths: updatedMonths
+      }, { merge: true });
+
+      closeSemesterManagerModal();
+    };
+
+    // =========================================================================
+    // MODAL TAMBAH / EDIT / PADAM KAD BULAN
     // =========================================================================
     window.openAddMonthModal = function() {
-      document.getElementById("monthModalTitle").textContent = "Tambah Semester & Bulan";
+      populateSemesterDropdown();
+      document.getElementById("monthModalTitle").textContent = "Tambah Bulan Baharu";
       document.getElementById("editMonthId").value = "";
-      document.getElementById("inputSemester").value = "";
+      if (currentUserSemesters.length > 0) {
+        document.getElementById("selectSemesterDropdown").value = currentUserSemesters[0];
+      }
       document.getElementById("selectMonthName").value = "January";
       document.getElementById("inputMonthYear").value = new Date().getFullYear();
       document.getElementById("deleteMonthBtn").classList.add("hidden");
@@ -768,9 +918,19 @@
       const target = currentUserMonths.find(m => m.id === monthId);
       if (!target) return;
 
+      populateSemesterDropdown();
+      const semSelect = document.getElementById("selectSemesterDropdown");
+      // Jika semester lama tiada dalam dropdown, masukkan sementara supaya tidak hilang
+      if (target.semester && !currentUserSemesters.includes(target.semester)) {
+        const opt = document.createElement("option");
+        opt.value = target.semester;
+        opt.textContent = target.semester;
+        semSelect.appendChild(opt);
+      }
+
       document.getElementById("monthModalTitle").textContent = "Edit Semester, Bulan & Tahun";
       document.getElementById("editMonthId").value = target.id;
-      document.getElementById("inputSemester").value = target.semester || "";
+      semSelect.value = target.semester || currentUserSemesters[0];
       document.getElementById("selectMonthName").value = target.month || "January";
       document.getElementById("inputMonthYear").value = target.year || "";
       document.getElementById("deleteMonthBtn").classList.remove("hidden");
@@ -786,7 +946,7 @@
       if (!currentUser) return;
 
       const editId = document.getElementById("editMonthId").value;
-      const semester = document.getElementById("inputSemester").value.trim();
+      const semester = document.getElementById("selectSemesterDropdown").value;
       const month = document.getElementById("selectMonthName").value;
       const year = document.getElementById("inputMonthYear").value.trim();
       if (!semester || !month || !year) return;
@@ -887,7 +1047,7 @@
     window.goHome = function() {
       currentUser = null;
       currentMonthId = null;
-      if (unsubUserMonths) unsubUserMonths();
+      if (unsubUserDoc) unsubUserDoc();
       if (unsubMonthDoc) unsubMonthDoc();
       if (unsubTx) unsubTx();
       document.getElementById("dashboardView").classList.add("hidden");
