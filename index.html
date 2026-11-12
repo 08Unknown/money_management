@@ -141,9 +141,9 @@
     </div>
   </main>
 
-  <!-- ==================== VIEW 2: PILIHAN BULAN ==================== -->
+  <!-- ==================== VIEW 2: PILIHAN & PENGURUSAN BULAN / TAHUN ==================== -->
   <main id="monthSelectView" class="hidden relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-10 fade-in">
-    <div class="glass-card bg-slate-900/80 border border-slate-800 rounded-3xl p-6 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div class="glass-card bg-slate-900/80 border border-slate-800 rounded-3xl p-6 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div class="flex items-center gap-4">
         <div id="avatar-month-view" class="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-pink-500 text-white flex items-center justify-center text-xl font-extrabold shadow-md overflow-hidden bg-cover bg-center">
           AN
@@ -151,21 +151,23 @@
         <div>
           <span class="text-xs font-bold uppercase tracking-wider text-indigo-400">Ruang Kewangan</span>
           <h2 id="monthViewUserTitle" class="text-2xl sm:text-3xl font-extrabold text-white capitalize">Anisa</h2>
-          <p class="text-xs sm:text-sm text-slate-400">Pilih bulan untuk melihat atau mengurus kewangan bulan tersebut.</p>
+          <p class="text-xs sm:text-sm text-slate-400">Pilih bulan, atau tambah & edit tahun/bulan mengikut keperluan anda.</p>
         </div>
       </div>
 
-      <!-- Pilihan Tahun -->
-      <div class="flex items-center gap-2">
-        <label class="text-xs font-bold text-slate-400">Tahun:</label>
-        <select id="yearSelector" onchange="renderMonthCards()" class="rounded-xl border border-slate-700 bg-slate-800 text-white px-4 py-2 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
-          <option value="2026" selected>2026</option>
-          <option value="2027">2027</option>
+      <div class="flex flex-wrap items-center gap-2.5">
+        <!-- Penapis Tahun Dinamik -->
+        <select id="yearFilterSelect" onchange="renderMonthCards()" class="rounded-xl border border-slate-700 bg-slate-800 text-white px-3.5 py-2.5 text-xs sm:text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <option value="ALL">Semua Tahun</option>
         </select>
+
+        <button onclick="openAddMonthModal()" class="text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:opacity-95 text-white shadow-md shadow-indigo-500/20 transition">
+          + Tambah Bulan / Tahun
+        </button>
       </div>
     </div>
 
-    <!-- Grid 12 Bulan -->
+    <!-- Grid Senarai Kad Bulan -->
     <div id="monthsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       <!-- Dijana oleh JS -->
     </div>
@@ -366,6 +368,61 @@
 
   </main>
 
+  <!-- ==================== MODAL BARU: TAMBAH / EDIT BULAN & TAHUN ==================== -->
+  <div id="monthFormModal" class="hidden fixed inset-0 bg-slate-950/75 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl fade-in">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+        <h3 id="monthModalTitle" class="text-lg font-extrabold text-white">Tambah Bulan & Tahun</h3>
+        <button onclick="closeMonthModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center text-lg">&times;</button>
+      </div>
+      <form onsubmit="saveMonthItem(event)" class="space-y-4">
+        <input type="hidden" id="editMonthId" />
+
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1.5">Tahun (Boleh Taip Sendiri)</label>
+          <input type="text" id="inputMonthYear" required placeholder="Contoh: 2026, 2027, 2028..." class="w-full rounded-xl border border-slate-700 bg-slate-800 text-white px-3.5 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1.5">Nama Bulan (Pilih atau Taip Sendiri)</label>
+          <input type="text" id="inputMonthName" list="monthSuggestions" required placeholder="Contoh: Januari, Februari, Raya..." class="w-full rounded-xl border border-slate-700 bg-slate-800 text-white px-3.5 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          <datalist id="monthSuggestions">
+            <option value="Januari"></option>
+            <option value="Februari"></option>
+            <option value="Mac"></option>
+            <option value="April"></option>
+            <option value="Mei"></option>
+            <option value="Jun"></option>
+            <option value="Julai"></option>
+            <option value="Ogos"></option>
+            <option value="September"></option>
+            <option value="Oktober"></option>
+            <option value="November"></option>
+            <option value="Disember"></option>
+          </datalist>
+        </div>
+
+        <!-- Butang Jana 12 Bulan Pantas untuk Tahun yang Ditaip (hanya masa tambah baharu) -->
+        <div id="bulkAddYearBox" class="p-3 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-between gap-2">
+          <span class="text-xs text-indigo-300">Nak terus cipta semua 12 bulan untuk tahun di atas?</span>
+          <button type="button" onclick="generateFullYearMonths()" class="shrink-0 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition">
+            Jana 12 Bulan
+          </button>
+        </div>
+
+        <div class="pt-4 border-t border-slate-800 flex items-center justify-between">
+          <button type="button" id="deleteMonthBtn" onclick="deleteMonthFromModal()" class="hidden px-3.5 py-2 rounded-xl text-xs font-bold bg-rose-500/15 text-rose-300 hover:bg-rose-500/25">
+            🗑️ Padam Bulan Ini
+          </button>
+          <div class="flex gap-2 ml-auto">
+            <button type="button" onclick="closeMonthModal()" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800">Batal</button>
+            <button type="submit" class="px-5 py-2 rounded-xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm">Simpan</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- ==================== MODAL 1: EDIT ITEM TRANSAKSI ==================== -->
   <div id="editTxModal" class="hidden fixed inset-0 bg-slate-950/70 backdrop-blur-xs z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl fade-in">
@@ -528,7 +585,7 @@
     window.addEventListener("resize", applyCodeBackground);
 
     // =========================================================================
-    // DATA DEFAULT & SENARAI BULAN
+    // DATA DEFAULT & SENARAI BULAN ASAS
     // =========================================================================
     const DEFAULT_CATEGORIES = [
       { name: "Makan & Minum", budget: 300 },
@@ -538,33 +595,33 @@
       { name: "Emergency", budget: 30 }
     ];
 
-    const MONTHS_LIST = [
-      { key: "01", label: "Januari" },
-      { key: "02", label: "Februari" },
-      { key: "03", label: "Mac" },
-      { key: "04", label: "April" },
-      { key: "05", label: "Mei" },
-      { key: "06", label: "Jun" },
-      { key: "07", label: "Julai" },
-      { key: "08", label: "Ogos" },
-      { key: "09", label: "September" },
-      { key: "10", label: "Oktober" },
-      { key: "11", label: "November" },
-      { key: "12", label: "Disember" }
+    const MONTH_NAMES = [
+      "Januari", "Februari", "Mac", "April", "Mei", "Jun",
+      "Julai", "Ogos", "September", "Oktober", "November", "Disember"
     ];
+
+    function getDefaultMonths2026() {
+      return MONTH_NAMES.map((name, idx) => ({
+        id: `2026-${String(idx + 1).padStart(2, "0")}`,
+        month: name,
+        year: "2026"
+      }));
+    }
 
     const INITIALS = { anisa: "AN", alya: "AL", bacirah: "BC" };
     const USERS = ["anisa", "alya", "bacirah"];
 
     let currentUser = null;
-    let currentMonthId = null;     // cth: "2026-01"
-    let currentMonthLabel = null;  // cth: "Januari 2026"
-    let currentMainMenu = "summary"; // "summary" | "record" | "list"
+    let currentUserMonths = [];     // Senarai objek { id, month, year } bagi user aktif
+    let currentMonthId = null;      // cth: "2026-01" atau "m_17123456"
+    let currentMonthLabel = null;   // cth: "Januari 2026"
+    let currentMainMenu = "summary";
     let currentTab = "ALL";
     let currentCategories = [...DEFAULT_CATEGORIES];
     let currentTransactions = [];
     let userAvatars = { anisa: null, alya: null, bacirah: null };
     let tempDraftCategories = [];
+    let unsubUserMonths = null;
     let unsubMonthDoc = null;
     let unsubTx = null;
 
@@ -601,12 +658,13 @@
     }
 
     // =========================================================================
-    // NAVIGASI: HOME -> PILIH BULAN -> DASHBOARD BULANAN
+    // NAVIGASI: HOME -> PILIH & URUS BULAN -> DASHBOARD BULANAN
     // =========================================================================
-    window.selectUser = function(userId) {
+    window.selectUser = async function(userId) {
       currentUser = userId;
       currentMonthId = null;
 
+      if (unsubUserMonths) unsubUserMonths();
       if (unsubMonthDoc) unsubMonthDoc();
       if (unsubTx) unsubTx();
 
@@ -620,41 +678,79 @@
       document.getElementById("monthViewUserTitle").textContent = userId;
       applyAvatarToElement(document.getElementById("avatar-month-view"), userId, userAvatars[userId]);
 
-      renderMonthCards();
+      const userRef = doc(db, "users", userId);
+      const snap = await getDoc(userRef);
+      if (!snap.exists() || !Array.isArray(snap.data().customMonths)) {
+        await setDoc(userRef, { customMonths: getDefaultMonths2026() }, { merge: true });
+      }
+
+      unsubUserMonths = onSnapshot(userRef, (docSnap) => {
+        const data = docSnap.exists() ? docSnap.data() : {};
+        currentUserMonths = Array.isArray(data.customMonths) ? data.customMonths : getDefaultMonths2026();
+        updateYearFilterDropdown();
+        renderMonthCards();
+      });
     };
 
+    function updateYearFilterDropdown() {
+      const select = document.getElementById("yearFilterSelect");
+      const prevVal = select.value;
+      const years = [...new Set(currentUserMonths.map(m => String(m.year || "").trim()).filter(Boolean))];
+
+      select.innerHTML = `<option value="ALL">Semua Tahun (${currentUserMonths.length})</option>` +
+        years.map(y => `<option value="${y.replace(/"/g, '&quot;')}">Tahun ${y}</option>`).join("");
+
+      if (prevVal === "ALL" || years.includes(prevVal)) {
+        select.value = prevVal;
+      } else {
+        select.value = "ALL";
+      }
+    }
+
     window.renderMonthCards = async function() {
-      const year = document.getElementById("yearSelector").value;
+      const selectedYear = document.getElementById("yearFilterSelect").value;
       const grid = document.getElementById("monthsGrid");
 
-      grid.innerHTML = MONTHS_LIST.map(m => {
-        const monthId = `${year}-${m.key}`;
-        const label = `${m.label} ${year}`;
+      const visibleMonths = selectedYear === "ALL"
+        ? currentUserMonths
+        : currentUserMonths.filter(m => String(m.year) === selectedYear);
+
+      if (visibleMonths.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full glass-card bg-slate-900/80 border border-slate-800 rounded-3xl p-10 text-center">
+            <p class="text-slate-400 text-sm mb-3">Tiada rekod bulan dijumpai. Klik butang di atas untuk tambah bulan & tahun baharu.</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = visibleMonths.map(m => {
+        const fullLabel = `${m.month} ${m.year}`.trim();
         return `
-          <div onclick="selectMonth('${monthId}', '${label}')" class="group glass-card bg-slate-900/80 hover:bg-slate-800/90 rounded-2xl border border-slate-800 hover:border-indigo-500/50 p-5 cursor-pointer transition-all hover:-translate-y-1 shadow-sm">
+          <div onclick="selectMonth('${m.id}', '${fullLabel.replace(/'/g, "\\'")}')" class="group relative glass-card bg-slate-900/80 hover:bg-slate-800/90 rounded-2xl border border-slate-800 hover:border-indigo-500/50 p-5 cursor-pointer transition-all hover:-translate-y-1 shadow-sm">
             <div class="flex items-center justify-between mb-3">
               <span class="text-xs font-extrabold px-2.5 py-1 rounded-lg bg-indigo-500/15 text-indigo-300">
-                ${m.key}/${year}
+                ${m.year}
               </span>
-              <span class="text-slate-500 group-hover:text-indigo-400 transition text-sm font-bold">→</span>
+              <button type="button" onclick="openEditMonthModal(event, '${m.id}')" title="Edit Tahun / Bulan" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-indigo-600 text-slate-300 hover:text-white flex items-center justify-center text-xs transition border border-slate-700">
+                ✏️
+              </button>
             </div>
-            <h3 class="text-lg font-extrabold text-white">${m.label} ${year}</h3>
-            <p id="month-preview-${monthId}" class="text-xs text-slate-400 mt-1.5 font-medium">Klik untuk urus bajet</p>
+            <h3 class="text-lg font-extrabold text-white">${m.month}</h3>
+            <p id="month-preview-${m.id}" class="text-xs text-slate-400 mt-1.5 font-medium">Klik untuk urus bajet</p>
           </div>
         `;
       }).join("");
 
-      // Paparkan ringkasan baki bagi setiap bulan jika data sudah wujud
-      for (const m of MONTHS_LIST) {
-        const monthId = `${year}-${m.key}`;
-        const mSnap = await getDoc(doc(db, "users", currentUser, "months", monthId));
+      for (const m of visibleMonths) {
+        const mSnap = await getDoc(doc(db, "users", currentUser, "months", m.id));
         if (mSnap.exists()) {
           const cats = extractCategoriesFromDoc(mSnap.data());
           const totB = cats.reduce((sum, c) => sum + Number(c.budget || 0), 0);
-          const txSnap = await getDocs(collection(db, "users", currentUser, "months", monthId, "transactions"));
+          const txSnap = await getDocs(collection(db, "users", currentUser, "months", m.id, "transactions"));
           let exp = 0;
           txSnap.forEach(d => exp += Number(d.data().price || 0));
-          const previewEl = document.getElementById(`month-preview-${monthId}`);
+          const previewEl = document.getElementById(`month-preview-${m.id}`);
           if (previewEl) {
             previewEl.innerHTML = `Baki: <span class="text-emerald-400 font-bold">RM ${(totB - exp).toFixed(2)}</span>`;
           }
@@ -662,6 +758,121 @@
       }
     };
 
+    // =========================================================================
+    // MODAL TAMBAH / EDIT / PADAM TAHUN & BULAN
+    // =========================================================================
+    window.openAddMonthModal = function() {
+      document.getElementById("monthModalTitle").textContent = "Tambah Bulan & Tahun Baharu";
+      document.getElementById("editMonthId").value = "";
+      document.getElementById("inputMonthYear").value = new Date().getFullYear();
+      document.getElementById("inputMonthName").value = "";
+      document.getElementById("bulkAddYearBox").classList.remove("hidden");
+      document.getElementById("deleteMonthBtn").classList.add("hidden");
+      document.getElementById("monthFormModal").classList.remove("hidden");
+    };
+
+    window.openEditMonthModal = function(event, monthId) {
+      if (event) event.stopPropagation();
+      const target = currentUserMonths.find(m => m.id === monthId);
+      if (!target) return;
+
+      document.getElementById("monthModalTitle").textContent = "Edit Tahun & Bulan";
+      document.getElementById("editMonthId").value = target.id;
+      document.getElementById("inputMonthYear").value = target.year;
+      document.getElementById("inputMonthName").value = target.month;
+      document.getElementById("bulkAddYearBox").classList.add("hidden");
+      document.getElementById("deleteMonthBtn").classList.remove("hidden");
+      document.getElementById("monthFormModal").classList.remove("hidden");
+    };
+
+    window.closeMonthModal = function() {
+      document.getElementById("monthFormModal").classList.add("hidden");
+    };
+
+    window.saveMonthItem = async function(e) {
+      e.preventDefault();
+      if (!currentUser) return;
+
+      const editId = document.getElementById("editMonthId").value;
+      const year = document.getElementById("inputMonthYear").value.trim();
+      const month = document.getElementById("inputMonthName").value.trim();
+      if (!year || !month) return;
+
+      const updatedList = [...currentUserMonths];
+
+      if (editId) {
+        const idx = updatedList.findIndex(m => m.id === editId);
+        if (idx !== -1) {
+          updatedList[idx] = { ...updatedList[idx], year, month };
+        }
+      } else {
+        const newId = `m_${Date.now()}`;
+        updatedList.push({ id: newId, month, year });
+      }
+
+      await setDoc(doc(db, "users", currentUser), { customMonths: updatedList }, { merge: true });
+      closeMonthModal();
+    };
+
+    window.generateFullYearMonths = async function() {
+      if (!currentUser) return;
+      const year = document.getElementById("inputMonthYear").value.trim();
+      if (!year) return alert("Sila taip tahun terlebih dahulu (contoh: 2027).");
+
+      const updatedList = [...currentUserMonths];
+      let addedCount = 0;
+
+      MONTH_NAMES.forEach((mName, idx) => {
+        const exists = updatedList.some(item =>
+          String(item.year).toLowerCase() === year.toLowerCase() &&
+          String(item.month).toLowerCase() === mName.toLowerCase()
+        );
+        if (!exists) {
+          updatedList.push({
+            id: `m_${year}_${idx + 1}_${Date.now()}`,
+            month: mName,
+            year: year
+          });
+          addedCount++;
+        }
+      });
+
+      if (addedCount === 0) {
+        alert(`Semua 12 bulan untuk tahun ${year} sudah wujud.`);
+        return;
+      }
+
+      await setDoc(doc(db, "users", currentUser), { customMonths: updatedList }, { merge: true });
+      document.getElementById("yearFilterSelect").value = year;
+      closeMonthModal();
+    };
+
+    window.deleteMonthFromModal = async function() {
+      const editId = document.getElementById("editMonthId").value;
+      if (!editId || !currentUser) return;
+
+      if (currentUserMonths.length <= 1) {
+        alert("Sekurang-kurangnya 1 bulan perlu dikekalkan.");
+        return;
+      }
+
+      if (!confirm("Padam kad bulan ini daripada senarai? (Rekod transaksi di dalamnya juga akan dipadam)")) return;
+
+      const updatedList = currentUserMonths.filter(m => m.id !== editId);
+      await setDoc(doc(db, "users", currentUser), { customMonths: updatedList }, { merge: true });
+
+      const txSnap = await getDocs(collection(db, "users", currentUser, "months", editId, "transactions"));
+      for (const d of txSnap.docs) {
+        await deleteDoc(doc(db, "users", currentUser, "months", editId, "transactions", d.id));
+      }
+      await deleteDoc(doc(db, "users", currentUser, "months", editId));
+
+      closeMonthModal();
+    };
+
+    // =========================================================================
+    // BUKA DASHBOARD BULAN YANG DIPILIH
+    // =========================================================================
     window.selectMonth = async function(monthId, monthLabel) {
       currentMonthId = monthId;
       currentMonthLabel = monthLabel;
@@ -716,6 +927,7 @@
     window.goHome = function() {
       currentUser = null;
       currentMonthId = null;
+      if (unsubUserMonths) unsubUserMonths();
       if (unsubMonthDoc) unsubMonthDoc();
       if (unsubTx) unsubTx();
       document.getElementById("dashboardView").classList.add("hidden");
@@ -1156,7 +1368,6 @@
       renderAllListTable();
     }
 
-    // Menu 2: Jadual Urus Rekod (dengan butang Edit & Padam)
     function renderRecordManageTable() {
       const tbody = document.getElementById("recordManageTableBody");
       if (currentTransactions.length === 0) {
@@ -1189,7 +1400,6 @@
       `).join("");
     }
 
-    // Menu 3: List Perbelanjaan Semua (bersih, dengan penapis kategori & carian)
     window.renderAllListTable = function() {
       const searchQuery = (document.getElementById("searchTxInput")?.value || "").toLowerCase().trim();
       const filtered = currentTransactions.filter(tx => {
