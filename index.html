@@ -247,7 +247,7 @@
         <div class="glass-card bg-slate-900/85 rounded-3xl border border-slate-800 p-6 shadow-sm">
           <div class="flex items-center justify-between mb-2">
             <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Baki Keseluruhan</p>
-            <span class="w-9 h-9 rounded-2xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center text-base">✨</span>
+            <span id="totalBalanceIcon" class="w-9 h-9 rounded-2xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center text-base">✨</span>
           </div>
           <p id="totalBalanceDisplay" class="text-2xl sm:text-3xl font-extrabold text-emerald-400">RM 0.00</p>
         </div>
@@ -849,9 +849,11 @@
           const txSnap = await getDocs(collection(db, "users", currentUser, "months", m.id, "transactions"));
           let exp = 0;
           txSnap.forEach(d => exp += Number(d.data().price || 0));
+          const bal = totB - exp;
+          const balColorClass = bal < 0 ? "text-rose-400" : "text-emerald-400";
           const previewEl = document.getElementById(`month-preview-${m.id}`);
           if (previewEl) {
-            previewEl.innerHTML = `Baki: <span class="text-emerald-400 font-bold">RM ${(totB - exp).toFixed(2)}</span>`;
+            previewEl.innerHTML = `Baki: <span class="${balColorClass} font-bold">RM ${bal.toFixed(2)}</span>`;
           }
         }
       }
@@ -1527,7 +1529,17 @@
       document.getElementById("categorySummaryBody").innerHTML = summaryHTML;
       document.getElementById("totalBudgetDisplay").textContent = `RM ${totalBudget.toFixed(2)}`;
       document.getElementById("totalExpenseDisplay").textContent = `RM ${totalExpense.toFixed(2)}`;
-      document.getElementById("totalBalanceDisplay").textContent = `RM ${totalBalance.toFixed(2)}`;
+
+      const balanceEl = document.getElementById("totalBalanceDisplay");
+      const balanceIconEl = document.getElementById("totalBalanceIcon");
+      balanceEl.textContent = `RM ${totalBalance.toFixed(2)}`;
+      if (totalBalance < 0) {
+        balanceEl.className = "text-2xl sm:text-3xl font-extrabold text-rose-400";
+        balanceIconEl.className = "w-9 h-9 rounded-2xl bg-rose-500/15 text-rose-400 flex items-center justify-center text-base";
+      } else {
+        balanceEl.className = "text-2xl sm:text-3xl font-extrabold text-emerald-400";
+        balanceIconEl.className = "w-9 h-9 rounded-2xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center text-base";
+      }
 
       renderRecordManageTable();
       renderAllListTable();
