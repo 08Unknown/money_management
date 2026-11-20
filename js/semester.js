@@ -119,7 +119,7 @@ window.renderMonthCards = async function() {
             ${semText}
           </span>
           <div class="flex items-center gap-1.5 shrink-0">
-            <button type="button" onclick="openMonthReport(event, '${m.id}', '${safeLabel}')" title="Cetak / Download PDF Report" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-emerald-600 text-emerald-300 hover:text-white flex items-center justify-center text-xs transition border border-slate-700">
+            <button type="button" onclick="openMonthReport(event, '${m.id}', '${safeLabel}')" title="Lihat Report Bulanan" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-emerald-600 text-emerald-300 hover:text-white flex items-center justify-center text-xs transition border border-slate-700">
               📄
             </button>
             <button type="button" onclick="openEditMonthModal(event, '${m.id}')" title="Edit Semester / Bulan / Tahun" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-indigo-600 text-slate-300 hover:text-white flex items-center justify-center text-xs transition border border-slate-700">
@@ -157,7 +157,7 @@ window.selectMonth = function(monthId, monthLabel) {
 
 window.openMonthReport = function(event, monthId, monthLabel) {
   if (event) event.stopPropagation();
-  window.location.href = `report.html?user=${encodeURIComponent(currentUser)}&month=${encodeURIComponent(monthId)}&label=${encodeURIComponent(monthLabel)}&autoprint=1`;
+  window.location.href = `report.html?user=${encodeURIComponent(currentUser)}&month=${encodeURIComponent(monthId)}&label=${encodeURIComponent(monthLabel)}`;
 };
 
 // =========================================================================
