@@ -23,7 +23,7 @@ initBackground();
 
 const currentUser = getQueryParam("user");
 const currentMonthId = getQueryParam("month");
-const currentMonthLabel = getQueryParam("label") || "Rekod Bulanan";
+const currentMonthLabel = getQueryParam("label") || "Monthly Records";
 
 if (!currentUser || !USERS.includes(currentUser) || !currentMonthId) {
   window.location.href = "index.html";
@@ -54,7 +54,7 @@ document.getElementById("backToMonthsBtn").href = `semester.html?user=${encodeUR
 document.getElementById("txDate").value = getTodayISO();
 
 // =========================================================================
-// 3 BAR MENU SWITCHER
+// 3 MAIN MENU SWITCHER
 // =========================================================================
 window.switchMainMenu = function(menuKey) {
   const menus = ["summary", "record", "list"];
@@ -83,7 +83,7 @@ function renderTabs() {
   const allTabs = ["ALL", ...currentCategories.map(c => c.name)];
   tabsContainer.innerHTML = allTabs.map(tab => {
     const isActive = currentTab === tab;
-    const label = tab === "ALL" ? "Semua" : tab;
+    const label = tab === "ALL" ? "All" : tab;
     const activeClass = "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-xs";
     const inactiveClass = "bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700";
     return `<button onclick="setTab('${tab.replace(/'/g, "\\'")}')" class="px-3 py-1 rounded-lg text-xs font-bold transition ${isActive ? activeClass : inactiveClass}">${label}</button>`;
@@ -116,22 +116,22 @@ function renderDashboard() {
   let summaryHTML = "";
 
   currentCategories.forEach(cat => {
-    const bajet = Number(cat.budget || 0);
+    const budget = Number(cat.budget || 0);
     const expense = Number(expenseByCat[cat.name] || 0);
-    const baki = bajet - expense;
-    totalBudget += bajet;
+    const balance = budget - expense;
+    totalBudget += budget;
     totalExpense += expense;
 
-    const pct = bajet > 0 ? Math.min(100, Math.round((expense / bajet) * 100)) : (expense > 0 ? 100 : 0);
-    const barColor = baki < 0 ? "bg-rose-500" : pct > 80 ? "bg-amber-500" : "bg-gradient-to-r from-emerald-400 to-teal-500";
-    const bakiColor = baki < 0 ? "text-rose-400 font-extrabold" : "text-emerald-400 font-extrabold";
+    const pct = budget > 0 ? Math.min(100, Math.round((expense / budget) * 100)) : (expense > 0 ? 100 : 0);
+    const barColor = balance < 0 ? "bg-rose-500" : pct > 80 ? "bg-amber-500" : "bg-gradient-to-r from-emerald-400 to-teal-500";
+    const bakiColor = balance < 0 ? "text-rose-400 font-extrabold" : "text-emerald-400 font-extrabold";
 
     summaryHTML += `
       <tr class="hover:bg-slate-800/40 transition">
         <td class="py-2.5 px-5 font-bold text-slate-100">${cat.name}</td>
-        <td class="py-2.5 px-5 text-right text-slate-400 font-medium">${bajet.toFixed(2)}</td>
+        <td class="py-2.5 px-5 text-right text-slate-400 font-medium">${budget.toFixed(2)}</td>
         <td class="py-2.5 px-5 text-right text-white font-semibold">${expense.toFixed(2)}</td>
-        <td class="py-2.5 px-5 text-right ${bakiColor}">${baki.toFixed(2)}</td>
+        <td class="py-2.5 px-5 text-right ${bakiColor}">${balance.toFixed(2)}</td>
         <td class="py-2.5 px-5">
           <div class="flex items-center gap-2">
             <div class="flex-1 bg-slate-800 rounded-full h-1.5 overflow-hidden">
@@ -147,11 +147,11 @@ function renderDashboard() {
   const totalBalance = totalBudget - totalExpense;
   summaryHTML += `
     <tr class="bg-slate-800/80 font-extrabold text-white border-t-2 border-slate-700">
-      <td class="py-2.5 px-5">JUMLAH KESELURUHAN</td>
+      <td class="py-2.5 px-5">OVERALL TOTAL</td>
       <td class="py-2.5 px-5 text-right">${totalBudget.toFixed(2)}</td>
       <td class="py-2.5 px-5 text-right text-rose-400">${totalExpense.toFixed(2)}</td>
       <td class="py-2.5 px-5 text-right ${totalBalance < 0 ? 'text-rose-400' : 'text-emerald-400'}">${totalBalance.toFixed(2)}</td>
-      <td class="py-2.5 px-5 text-[11px] text-slate-400 font-semibold">Semua Kategori</td>
+      <td class="py-2.5 px-5 text-[11px] text-slate-400 font-semibold">All Categories</td>
     </tr>
   `;
 
@@ -180,7 +180,7 @@ function renderRecordManageTable() {
     tbody.innerHTML = `
       <tr>
         <td colspan="6" class="py-10 text-center text-slate-400 text-xs sm:text-sm">
-          Tiada rekod transaksi untuk ${currentMonthLabel}. Pilih tarikh & tambah rekod baharu di sebelah kiri!
+          No expense records for ${currentMonthLabel}. Select a date & add a new entry on the left!
         </td>
       </tr>
     `;
@@ -222,7 +222,7 @@ window.renderAllListTable = function() {
   });
 
   const totalFiltered = filtered.reduce((sum, t) => sum + Number(t.price || 0), 0);
-  document.getElementById("recordCount").textContent = `${filtered.length} rekod`;
+  document.getElementById("recordCount").textContent = `${filtered.length} records`;
   const totalEl = document.getElementById("allListTotalDisplay");
   if (totalEl) totalEl.textContent = `RM ${totalFiltered.toFixed(2)}`;
 
@@ -232,7 +232,7 @@ window.renderAllListTable = function() {
     tbody.innerHTML = `
       <tr>
         <td colspan="6" class="py-10 text-center text-slate-400 text-xs sm:text-sm">
-          Tiada rekod perbelanjaan ditemui untuk paparan ini.
+          No expense records found for this filter.
         </td>
       </tr>
     `;
@@ -256,7 +256,7 @@ window.renderAllListTable = function() {
 };
 
 // =========================================================================
-// MUAT DATA REALTIME DARI FIREBASE
+// LOAD REALTIME DATA FROM FIREBASE
 // =========================================================================
 async function initDashboard() {
   onSnapshot(doc(db, "users", currentUser), (uSnap) => {
