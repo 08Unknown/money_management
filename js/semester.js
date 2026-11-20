@@ -81,7 +81,7 @@ function updateSemFilterDropdown() {
     ...currentUserMonths.map(m => String(m.semester || "").trim()).filter(Boolean)
   ])];
 
-  select.innerHTML = `<option value="ALL">Semua Semester (${currentUserMonths.length})</option>` +
+  select.innerHTML = `<option value="ALL">All Semesters (${currentUserMonths.length})</option>` +
     semesters.map(s => `<option value="${s.replace(/"/g, '&quot;')}">${s}</option>`).join("");
 
   if (prevVal === "ALL" || semesters.includes(prevVal)) {
@@ -102,7 +102,7 @@ window.renderMonthCards = async function() {
   if (visibleMonths.length === 0) {
     grid.innerHTML = `
       <div class="col-span-full glass-card bg-slate-900/80 border border-slate-800 rounded-3xl p-10 text-center">
-        <p class="text-slate-400 text-sm mb-3">Tiada rekod semester & bulan dijumpai. Klik <strong>+ Tambah Bulan</strong> di atas.</p>
+        <p class="text-slate-400 text-sm mb-3">No semester & month records found. Click <strong>+ Add Month</strong> above.</p>
       </div>
     `;
     return;
@@ -119,7 +119,7 @@ window.renderMonthCards = async function() {
             ${semText}
           </span>
           <div class="flex items-center gap-1.5 shrink-0">
-            <button type="button" onclick="openMonthReport(event, '${m.id}', '${safeLabel}')" title="Lihat Report Bulanan" class="w-7 h-7 rounded-lg bg-emerald-500/15 hover:bg-emerald-600 text-emerald-400 hover:text-white flex items-center justify-center transition border border-emerald-500/30">
+            <button type="button" onclick="openMonthReport(event, '${m.id}', '${safeLabel}')" title="View Monthly Report" class="w-7 h-7 rounded-lg bg-emerald-500/15 hover:bg-emerald-600 text-emerald-400 hover:text-white flex items-center justify-center transition border border-emerald-500/30">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                 <polyline points="14 2 14 8 20 8"></polyline>
@@ -128,13 +128,13 @@ window.renderMonthCards = async function() {
                 <line x1="10" y1="9" x2="8" y2="9"></line>
               </svg>
             </button>
-            <button type="button" onclick="openEditMonthModal(event, '${m.id}')" title="Edit Semester / Bulan / Tahun" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-indigo-600 text-slate-300 hover:text-white flex items-center justify-center text-xs transition border border-slate-700">
+            <button type="button" onclick="openEditMonthModal(event, '${m.id}')" title="Edit Semester / Month / Year" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-indigo-600 text-slate-300 hover:text-white flex items-center justify-center text-xs transition border border-slate-700">
               ✏️
             </button>
           </div>
         </div>
         <h3 class="text-lg font-extrabold text-white leading-snug">${m.month} ${m.year}</h3>
-        <p id="month-preview-${m.id}" class="text-xs text-slate-400 mt-1.5 font-medium">Klik untuk urus bajet</p>
+        <p id="month-preview-${m.id}" class="text-xs text-slate-400 mt-1.5 font-medium">Click to manage budget</p>
       </div>
     `;
   }).join("");
@@ -151,7 +151,7 @@ window.renderMonthCards = async function() {
       const balColorClass = bal < 0 ? "text-rose-400" : "text-emerald-400";
       const previewEl = document.getElementById(`month-preview-${m.id}`);
       if (previewEl) {
-        previewEl.innerHTML = `Baki: <span class="${balColorClass} font-bold">RM ${bal.toFixed(2)}</span>`;
+        previewEl.innerHTML = `Balance: <span class="${balColorClass} font-bold">RM ${bal.toFixed(2)}</span>`;
       }
     }
   }
@@ -167,7 +167,7 @@ window.openMonthReport = function(event, monthId, monthLabel) {
 };
 
 // =========================================================================
-// MODAL URUS SENARAI SEMESTER
+// MANAGE SEMESTER LIST MODAL
 // =========================================================================
 window.openSemesterManagerModal = function() {
   tempDraftSemesters = currentUserSemesters.map(s => ({ oldName: s, name: s }));
@@ -186,7 +186,7 @@ function renderEditableSemesters() {
       <input type="text" value="${item.name.replace(/"/g, '&quot;')}"
         onchange="updateDraftSemesterName(${idx}, this.value)"
         class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm font-semibold text-white" />
-      <button type="button" onclick="removeDraftSemester(${idx})" title="Padam Semester" class="p-2 rounded-xl text-rose-400 hover:bg-rose-500/10">🗑️</button>
+      <button type="button" onclick="removeDraftSemester(${idx})" title="Delete Semester" class="p-2 rounded-xl text-rose-400 hover:bg-rose-500/10">🗑️</button>
     </div>
   `).join("");
 }
@@ -198,7 +198,7 @@ window.updateDraftSemesterName = function(idx, val) {
 
 window.removeDraftSemester = function(idx) {
   if (tempDraftSemesters.length <= 1) {
-    alert("Sekurang-kurangnya 1 pilihan semester perlu dikekalkan.");
+    alert("At least 1 semester option must be kept.");
     return;
   }
   tempDraftSemesters.splice(idx, 1);
@@ -208,9 +208,9 @@ window.removeDraftSemester = function(idx) {
 window.addSemesterOption = function() {
   const input = document.getElementById("newSemesterInput");
   const val = input.value.trim();
-  if (!val) return alert("Sila masukkan nama semester baharu.");
+  if (!val) return alert("Please enter a new semester name.");
   if (tempDraftSemesters.some(s => s.name.toLowerCase() === val.toLowerCase())) {
-    return alert("Nama semester ini sudah ada dalam senarai.");
+    return alert("This semester name already exists in the list.");
   }
   tempDraftSemesters.push({ oldName: null, name: val });
   input.value = "";
@@ -233,11 +233,11 @@ window.saveSemesterOptions = async function() {
 };
 
 // =========================================================================
-// MODAL TAMBAH / EDIT / PADAM KAD BULAN
+// ADD / EDIT / DELETE MONTH CARD MODAL
 // =========================================================================
 window.openAddMonthModal = function() {
   populateSemesterDropdown();
-  document.getElementById("monthModalTitle").textContent = "Tambah Bulan Baharu";
+  document.getElementById("monthModalTitle").textContent = "Add New Month";
   document.getElementById("editMonthId").value = "";
   if (currentUserSemesters.length > 0) {
     document.getElementById("selectSemesterDropdown").value = currentUserSemesters[0];
@@ -262,7 +262,7 @@ window.openEditMonthModal = function(event, monthId) {
     semSelect.appendChild(opt);
   }
 
-  document.getElementById("monthModalTitle").textContent = "Edit Semester, Bulan & Tahun";
+  document.getElementById("monthModalTitle").textContent = "Edit Semester, Month & Year";
   document.getElementById("editMonthId").value = target.id;
   semSelect.value = target.semester || currentUserSemesters[0];
   document.getElementById("selectMonthName").value = target.month || "January";
@@ -301,11 +301,11 @@ window.deleteMonthFromModal = async function() {
   if (!editId) return;
 
   if (currentUserMonths.length <= 1) {
-    alert("Sekurang-kurangnya 1 rekod bulan perlu dikekalkan.");
+    alert("At least 1 month record must be kept.");
     return;
   }
 
-  if (!confirm("Padam kad semester & bulan ini? (Semua transaksi di dalamnya juga akan dipadam)")) return;
+  if (!confirm("Delete this semester & month card? (All transactions inside will also be deleted)")) return;
 
   const updatedList = currentUserMonths.filter(m => m.id !== editId);
   await setDoc(doc(db, "users", currentUser), { uniMonths: updatedList }, { merge: true });
