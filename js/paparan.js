@@ -43,20 +43,18 @@ function getState() {
   };
 }
 
-// Sambungkan modul transaksi & kategori
 setupTransaksiHandlers(getState);
 setupKategoriHandlers(getState, () => {
   currentTab = "ALL";
 });
 
-// Tetapkan maklumat header & pautan kembali
 document.getElementById("userTitle").textContent = currentUser;
 document.getElementById("activeMonthBadge").textContent = currentMonthLabel;
 document.getElementById("backToMonthsBtn").href = `semester.html?user=${encodeURIComponent(currentUser)}`;
 document.getElementById("txDate").value = getTodayISO();
 
 // =========================================================================
-// 3 BAR MENU SWITCHER (KEKAL SEBARIS)
+// 3 BAR MENU SWITCHER (PADAT & SEBARIS)
 // =========================================================================
 window.switchMainMenu = function(menuKey) {
   const menus = ["summary", "record", "list"];
@@ -66,10 +64,10 @@ window.switchMainMenu = function(menuKey) {
     const btn = document.getElementById(`menuBtn-${m}`);
     if (m === menuKey) {
       sec.classList.remove("hidden");
-      btn.className = "py-3 px-2 sm:px-4 rounded-xl text-[11px] sm:text-sm font-extrabold transition flex items-center justify-center gap-1.5 sm:gap-2 text-center leading-tight bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md";
+      btn.className = "py-2 px-2 sm:px-4 rounded-xl text-[11px] sm:text-xs font-extrabold transition flex items-center justify-center gap-1.5 text-center leading-tight bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md";
     } else {
       sec.classList.add("hidden");
-      btn.className = "py-3 px-2 sm:px-4 rounded-xl text-[11px] sm:text-sm font-extrabold transition flex items-center justify-center gap-1.5 sm:gap-2 text-center leading-tight text-slate-300 hover:bg-slate-800";
+      btn.className = "py-2 px-2 sm:px-4 rounded-xl text-[11px] sm:text-xs font-extrabold transition flex items-center justify-center gap-1.5 text-center leading-tight text-slate-300 hover:bg-slate-800";
     }
   });
 };
@@ -88,7 +86,7 @@ function renderTabs() {
     const label = tab === "ALL" ? "Semua" : tab;
     const activeClass = "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-xs";
     const inactiveClass = "bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700";
-    return `<button onclick="setTab('${tab.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition ${isActive ? activeClass : inactiveClass}">${label}</button>`;
+    return `<button onclick="setTab('${tab.replace(/'/g, "\\'")}')" class="px-3 py-1 rounded-lg text-xs font-bold transition ${isActive ? activeClass : inactiveClass}">${label}</button>`;
   }).join("");
 }
 
@@ -130,15 +128,17 @@ function renderDashboard() {
 
     summaryHTML += `
       <tr class="hover:bg-slate-800/40 transition">
-        <td class="py-4 px-6 font-bold text-slate-100">${cat.name}</td>
-        <td class="py-4 px-6 text-right text-slate-400 font-medium">${bajet.toFixed(2)}</td>
-        <td class="py-4 px-6 text-right text-white font-semibold">${expense.toFixed(2)}</td>
-        <td class="py-4 px-6 text-right ${bakiColor}">${baki.toFixed(2)}</td>
-        <td class="py-4 px-6">
-          <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden mb-1">
-            <div class="${barColor} h-2 rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+        <td class="py-2.5 px-5 font-bold text-slate-100">${cat.name}</td>
+        <td class="py-2.5 px-5 text-right text-slate-400 font-medium">${bajet.toFixed(2)}</td>
+        <td class="py-2.5 px-5 text-right text-white font-semibold">${expense.toFixed(2)}</td>
+        <td class="py-2.5 px-5 text-right ${bakiColor}">${baki.toFixed(2)}</td>
+        <td class="py-2.5 px-5">
+          <div class="flex items-center gap-2">
+            <div class="flex-1 bg-slate-800 rounded-full h-1.5 overflow-hidden">
+              <div class="${barColor} h-1.5 rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+            </div>
+            <span class="text-[11px] font-semibold text-slate-400 w-9 text-right">${pct}%</span>
           </div>
-          <span class="text-[11px] font-medium text-slate-400">${pct}% digunakan</span>
         </td>
       </tr>
     `;
@@ -147,11 +147,11 @@ function renderDashboard() {
   const totalBalance = totalBudget - totalExpense;
   summaryHTML += `
     <tr class="bg-slate-800/80 font-extrabold text-white border-t-2 border-slate-700">
-      <td class="py-4 px-6">JUMLAH KESELURUHAN</td>
-      <td class="py-4 px-6 text-right">${totalBudget.toFixed(2)}</td>
-      <td class="py-4 px-6 text-right text-rose-400">${totalExpense.toFixed(2)}</td>
-      <td class="py-4 px-6 text-right ${totalBalance < 0 ? 'text-rose-400' : 'text-emerald-400'}">${totalBalance.toFixed(2)}</td>
-      <td class="py-4 px-6 text-xs text-slate-400 font-semibold">Semua Kategori</td>
+      <td class="py-2.5 px-5">JUMLAH KESELURUHAN</td>
+      <td class="py-2.5 px-5 text-right">${totalBudget.toFixed(2)}</td>
+      <td class="py-2.5 px-5 text-right text-rose-400">${totalExpense.toFixed(2)}</td>
+      <td class="py-2.5 px-5 text-right ${totalBalance < 0 ? 'text-rose-400' : 'text-emerald-400'}">${totalBalance.toFixed(2)}</td>
+      <td class="py-2.5 px-5 text-[11px] text-slate-400 font-semibold">Semua Kategori</td>
     </tr>
   `;
 
@@ -163,11 +163,11 @@ function renderDashboard() {
   const balanceIconEl = document.getElementById("totalBalanceIcon");
   balanceEl.textContent = `RM ${totalBalance.toFixed(2)}`;
   if (totalBalance < 0) {
-    balanceEl.className = "text-2xl sm:text-3xl font-extrabold text-rose-400";
-    balanceIconEl.className = "w-9 h-9 rounded-2xl bg-rose-500/15 text-rose-400 flex items-center justify-center text-base";
+    balanceEl.className = "text-lg sm:text-2xl font-extrabold text-rose-400";
+    if (balanceIconEl) balanceIconEl.className = "w-7 h-7 rounded-xl bg-rose-500/15 text-rose-400 hidden sm:flex items-center justify-center text-sm";
   } else {
-    balanceEl.className = "text-2xl sm:text-3xl font-extrabold text-emerald-400";
-    balanceIconEl.className = "w-9 h-9 rounded-2xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center text-base";
+    balanceEl.className = "text-lg sm:text-2xl font-extrabold text-emerald-400";
+    if (balanceIconEl) balanceIconEl.className = "w-7 h-7 rounded-xl bg-emerald-500/15 text-emerald-400 hidden sm:flex items-center justify-center text-sm";
   }
 
   renderRecordManageTable();
@@ -179,7 +179,7 @@ function renderRecordManageTable() {
   if (currentTransactions.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="6" class="py-12 text-center text-slate-400 text-sm">
+        <td colspan="6" class="py-10 text-center text-slate-400 text-xs sm:text-sm">
           Tiada rekod transaksi untuk ${currentMonthLabel}. Pilih tarikh & tambah rekod baharu di sebelah kiri!
         </td>
       </tr>
@@ -189,17 +189,17 @@ function renderRecordManageTable() {
 
   tbody.innerHTML = currentTransactions.map(tx => `
     <tr class="hover:bg-slate-800/40 transition">
-      <td class="py-3.5 px-4 text-xs font-bold text-slate-300 whitespace-nowrap">${formatDisplayDate(tx.date)}</td>
-      <td class="py-3.5 px-4 font-semibold text-slate-100">${tx.item}</td>
-      <td class="py-3.5 px-4">
-        <span class="text-xs px-2.5 py-1 rounded-lg bg-indigo-500/15 text-indigo-300 font-bold whitespace-nowrap">
+      <td class="py-2.5 px-4 text-xs font-bold text-slate-300 whitespace-nowrap">${formatDisplayDate(tx.date)}</td>
+      <td class="py-2.5 px-4 font-semibold text-slate-100">${tx.item}</td>
+      <td class="py-2.5 px-4">
+        <span class="text-[11px] px-2 py-0.5 rounded-md bg-indigo-500/15 text-indigo-300 font-bold whitespace-nowrap">
           ${tx.category}
         </span>
       </td>
-      <td class="py-3.5 px-4 text-slate-400 text-xs uppercase font-medium">${tx.place || "-"}</td>
-      <td class="py-3.5 px-4 text-right font-bold text-white">${Number(tx.price).toFixed(2)}</td>
-      <td class="py-3.5 px-4 text-center">
-        <button onclick="openEditTxModal('${tx.id}')" class="text-xs text-indigo-300 hover:text-white font-bold px-3 py-1.5 rounded-lg bg-indigo-500/15 hover:bg-indigo-600 transition whitespace-nowrap">
+      <td class="py-2.5 px-4 text-slate-400 text-xs uppercase font-medium">${tx.place || "-"}</td>
+      <td class="py-2.5 px-4 text-right font-bold text-white">${Number(tx.price).toFixed(2)}</td>
+      <td class="py-2.5 px-4 text-center">
+        <button onclick="openEditTxModal('${tx.id}')" class="text-xs text-indigo-300 hover:text-white font-bold px-2.5 py-1 rounded-lg bg-indigo-500/15 hover:bg-indigo-600 transition whitespace-nowrap">
           ✏️ Edit
         </button>
       </td>
@@ -227,7 +227,7 @@ window.renderAllListTable = function() {
   if (filtered.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="6" class="py-12 text-center text-slate-400 text-sm">
+        <td colspan="6" class="py-10 text-center text-slate-400 text-xs sm:text-sm">
           Tiada rekod perbelanjaan ditemui untuk paparan ini.
         </td>
       </tr>
@@ -239,21 +239,21 @@ window.renderAllListTable = function() {
 
   tbody.innerHTML = filtered.map((tx, index) => `
     <tr class="hover:bg-slate-800/40 transition">
-      <td class="py-3.5 px-4 text-slate-500 text-xs font-bold">${index + 1}</td>
-      <td class="py-3.5 px-4 text-xs font-bold text-slate-300 whitespace-nowrap">${formatDisplayDate(tx.date)}</td>
-      <td class="py-3.5 px-4 font-semibold text-slate-100">${tx.item}</td>
-      <td class="py-3.5 px-4">
-        <span class="text-xs px-2.5 py-1 rounded-lg bg-indigo-500/15 text-indigo-300 font-bold whitespace-nowrap">
+      <td class="py-2.5 px-4 text-slate-500 text-xs font-bold">${index + 1}</td>
+      <td class="py-2.5 px-4 text-xs font-bold text-slate-300 whitespace-nowrap">${formatDisplayDate(tx.date)}</td>
+      <td class="py-2.5 px-4 font-semibold text-slate-100">${tx.item}</td>
+      <td class="py-2.5 px-4">
+        <span class="text-[11px] px-2 py-0.5 rounded-md bg-indigo-500/15 text-indigo-300 font-bold whitespace-nowrap">
           ${tx.category}
         </span>
       </td>
-      <td class="py-3.5 px-4 text-slate-400 text-xs uppercase font-medium">${tx.place || "-"}</td>
-      <td class="py-3.5 px-5 text-right font-bold text-white">${Number(tx.price).toFixed(2)}</td>
+      <td class="py-2.5 px-4 text-slate-400 text-xs uppercase font-medium">${tx.place || "-"}</td>
+      <td class="py-2.5 px-5 text-right font-bold text-white">${Number(tx.price).toFixed(2)}</td>
     </tr>
   `).join("") + `
     <tr class="bg-slate-800/80 font-extrabold text-white border-t border-slate-700">
-      <td colspan="5" class="py-3.5 px-4 text-right text-xs uppercase tracking-wider text-slate-300">Jumlah Dipaparkan</td>
-      <td class="py-3.5 px-5 text-right text-rose-400">RM ${totalFiltered.toFixed(2)}</td>
+      <td colspan="5" class="py-2.5 px-4 text-right text-xs uppercase tracking-wider text-slate-300">Jumlah Dipaparkan</td>
+      <td class="py-2.5 px-5 text-right text-rose-400">RM ${totalFiltered.toFixed(2)}</td>
     </tr>
   `;
 };
