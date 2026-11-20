@@ -1,60 +1,60 @@
 import {
   doc,
-  getDocs,
-  collection,
   addDoc,
-  deleteDoc,
   updateDoc,
-  serverTimestamp
+  deleteDoc,
+  collection
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { db } from "./sambungan.js";
 import { getTodayISO } from "./state.js";
 
 export function setupTransaksiHandlers(getState) {
-  // TAMBAH REKOD (INSERT)
   window.addTransaction = async function(e) {
     e.preventDefault();
     const { currentUser, currentMonthId } = getState();
-    if (!currentUser || !currentMonthId) return;
 
-    const date = document.getElementById("txDate").value || getTodayISO();
+    const dateVal = document.getElementById("txDate").value || getTodayISO();
     const category = document.getElementById("txCategory").value;
     const item = document.getElementById("txItem").value.trim();
     const price = parseFloat(document.getElementById("txPrice").value);
-    const place = document.getElementById("txPlace").value.trim() || "-";
+    const place = document.getElementById("txPlace").value.trim();
+
+    if (!item || isNaN(price) || price <= 0) return;
 
     await addDoc(collection(db, "users", currentUser, "months", currentMonthId, "transactions"), {
-      date,
+      date: dateVal,
       category,
       item,
       price,
       place,
-      createdAt: Date.now(),
-      timestamp: serverTimestamp()
+      createdAt: Date.now()
     });
 
-    document.getElementById("transactionForm").reset();
-    document.getElementById("txDate").value = date;
+    document.getElementById("txItem").value = "";
+    document.getElementById("txPrice").value = "";
+    document.getElementById("txPlace").value = "";
   };
 
-  // BUKA MODAL EDIT
   window.openEditTxModal = function(txId) {
-    const { currentTransactions, currentCategories } = getState();
+    const { currentCategories, currentTransactions } = getState();
     const tx = currentTransactions.find(t => t.id === txId);
     if (!tx) return;
 
-    const catSelect = document.getElementById("editTxCategory");
-    catSelect.innerHTML = currentCategories.map(c => `
-      <option value="${c.name.replace(/"/g, '&quot;')}">${c.name}</option>
-    `).join("");
+    const select = document.getElementById("editTxCategory");
+    select.innerHTML = currentCategories.map(c => `<option value="${c.name.replace(/"/g, '&quot;')}">${c.name}</option>`).join("");
+    if (!currentCategories.some(c => c.name === tx.category)) {
+      const opt = document.createElement("option");
+      opt.value = tx.category;
+      opt.textContent = tx.category;
+      select.appendChild(opt);
+    }
 
     document.getElementById("editTxId").value = tx.id;
     document.getElementById("editTxDate").value = tx.date || getTodayISO();
-    catSelect.value = tx.category;
+    select.value = tx.category;
     document.getElementById("editTxItem").value = tx.item;
     document.getElementById("editTxPrice").value = tx.price;
-    document.getElementById("editTxPlace").value = tx.place === "-" ? "" : tx.place;
-
+    document.getElementById("editTxPlace").value = tx.place || "";
     document.getElementById("editTxModal").classList.remove("hidden");
   };
 
@@ -62,55 +62,47 @@ export function setupTransaksiHandlers(getState) {
     document.getElementById("editTxModal").classList.add("hidden");
   };
 
-  // KEMAS KINI REKOD (UPDATE)
   window.saveEditedTransaction = async function(e) {
     e.preventDefault();
     const { currentUser, currentMonthId } = getState();
-    if (!currentUser || !currentMonthId) return;
 
     const txId = document.getElementById("editTxId").value;
-    const date = document.getElementById("editTxDate").value || getTodayISO();
+    const dateVal = document.getElementById("editTxDate").value;
     const category = document.getElementById("editTxCategory").value;
     const item = document.getElementById("editTxItem").value.trim();
     const price = parseFloat(document.getElementById("editTxPrice").value);
-    const place = document.getElementById("editTxPlace").value.trim() || "-";
+    const place = document.getElementById("editTxPlace").value.trim();
+
+    if (!txId || !item || isNaN(price) || price <= 0) return;
 
     await updateDoc(doc(db, "users", currentUser, "months", currentMonthId, "transactions", txId), {
-      date,
+      date: dateVal,
       category,
       item,
       price,
       place
     });
 
-    closeEditTxModal();
+    window.closeEditTxModal();
   };
 
-  // PADAM SATU REKOD (DELETE)
   window.deleteSingleFromEditModal = async function() {
     const { currentUser, currentMonthId } = getState();
     const txId = document.getElementById("editTxId").value;
-    if (!txId || !confirm("Padam item perbelanjaan ini?")) return;
+    if (!txId) return;
+    if (!confirm("Delete this expense item?")) return;
+
     await deleteDoc(doc(db, "users", currentUser, "months", currentMonthId, "transactions", txId));
-    closeEditTxModal();
+    window.closeEditTxModal();
   };
 
-  // PADAM SEMUA REKOD BULAN INI
   window.deleteAllTransactions = async function() {
     const { currentUser, currentMonthId, currentMonthLabel, currentTransactions } = getState();
-    if (!currentUser || !currentMonthId) return;
-    if (currentTransactions.length === 0) {
-      alert("Tiada rekod untuk dipadam.");
-      return;
-    }
-    const ok = confirm(
-      `AMARAN: Semua (${currentTransactions.length}) rekod perbelanjaan bagi ${currentMonthLabel} akan dipadamkan. Teruskan?`
-    );
-    if (!ok) return;
+    if (currentTransactions.length === 0) return alert("There are no records to delete.");
+    if (!confirm(`Delete ALL (${currentTransactions.length}) expense records for ${currentMonthLabel}?`)) return;
 
-    const snap = await getDocs(collection(db, "users", currentUser, "months", currentMonthId, "transactions"));
-    for (const docSnap of snap.docs) {
-      await deleteDoc(doc(db, "users", currentUser, "months", currentMonthId, "transactions", docSnap.id));
+    for (const tx of currentTransactions) {
+      await deleteDoc(doc(db, "users", currentUser, "months", currentMonthId, "transactions", tx.id));
     }
   };
 }
