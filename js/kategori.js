@@ -1,13 +1,17 @@
-import { doc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  doc,
+  setDoc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { db } from "./sambungan.js";
 
 export function setupKategoriHandlers(getState, resetTabCallback) {
-  let tempDraftCategories = [];
+  let tempEditableCategories = [];
 
   window.openCategoryModal = function() {
-    const { currentUser, currentMonthLabel, currentCategories } = getState();
-    document.getElementById("modalMonthLabel").textContent = `${currentUser} • ${currentMonthLabel}`;
-    tempDraftCategories = JSON.parse(JSON.stringify(currentCategories));
+    const { currentCategories, currentMonthLabel } = getState();
+    document.getElementById("modalMonthLabel").textContent = currentMonthLabel;
+    tempEditableCategories = currentCategories.map(c => ({ oldName: c.name, name: c.name, budget: c.budget }));
     renderEditableCategories();
     document.getElementById("categoryModal").classList.remove("hidden");
   };
@@ -18,40 +22,35 @@ export function setupKategoriHandlers(getState, resetTabCallback) {
 
   function renderEditableCategories() {
     const container = document.getElementById("editableCategoriesList");
-    container.innerHTML = tempDraftCategories.map((cat, idx) => `
+    container.innerHTML = tempEditableCategories.map((cat, idx) => `
       <div class="flex items-center gap-2 bg-slate-800/70 p-2.5 rounded-2xl border border-slate-700/70">
-        <input type="text" value="${cat.name.replace(/"/g, '&quot;')}"
-          onchange="updateDraftCatName(${idx}, this.value)"
+        <input type="text" value="${cat.name.replace(/"/g, '&quot;')}" onchange="updateTempCatName(${idx}, this.value)"
           class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm font-semibold text-white" />
-        <div class="relative w-28">
-          <span class="absolute left-2.5 top-2 text-xs font-bold text-slate-400">RM</span>
-          <input type="number" step="0.01" value="${cat.budget}"
-            onchange="updateDraftCatBudget(${idx}, this.value)"
-            class="w-full bg-slate-900 border border-slate-700 rounded-xl pl-8 pr-2.5 py-2 text-sm font-bold text-right text-white" />
+        <div class="flex items-center bg-slate-900 border border-slate-700 rounded-xl px-2.5">
+          <span class="text-xs font-bold text-slate-400 mr-1">RM</span>
+          <input type="number" step="0.01" value="${cat.budget}" onchange="updateTempCatBudget(${idx}, this.value)"
+            class="w-20 py-2 text-sm font-bold text-right bg-transparent focus:outline-none text-white" />
         </div>
-        <button type="button" onclick="removeDraftCategory(${idx})" class="p-2 rounded-xl text-rose-400 hover:bg-rose-500/10">🗑️</button>
+        <button type="button" onclick="removeCategoryRow(${idx})" title="Delete Category" class="p-2 rounded-xl text-rose-400 hover:bg-rose-500/10">🗑️</button>
       </div>
     `).join("");
   }
 
-  window.updateDraftCatName = function(idx, val) {
+  window.updateTempCatName = function(idx, val) {
     const trimmed = val.trim();
-    if (trimmed) {
-      tempDraftCategories[idx].oldName = tempDraftCategories[idx].oldName || tempDraftCategories[idx].name;
-      tempDraftCategories[idx].name = trimmed;
-    }
+    if (trimmed) tempEditableCategories[idx].name = trimmed;
   };
 
-  window.updateDraftCatBudget = function(idx, val) {
-    tempDraftCategories[idx].budget = parseFloat(val) || 0;
+  window.updateTempCatBudget = function(idx, val) {
+    tempEditableCategories[idx].budget = parseFloat(val) || 0;
   };
 
-  window.removeDraftCategory = function(idx) {
-    if (tempDraftCategories.length <= 1) {
-      alert("Sekurang-kurangnya 1 kategori perlu dikekalkan.");
+  window.removeCategoryRow = function(idx) {
+    if (tempEditableCategories.length <= 1) {
+      alert("At least 1 category must be kept.");
       return;
     }
-    tempDraftCategories.splice(idx, 1);
+    tempEditableCategories.splice(idx, 1);
     renderEditableCategories();
   };
 
@@ -60,11 +59,11 @@ export function setupKategoriHandlers(getState, resetTabCallback) {
     const budgetInput = document.getElementById("newCatBudget");
     const name = nameInput.value.trim();
     const budget = parseFloat(budgetInput.value) || 0;
-    if (!name) return alert("Sila masukkan nama kategori baharu.");
-    if (tempDraftCategories.some(c => c.name.toLowerCase() === name.toLowerCase())) {
-      return alert("Nama kategori ini sudah wujud!");
+    if (!name) return alert("Please enter a category name.");
+    if (tempEditableCategories.some(c => c.name.toLowerCase() === name.toLowerCase())) {
+      return alert("This category already exists.");
     }
-    tempDraftCategories.push({ name, budget });
+    tempEditableCategories.push({ oldName: null, name, budget });
     nameInput.value = "";
     budgetInput.value = "";
     renderEditableCategories();
@@ -72,25 +71,22 @@ export function setupKategoriHandlers(getState, resetTabCallback) {
 
   window.saveCategoryChanges = async function() {
     const { currentUser, currentMonthId, currentTransactions } = getState();
-    if (!currentUser || !currentMonthId) return;
 
-    for (const cat of tempDraftCategories) {
-      if (cat.oldName && cat.oldName !== cat.name) {
-        const matchingTxs = currentTransactions.filter(t => t.category === cat.oldName);
-        for (const tx of matchingTxs) {
-          await updateDoc(doc(db, "users", currentUser, "months", currentMonthId, "transactions", tx.id), {
-            category: cat.name
-          });
+    const cleaned = tempEditableCategories.map(c => ({ name: c.name.trim(), budget: Number(c.budget) || 0 }));
+    for (const item of tempEditableCategories) {
+      if (item.oldName && item.oldName !== item.name) {
+        for (const tx of currentTransactions) {
+          if (tx.category === item.oldName) {
+            await updateDoc(doc(db, "users", currentUser, "months", currentMonthId, "transactions", tx.id), {
+              category: item.name
+            });
+          }
         }
       }
-      delete cat.oldName;
     }
 
-    await setDoc(doc(db, "users", currentUser, "months", currentMonthId), {
-      categories: tempDraftCategories
-    }, { merge: true });
-
+    await setDoc(doc(db, "users", currentUser, "months", currentMonthId), { categories: cleaned }, { merge: true });
     if (resetTabCallback) resetTabCallback();
-    closeCategoryModal();
+    window.closeCategoryModal();
   };
 }
