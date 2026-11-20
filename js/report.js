@@ -132,8 +132,19 @@ async function generateReport() {
     `;
   }
 
-  // Sort transactions by date
+  // Sort transactions by Category order (matching Table 1), then by Date
+  const categoryOrder = cats.map(c => c.name);
   allTransactions.sort((a, b) => {
+    const catA = a.category || "";
+    const catB = b.category || "";
+    const idxA = categoryOrder.indexOf(catA);
+    const idxB = categoryOrder.indexOf(catB);
+
+    if (idxA !== -1 && idxB !== -1 && idxA !== idxB) return idxA - idxB;
+    if (idxA !== -1 && idxB === -1) return -1;
+    if (idxA === -1 && idxB !== -1) return 1;
+    if (catA !== catB) return catA.localeCompare(catB);
+
     const dA = a.date || "";
     const dB = b.date || "";
     if (dA !== dB) return dA.localeCompare(dB);
