@@ -43,7 +43,7 @@ async function generateReport() {
   const mSnap = await getDoc(doc(db, "users", currentUser, "months", monthId));
   const cats = extractCategoriesFromDoc(mSnap.exists() ? mSnap.data() : {});
   cats.forEach(c => {
-    categoryMap[c.name] = { budget: Number(c.budget || 0), expense: 0 };
+    categoryMap[c.name] = { budget: Number(c.budget || 0), expense: 0, items: [] };
   });
 
   const txSnap = await getDocs(collection(db, "users", currentUser, "months", monthId, "transactions"));
@@ -51,19 +51,28 @@ async function generateReport() {
     allTransactions.push(d.data());
   });
 
-  let uncategorizedExpense = 0;
+  // Sort transactions chronologically within each category
+  allTransactions.sort((a, b) => {
+    const dA = a.date || "";
+    const dB = b.date || "";
+    if (dA !== dB) return dA.localeCompare(dB);
+    return (a.createdAt || 0) - (b.createdAt || 0);
+  });
+
+  // Group items into their respective categories
   allTransactions.forEach(tx => {
     const price = Number(tx.price || 0);
     if (categoryMap[tx.category]) {
       categoryMap[tx.category].expense += price;
+      categoryMap[tx.category].items.push(tx);
     } else {
-      uncategorizedExpense += price;
+      if (!categoryMap["Others"]) {
+        categoryMap["Others"] = { budget: 0, expense: 0, items: [] };
+      }
+      categoryMap["Others"].expense += price;
+      categoryMap["Others"].items.push(tx);
     }
   });
-
-  if (uncategorizedExpense > 0) {
-    categoryMap["Others"] = { budget: 0, expense: uncategorizedExpense };
-  }
 
   let totalBudget = 0;
   let totalExpense = 0;
@@ -132,48 +141,62 @@ async function generateReport() {
     `;
   }
 
-  // Sort transactions by Category order (matching Table 1), then by Date
-  const categoryOrder = cats.map(c => c.name);
-  allTransactions.sort((a, b) => {
-    const catA = a.category || "";
-    const catB = b.category || "";
-    const idxA = categoryOrder.indexOf(catA);
-    const idxB = categoryOrder.indexOf(catB);
-
-    if (idxA !== -1 && idxB !== -1 && idxA !== idxB) return idxA - idxB;
-    if (idxA !== -1 && idxB === -1) return -1;
-    if (idxA === -1 && idxB !== -1) return 1;
-    if (catA !== catB) return catA.localeCompare(catB);
-
-    const dA = a.date || "";
-    const dB = b.date || "";
-    if (dA !== dB) return dA.localeCompare(dB);
-    return (a.createdAt || 0) - (b.createdAt || 0);
-  });
-
-  // Render Table 2: Detailed Transaction List
+  // Render Section 2: Grouped Transaction Tables by Category
   document.getElementById("repTxCount").textContent = `${allTransactions.length} transactions`;
-  const txBody = document.getElementById("repTransactionBody");
+  const groupedContainer = document.getElementById("repGroupedTransactions");
 
   if (allTransactions.length === 0) {
-    txBody.innerHTML = `<tr><td colspan="6" class="py-10 text-center text-slate-400">No expense records for this period.</td></tr>`;
-  } else {
-    txBody.innerHTML = allTransactions.map((tx, idx) => `
-      <tr>
-        <td class="print-text-muted py-3 px-4 text-xs font-bold text-slate-500">${idx + 1}</td>
-        <td class="print-text-dark py-3 px-4 text-xs font-bold text-slate-300 whitespace-nowrap">${formatDisplayDate(tx.date)}</td>
-        <td class="print-text-dark py-3 px-4 font-semibold text-slate-100">${tx.item}</td>
-        <td class="print-text-muted py-3 px-4 text-xs font-bold text-indigo-300">${tx.category}</td>
-        <td class="print-text-muted py-3 px-4 text-xs uppercase text-slate-400">${tx.place || "-"}</td>
-        <td class="print-text-dark py-3 px-5 text-right font-bold text-white">${Number(tx.price).toFixed(2)}</td>
-      </tr>
-    `).join("") + `
-      <tr class="print-bg-light bg-slate-800/80 font-extrabold text-white border-t border-slate-700">
-        <td colspan="5" class="print-text-dark py-3.5 px-4 text-right text-xs uppercase tracking-wider text-slate-300">Total Expenses</td>
-        <td class="py-3.5 px-5 text-right text-rose-400">RM ${totalExpense.toFixed(2)}</td>
-      </tr>
+    groupedContainer.innerHTML = `
+      <div class="rounded-2xl border border-slate-800 py-10 text-center text-sm text-slate-400">
+        No expense records for this period.
+      </div>
     `;
+    return;
   }
+
+  groupedContainer.innerHTML = categoryEntries.map(([catName, vals]) => {
+    const items = vals.items;
+    const rowsHTML = items.length === 0
+      ? `<tr><td colspan="5" class="print-text-muted py-4 px-5 text-xs text-slate-400 italic">No expenses recorded under ${catName}.</td></tr>`
+      : items.map((tx, idx) => `
+          <tr>
+            <td class="print-text-muted py-2.5 px-4 text-xs font-bold text-slate-500">${idx + 1}</td>
+            <td class="print-text-dark py-2.5 px-4 text-xs font-bold text-slate-300 whitespace-nowrap">${formatDisplayDate(tx.date)}</td>
+            <td class="print-text-dark py-2.5 px-4 font-semibold text-slate-100">${tx.item}</td>
+            <td class="print-text-muted py-2.5 px-4 text-xs uppercase text-slate-400">${tx.place || "-"}</td>
+            <td class="print-text-dark py-2.5 px-5 text-right font-bold text-white">${Number(tx.price).toFixed(2)}</td>
+          </tr>
+        `).join("");
+
+    return `
+      <div class="overflow-hidden rounded-2xl border border-slate-800 break-inside-avoid">
+        <div class="print-bg-light bg-slate-800/90 px-5 py-2.5 border-b border-slate-800 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-md bg-indigo-500/20 text-indigo-300">${catName}</span>
+            <span class="print-text-muted text-xs text-slate-400 font-semibold">(${items.length} ${items.length === 1 ? 'item' : 'items'})</span>
+          </div>
+          <span class="text-xs font-extrabold text-rose-400">Subtotal: RM ${vals.expense.toFixed(2)}</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left">
+            <thead class="print-bg-light bg-slate-800/40 text-slate-400 text-xs font-bold border-b border-slate-800">
+              <tr>
+                <th class="print-text-dark py-2.5 px-4 w-12">No.</th>
+                <th class="print-text-dark py-2.5 px-4 w-32">Date</th>
+                <th class="print-text-dark py-2.5 px-4">Item / Description</th>
+                <th class="print-text-dark py-2.5 px-4">Place / Note</th>
+                <th class="print-text-dark py-2.5 px-5 text-right w-32">Price (RM)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800">
+              ${rowsHTML}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+  }).join("");
 }
 
 generateReport();
