@@ -111,15 +111,21 @@ window.renderMonthCards = async function() {
   grid.innerHTML = visibleMonths.map(m => {
     const semText = m.semester || "Sem 1";
     const fullLabel = `${semText} • ${m.month} ${m.year}`.trim();
+    const safeLabel = fullLabel.replace(/'/g, "\\'");
     return `
-      <div onclick="selectMonth('${m.id}', '${fullLabel.replace(/'/g, "\\'")}')" class="group relative glass-card bg-slate-900/80 hover:bg-slate-800/90 rounded-2xl border border-slate-800 hover:border-indigo-500/50 p-5 cursor-pointer transition-all hover:-translate-y-1 shadow-sm">
+      <div onclick="selectMonth('${m.id}', '${safeLabel}')" class="group relative glass-card bg-slate-900/80 hover:bg-slate-800/90 rounded-2xl border border-slate-800 hover:border-indigo-500/50 p-5 cursor-pointer transition-all hover:-translate-y-1 shadow-sm">
         <div class="flex items-center justify-between gap-2 mb-3">
           <span class="text-xs font-extrabold px-2.5 py-1 rounded-lg bg-indigo-500/15 text-indigo-300 truncate">
             ${semText}
           </span>
-          <button type="button" onclick="openEditMonthModal(event, '${m.id}')" title="Edit Semester / Bulan / Tahun" class="w-7 h-7 shrink-0 rounded-lg bg-slate-800 hover:bg-indigo-600 text-slate-300 hover:text-white flex items-center justify-center text-xs transition border border-slate-700">
-            ✏️
-          </button>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button type="button" onclick="openMonthReport(event, '${m.id}', '${safeLabel}')" title="Lihat Report Bulanan" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-emerald-600 text-emerald-300 hover:text-white flex items-center justify-center text-xs transition border border-slate-700">
+              📄
+            </button>
+            <button type="button" onclick="openEditMonthModal(event, '${m.id}')" title="Edit Semester / Bulan / Tahun" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-indigo-600 text-slate-300 hover:text-white flex items-center justify-center text-xs transition border border-slate-700">
+              ✏️
+            </button>
+          </div>
         </div>
         <h3 class="text-lg font-extrabold text-white leading-snug">${m.month} ${m.year}</h3>
         <p id="month-preview-${m.id}" class="text-xs text-slate-400 mt-1.5 font-medium">Klik untuk urus bajet</p>
@@ -147,6 +153,16 @@ window.renderMonthCards = async function() {
 
 window.selectMonth = function(monthId, monthLabel) {
   window.location.href = `dashboard.html?user=${encodeURIComponent(currentUser)}&month=${encodeURIComponent(monthId)}&label=${encodeURIComponent(monthLabel)}`;
+};
+
+window.openMonthReport = function(event, monthId, monthLabel) {
+  if (event) event.stopPropagation();
+  window.location.href = `report.html?user=${encodeURIComponent(currentUser)}&mode=month&month=${encodeURIComponent(monthId)}&label=${encodeURIComponent(monthLabel)}`;
+};
+
+window.openSemesterReport = function() {
+  const selectedSem = document.getElementById("semFilterSelect").value;
+  window.location.href = `report.html?user=${encodeURIComponent(currentUser)}&mode=semester&sem=${encodeURIComponent(selectedSem)}`;
 };
 
 // =========================================================================
