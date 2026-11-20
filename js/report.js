@@ -20,7 +20,6 @@ initBackground();
 const currentUser = getQueryParam("user");
 const monthId = getQueryParam("month");
 const monthLabel = getQueryParam("label") || "Laporan Bulanan";
-const autoPrint = getQueryParam("autoprint") === "1";
 
 if (!currentUser || !USERS.includes(currentUser) || !monthId) {
   window.location.href = "index.html";
@@ -164,13 +163,6 @@ async function generateReport() {
         <td class="py-3.5 px-6 text-right text-rose-400">RM ${totalExpense.toFixed(2)}</td>
       </tr>
     `;
-  }
-
-  // Terus buka dialog Print / Save as PDF apabila data siap dimuatkan
-  if (autoPrint) {
-    setTimeout(() => {
-      window.print();
-    }, 450);
   }
 }
 
