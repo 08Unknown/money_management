@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pilih Semester & Bulan - University Money Management</title>
+  <title>Select Semester & Month - University Money Management</title>
   <link rel="icon" type="image/png" href="money_logo.png?v=2" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -23,16 +23,16 @@
 </head>
 <body class="bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-slate-100 min-h-screen relative selection:bg-indigo-500 selection:text-white">
 
-  <!-- LAPISAN GAMBAR LATAR BELAKANG -->
+  <!-- BACKGROUND LAYER -->
   <div id="customBgLayer" class="fixed inset-0 pointer-events-none z-0 bg-cover bg-center"></div>
 
-  <!-- TOP NAVBAR (DENGAN BUTANG BACK & PROFIL DI KANAN ATAS) -->
+  <!-- TOP NAVBAR -->
   <header class="glass-card bg-slate-900/90 border-b border-slate-800/90 sticky top-0 z-30 shadow-md">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-2.5 flex items-center justify-between gap-3">
       
-      <!-- Kiri: Butang Back & Tajuk -->
+      <!-- Left: Back Button & Title -->
       <div class="flex items-center gap-3">
-        <a href="index.html" title="Kembali ke Pilih Profil" class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
+        <a href="index.html" title="Back to Profile Selection" class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
           <span>←</span> <span>Back</span>
         </a>
 
@@ -49,10 +49,10 @@
         </a>
       </div>
 
-      <!-- Kanan: Profil Pelajar -->
+      <!-- Right: Student Profile -->
       <div class="flex items-center gap-2.5 bg-slate-800/80 border border-slate-700/80 rounded-2xl pl-3.5 pr-1.5 py-1">
         <div class="text-right">
-          <h2 id="monthViewUserTitle" class="text-xs sm:text-sm font-extrabold text-white capitalize leading-tight">Pelajar</h2>
+          <h2 id="monthViewUserTitle" class="text-xs sm:text-sm font-extrabold text-white capitalize leading-tight">Student</h2>
           <span class="block text-[10px] font-medium text-indigo-300 leading-tight">Student Wallet</span>
         </div>
         <div id="avatar-month-view" class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-pink-500 text-white flex items-center justify-center text-xs font-extrabold shadow-sm overflow-hidden bg-cover bg-center shrink-0">
@@ -63,42 +63,41 @@
     </div>
   </header>
 
-  <!-- VIEW 2: PILIHAN & PENGURUSAN SEMESTER / BULAN -->
+  <!-- VIEW 2: SEMESTER & MONTH MANAGEMENT -->
   <main class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-7 fade-in">
     
-    <!-- Bar Kawalan Semester & Tambah Bulan (Ringkas & Sebaris) -->
+    <!-- Control Bar -->
     <div class="glass-card bg-slate-900/80 border border-slate-800 rounded-2xl p-4 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div>
-        <h3 class="text-base sm:text-lg font-extrabold text-white">Senarai Semester & Bulan</h3>
-        <p class="text-xs text-slate-400">Pilih kad bulan untuk urus bajet atau klik ikon laporan.</p>
+        <h3 class="text-base sm:text-lg font-extrabold text-white">Semesters & Monthly Records</h3>
+        <p class="text-xs text-slate-400">Select a month card to manage budget or click the report icon.</p>
       </div>
 
       <div class="flex flex-wrap items-center gap-2">
         <select id="semFilterSelect" onchange="renderMonthCards()" class="rounded-xl border border-slate-700 bg-slate-800 text-white px-3 py-2 text-xs sm:text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
-          <option value="ALL">Semua Semester</option>
+          <option value="ALL">All Semesters</option>
         </select>
 
         <button onclick="openSemesterManagerModal()" class="text-xs sm:text-sm font-bold px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
-          ⚙️ Urus Senarai Semester
+          ⚙️ Manage Semesters
         </button>
 
         <button onclick="openAddMonthModal()" class="text-xs sm:text-sm font-bold px-3.5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:opacity-95 text-white shadow-md shadow-indigo-500/20 transition">
-          + Tambah Bulan
+          + Add Month
         </button>
       </div>
     </div>
 
-    <!-- Grid Senarai Kad Semester & Bulan -->
+    <!-- Grid of Semester & Month Cards -->
     <div id="monthsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      <!-- Dijana oleh js/semester.js -->
     </div>
   </main>
 
-  <!-- MODAL: TAMBAH / EDIT BULAN (DROPDOWN SEMESTER) -->
+  <!-- MODAL: ADD / EDIT MONTH -->
   <div id="monthFormModal" class="hidden fixed inset-0 bg-slate-950/75 backdrop-blur-xs z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl fade-in">
       <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
-        <h3 id="monthModalTitle" class="text-lg font-extrabold text-white">Tambah Bulan Baharu</h3>
+        <h3 id="monthModalTitle" class="text-lg font-extrabold text-white">Add New Month</h3>
         <button onclick="closeMonthModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center text-lg">&times;</button>
       </div>
       <form onsubmit="saveMonthItem(event)" class="space-y-4">
@@ -106,9 +105,9 @@
 
         <div>
           <div class="flex items-center justify-between mb-1.5">
-            <label class="block text-xs font-bold text-slate-300">Pilih Semester</label>
+            <label class="block text-xs font-bold text-slate-300">Select Semester</label>
             <button type="button" onclick="openSemesterManagerModal()" class="text-[11px] font-bold text-indigo-400 hover:underline">
-              ⚙️ + Tambah / Edit Semester
+              ⚙️ + Add / Edit Semester
             </button>
           </div>
           <select id="selectSemesterDropdown" required class="w-full rounded-xl border border-slate-700 bg-slate-800 text-white px-3.5 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
@@ -117,7 +116,7 @@
 
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-bold text-slate-300 mb-1.5">Month (Bulan)</label>
+            <label class="block text-xs font-bold text-slate-300 mb-1.5">Month</label>
             <select id="selectMonthName" required class="w-full rounded-xl border border-slate-700 bg-slate-800 text-white px-3.5 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
               <option value="January">January</option>
               <option value="February">February</option>
@@ -135,31 +134,31 @@
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-slate-300 mb-1.5">Year (Tahun)</label>
-            <input type="text" id="inputMonthYear" required placeholder="Contoh: 2026" class="w-full rounded-xl border border-slate-700 bg-slate-800 text-white px-3.5 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            <label class="block text-xs font-bold text-slate-300 mb-1.5">Year</label>
+            <input type="text" id="inputMonthYear" required placeholder="e.g. 2026" class="w-full rounded-xl border border-slate-700 bg-slate-800 text-white px-3.5 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500" />
           </div>
         </div>
 
         <div class="pt-4 border-t border-slate-800 flex items-center justify-between">
           <button type="button" id="deleteMonthBtn" onclick="deleteMonthFromModal()" class="hidden px-3.5 py-2 rounded-xl text-xs font-bold bg-rose-500/15 text-rose-300 hover:bg-rose-500/25">
-            🗑️ Padam Rekod Ini
+            🗑️ Delete Record
           </button>
           <div class="flex gap-2 ml-auto">
-            <button type="button" onclick="closeMonthModal()" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800">Batal</button>
-            <button type="submit" class="px-5 py-2 rounded-xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm">Simpan</button>
+            <button type="button" onclick="closeMonthModal()" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800">Cancel</button>
+            <button type="submit" class="px-5 py-2 rounded-xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm">Save</button>
           </div>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- MODAL: URUS SENARAI SEMESTER -->
+  <!-- MODAL: MANAGE SEMESTER LIST -->
   <div id="semesterManagerModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-xs z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl fade-in max-h-[88vh] flex flex-col">
       <div class="flex items-center justify-between pb-3 border-b border-slate-800">
         <div>
-          <h3 class="text-lg font-extrabold text-white">Urus Senarai Semester</h3>
-          <p class="text-xs text-slate-400">Tambah, edit nama, atau padam pilihan semester dalam dropdown.</p>
+          <h3 class="text-lg font-extrabold text-white">Manage Semester List</h3>
+          <p class="text-xs text-slate-400">Add, rename, or delete semester options in the dropdown.</p>
         </div>
         <button onclick="closeSemesterManagerModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center text-lg">&times;</button>
       </div>
@@ -167,18 +166,18 @@
       <div id="editableSemestersList" class="py-4 space-y-2 overflow-y-auto flex-1 pr-1"></div>
 
       <div class="pt-3 border-t border-slate-800">
-        <label class="block text-xs font-bold text-slate-400 mb-1.5">+ Tambah Semester Baharu</label>
+        <label class="block text-xs font-bold text-slate-400 mb-1.5">+ Add New Semester</label>
         <div class="flex gap-2">
-          <input type="text" id="newSemesterInput" placeholder="Contoh: Sem 9, Short Sem..." class="flex-1 rounded-xl border border-slate-700 bg-slate-800 text-white px-3 py-2 text-sm" />
+          <input type="text" id="newSemesterInput" placeholder="e.g. Sem 9, Short Sem..." class="flex-1 rounded-xl border border-slate-700 bg-slate-800 text-white px-3 py-2 text-sm" />
           <button type="button" onclick="addSemesterOption()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold transition">
-            Tambah
+            Add
           </button>
         </div>
       </div>
 
       <div class="pt-4 mt-4 border-t border-slate-800 flex justify-end gap-2">
-        <button type="button" onclick="closeSemesterManagerModal()" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800">Batal</button>
-        <button type="button" onclick="saveSemesterOptions()" class="px-5 py-2 rounded-xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md">Simpan Senarai</button>
+        <button type="button" onclick="closeSemesterManagerModal()" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800">Cancel</button>
+        <button type="button" onclick="saveSemesterOptions()" class="px-5 py-2 rounded-xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md">Save List</button>
       </div>
     </div>
   </div>
