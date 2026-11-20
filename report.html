@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Laporan Kewangan - University Money Management</title>
+  <link rel="icon" type="image/png" href="money_logo.png?v=2" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Gaya khas apabila pengguna klik Cetak / Simpan PDF */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #0f172a !important;
+      }
+      #customBgLayer, .no-print {
+        display: none !important;
+      }
+      .print-card {
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        color: #0f172a !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+      }
+      .print-text-dark {
+        color: #0f172a !important;
+      }
+      .print-text-muted {
+        color: #475569 !important;
+      }
+      .print-bg-light {
+        background-color: #f8fafc !important;
+        color: #0f172a !important;
+      }
+      table, th, td {
+        border-color: #cbd5e1 !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-slate-100 min-h-screen relative selection:bg-indigo-500 selection:text-white">
+
+  <!-- LAPISAN GAMBAR LATAR BELAKANG -->
+  <div id="customBgLayer" class="fixed inset-0 pointer-events-none z-0 bg-cover bg-center"></div>
+
+  <!-- TOP NAVBAR (DISEMBUNYIKAN SEMASA PRINT) -->
+  <header class="no-print glass-card bg-slate-900/80 border-b border-slate-800/90 sticky top-0 z-30 shadow-md">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-3">
+      <a href="index.html" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 text-white flex items-center justify-center font-extrabold text-base shadow-md shadow-indigo-500/25">
+          🎓
+        </div>
+        <div>
+          <h1 class="font-extrabold text-white text-base sm:text-lg tracking-tight leading-tight">
+            University Money Management
+          </h1>
+          <p class="text-[11px] font-medium text-slate-400">Financial Report & Statement</p>
+        </div>
+      </a>
+
+      <div class="flex items-center gap-2">
+        <a id="backToSemesterBtn" href="semester.html" class="text-xs sm:text-sm font-bold px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
+          ← Kembali
+        </a>
+        <button onclick="window.print()" class="text-xs sm:text-sm font-bold px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:opacity-95 text-white shadow-md shadow-emerald-500/20 transition flex items-center gap-1.5">
+          <span>🖨️</span> <span>Cetak / Simpan PDF</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- KANDUNGAN PENYATA LAPORAN -->
+  <main class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-8 fade-in space-y-6">
+
+    <!-- Kepala Penyata -->
+    <div class="print-card glass-card bg-slate-900/85 border border-slate-800 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="flex items-center gap-4">
+        <div id="avatar-report" class="no-print w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-pink-500 text-white flex items-center justify-center text-xl font-extrabold shadow-md overflow-hidden bg-cover bg-center shrink-0">
+          --
+        </div>
+        <div>
+          <span id="reportTypeTag" class="inline-block text-[11px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 mb-1.5">
+            Laporan Kewangan Bulanan
+          </span>
+          <h2 id="reportPeriodTitle" class="print-text-dark text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            Memuatkan Laporan...
+          </h2>
+          <p class="print-text-muted text-xs sm:text-sm text-slate-400 mt-0.5">
+            Profil Pelajar: <strong id="reportStudentName" class="print-text-dark text-slate-200 capitalize">-</strong> • Tarikh Dijana: <span id="reportGeneratedDate">-</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="sm:text-right border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-800">
+        <p class="print-text-muted text-xs font-bold uppercase tracking-wider text-slate-400">Status Bajet</p>
+        <p id="reportStatusBadge" class="text-base sm:text-lg font-extrabold text-emerald-400 mt-0.5">-</p>
+      </div>
+    </div>
+
+    <!-- 4 Kad Metrik Utama -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="print-card glass-card bg-slate-900/85 border border-slate-800 rounded-2xl p-5">
+        <p class="print-text-muted text-xs font-bold uppercase tracking-wider text-slate-400">Jumlah Bajet</p>
+        <p id="repTotalBudget" class="print-text-dark text-xl sm:text-2xl font-extrabold text-white mt-1.5">RM 0.00</p>
+      </div>
+
+      <div class="print-card glass-card bg-slate-900/85 border border-slate-800 rounded-2xl p-5">
+        <p class="print-text-muted text-xs font-bold uppercase tracking-wider text-slate-400">Jumlah Belanja</p>
+        <p id="repTotalExpense" class="text-xl sm:text-2xl font-extrabold text-rose-400 mt-1.5">RM 0.00</p>
+      </div>
+
+      <div class="print-card glass-card bg-slate-900/85 border border-slate-800 rounded-2xl p-5">
+        <p class="print-text-muted text-xs font-bold uppercase tracking-wider text-slate-400">Baki Akhir</p>
+        <p id="repTotalBalance" class="text-xl sm:text-2xl font-extrabold text-emerald-400 mt-1.5">RM 0.00</p>
+      </div>
+
+      <div class="print-card glass-card bg-slate-900/85 border border-slate-800 rounded-2xl p-5">
+        <p class="print-text-muted text-xs font-bold uppercase tracking-wider text-slate-400">Perbelanjaan Tertinggi</p>
+        <p id="repTopCategory" class="print-text-dark text-base sm:text-lg font-extrabold text-indigo-300 mt-1.5 truncate">-</p>
+        <p id="repTopCategoryAmt" class="print-text-muted text-xs text-slate-400 font-semibold">RM 0.00</p>
+      </div>
+    </div>
+
+    <!-- Jadual Analisis Kategori -->
+    <div class="print-card glass-card bg-slate-900/85 border border-slate-800 rounded-3xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+        <h3 class="print-text-dark font-extrabold text-white text-base">1. Ringkasan Prestasi Mengikut Kategori</h3>
+        <span id="repUsagePct" class="print-text-muted text-xs font-bold text-slate-400">0% Bajet Digunakan</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+          <thead class="print-bg-light bg-slate-800/70 text-slate-300 font-bold border-b border-slate-800">
+            <tr>
+              <th class="py-3.5 px-6">Kategori</th>
+              <th class="py-3.5 px-6 text-right">Bajet (RM)</th>
+              <th class="py-3.5 px-6 text-right">Expense (RM)</th>
+              <th class="py-3.5 px-6 text-right">Baki (RM)</th>
+              <th class="py-3.5 px-6 text-right">Peratus (%)</th>
+            </tr>
+          </thead>
+          <tbody id="repCategoryBody" class="divide-y divide-slate-800">
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Jadual Penyata Transaksi Lengkap -->
+    <div class="print-card glass-card bg-slate-900/85 border border-slate-800 rounded-3xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+        <h3 class="print-text-dark font-extrabold text-white text-base">2. Senarai Lengkap Rekod Perbelanjaan</h3>
+        <span id="repTxCount" class="print-text-muted text-xs font-bold text-slate-400">0 transaksi</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+          <thead class="print-bg-light bg-slate-800/70 text-slate-300 font-bold border-b border-slate-800">
+            <tr>
+              <th class="py-3.5 px-4 w-12">Bil</th>
+              <th class="py-3.5 px-4">Tarikh</th>
+              <th class="py-3.5 px-4" id="colMonthHeader" style="display:none;">Bulan</th>
+              <th class="py-3.5 px-4">Item / Perbelanjaan</th>
+              <th class="py-3.5 px-4">Kategori</th>
+              <th class="py-3.5 px-4">Tempat / Nota</th>
+              <th class="py-3.5 px-6 text-right">Harga (RM)</th>
+            </tr>
+          </thead>
+          <tbody id="repTransactionBody" class="divide-y divide-slate-800">
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <script type="module" src="js/report.js"></script>
+</body>
+</html>
