@@ -26,12 +26,16 @@
   <!-- LAPISAN GAMBAR LATAR BELAKANG -->
   <div id="customBgLayer" class="fixed inset-0 pointer-events-none z-0 bg-cover bg-center"></div>
 
-  <!-- TOP NAVBAR (PROFIL & URUS KATEGORI DI KANAN ATAS) -->
+  <!-- TOP NAVBAR (BUTANG BACK DI KIRI & URUS KATEGORI + PROFIL DI KANAN) -->
   <header class="glass-card bg-slate-900/90 border-b border-slate-800/90 sticky top-0 z-30 shadow-md">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-3">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-2.5 flex items-center justify-between gap-3">
       
-      <!-- Kiri: Logo, Tajuk & Butang Navigasi -->
+      <!-- Kiri: Butang Back & Tajuk -->
       <div class="flex items-center gap-3">
+        <a id="backToMonthsBtn" href="semester.html" title="Kembali ke Senarai Semester" class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
+          <span>←</span> <span>Back</span>
+        </a>
+
         <a href="index.html" class="flex items-center gap-2.5 group">
           <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 text-white flex items-center justify-center font-extrabold text-sm shadow-md shadow-indigo-500/25 group-hover:scale-105 transition-transform">
             🎓
@@ -43,21 +47,10 @@
             <p class="text-[10px] font-medium text-slate-400">Student Budget & Expense Tracker</p>
           </div>
         </a>
-
-        <div class="h-6 w-px bg-slate-800 hidden md:block"></div>
-
-        <div class="flex items-center gap-1.5">
-          <a id="backToMonthsBtn" href="semester.html" class="text-[11px] sm:text-xs font-bold px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
-            📅 Tukar Bulan
-          </a>
-          <a href="index.html" class="text-[11px] sm:text-xs font-bold px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
-            ← Profil
-          </a>
-        </div>
       </div>
 
-      <!-- Kanan: Butang Urus Kategori & Kad Profil Kecil -->
-      <div class="flex items-center gap-2.5 sm:gap-3 ml-auto">
+      <!-- Kanan: Butang Urus Kategori & Kad Profil -->
+      <div class="flex items-center gap-2.5 sm:gap-3">
         <button onclick="openCategoryModal()" class="text-[11px] sm:text-xs font-bold px-3 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:opacity-95 text-white shadow-sm shadow-indigo-500/20 transition whitespace-nowrap">
           ⚙️ Urus Kategori & Bajet
         </button>
@@ -78,7 +71,7 @@
     </div>
   </header>
 
-  <!-- VIEW 3: DASHBOARD BULANAN (SAIZ LEBIH PADAT) -->
+  <!-- VIEW 3: DASHBOARD BULANAN (SAIZ PADAT) -->
   <main class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-4 fade-in">
 
     <!-- 3 BAR MENU UTAMA (PADAT & SEBARIS) -->
@@ -96,7 +89,7 @@
 
     <!-- ==================== SECTION 1: JUMLAH SEMUA KATEGORI ==================== -->
     <section id="section-summary" class="fade-in">
-      <!-- 3 Kad Ringkasan Utama (Padat) -->
+      <!-- 3 Kad Ringkasan Utama -->
       <div class="grid grid-cols-3 gap-3 sm:gap-4 mb-4">
         <div class="glass-card bg-slate-900/85 rounded-2xl border border-slate-800 px-4 py-3.5 shadow-sm">
           <div class="flex items-center justify-between mb-1">
@@ -123,7 +116,7 @@
         </div>
       </div>
 
-      <!-- Jadual Ringkasan Kategori (Padat supaya muat penuh 1 skrin) -->
+      <!-- Jadual Ringkasan Kategori -->
       <div class="glass-card bg-slate-900/85 rounded-2xl border border-slate-800 shadow-sm overflow-hidden">
         <div class="px-5 py-2.5 border-b border-slate-800 flex items-center justify-between">
           <h3 class="font-extrabold text-white text-sm">Jumlah Mengikut Kategori</h3>
