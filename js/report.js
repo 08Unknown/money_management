@@ -1,16 +1,19 @@
 import {
   doc,
+  setDoc,
   getDoc,
   getDocs,
-  collection
+  collection,
+  deleteDoc,
+  onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { db } from "./sambungan.js";
 import {
   initBackground,
   getQueryParam,
-  getTodayISO,
-  formatDisplayDate,
   USERS,
+  DEFAULT_SEMESTERS,
+  getInitialStudentMonths,
   extractCategoriesFromDoc,
   applyAvatarToElement
 } from "./state.js";
@@ -18,197 +21,296 @@ import {
 initBackground();
 
 const currentUser = getQueryParam("user");
-const mode = getQueryParam("mode") || "month"; // 'month' atau 'semester'
-const monthId = getQueryParam("month");
-const monthLabel = getQueryParam("label") || "";
-const semesterName = getQueryParam("sem") || "";
-
 if (!currentUser || !USERS.includes(currentUser)) {
   window.location.href = "index.html";
 }
 
-document.getElementById("backToSemesterBtn").href = `semester.html?user=${encodeURIComponent(currentUser)}`;
-document.getElementById("reportStudentName").textContent = currentUser;
-document.getElementById("reportGeneratedDate").textContent = formatDisplayDate(getTodayISO());
+let currentUserSemesters = [...DEFAULT_SEMESTERS];
+let currentUserMonths = [];
+let tempDraftSemesters = [];
 
-async function generateReport() {
-  // Muat avatar pengguna
-  const userSnap = await getDoc(doc(db, "users", currentUser));
-  const userData = userSnap.exists() ? userSnap.data() : {};
-  applyAvatarToElement(document.getElementById("avatar-report"), currentUser, userData.avatar || null);
+document.getElementById("monthViewUserTitle").textContent = currentUser;
 
-  let categoryMap = {}; // { namaKategori: { budget: 0, expense: 0 } }
-  let allTransactions = [];
+async function initUserSemesterPage() {
+  const userRef = doc(db, "users", currentUser);
+  const snap = await getDoc(userRef);
+  const updates = {};
 
-  if (mode === "semester") {
-    // ================= LAPORAN GABUNGAN SATU SEMESTER =================
-    document.getElementById("reportTypeTag").textContent = "Laporan Gabungan Semester";
-    document.getElementById("reportPeriodTitle").textContent = semesterName === "ALL"
-      ? "Semua Semester"
-      : `Laporan ${semesterName}`;
-    document.getElementById("colMonthHeader").style.display = "";
-
-    const uniMonths = Array.isArray(userData.uniMonths) ? userData.uniMonths : [];
-    const targetMonths = semesterName === "ALL"
-      ? uniMonths
-      : uniMonths.filter(m => String(m.semester) === semesterName);
-
-    for (const m of targetMonths) {
-      const mSnap = await getDoc(doc(db, "users", currentUser, "months", m.id));
-      const cats = extractCategoriesFromDoc(mSnap.exists() ? mSnap.data() : {});
-      cats.forEach(c => {
-        if (!categoryMap[c.name]) categoryMap[c.name] = { budget: 0, expense: 0 };
-        categoryMap[c.name].budget += Number(c.budget || 0);
-      });
-
-      const txSnap = await getDocs(collection(db, "users", currentUser, "months", m.id, "transactions"));
-      txSnap.forEach(d => {
-        const tx = d.data();
-        allTransactions.push({
-          ...tx,
-          monthTag: `${m.month} ${m.year}`
-        });
-      });
-    }
-  } else {
-    // ================= LAPORAN BULANAN =================
-    if (!monthId) {
-      window.location.href = `semester.html?user=${encodeURIComponent(currentUser)}`;
-      return;
-    }
-
-    document.getElementById("reportTypeTag").textContent = "Laporan Kewangan Bulanan";
-    document.getElementById("reportPeriodTitle").textContent = monthLabel || "Laporan Bulanan";
-
-    const mSnap = await getDoc(doc(db, "users", currentUser, "months", monthId));
-    const cats = extractCategoriesFromDoc(mSnap.exists() ? mSnap.data() : {});
-    cats.forEach(c => {
-      categoryMap[c.name] = { budget: Number(c.budget || 0), expense: 0 };
-    });
-
-    const txSnap = await getDocs(collection(db, "users", currentUser, "months", monthId, "transactions"));
-    txSnap.forEach(d => {
-      allTransactions.push(d.data());
-    });
+  if (!snap.exists() || !Array.isArray(snap.data().uniMonths)) {
+    updates.uniMonths = getInitialStudentMonths();
+  }
+  if (!snap.exists() || !Array.isArray(snap.data().semesterOptions) || snap.data().semesterOptions.length === 0) {
+    updates.semesterOptions = [...DEFAULT_SEMESTERS];
+  }
+  if (Object.keys(updates).length > 0) {
+    await setDoc(userRef, updates, { merge: true });
   }
 
-  // Kira jumlah perbelanjaan setiap kategori
-  let uncategorizedExpense = 0;
-  allTransactions.forEach(tx => {
-    const price = Number(tx.price || 0);
-    if (categoryMap[tx.category]) {
-      categoryMap[tx.category].expense += price;
-    } else {
-      uncategorizedExpense += price;
-    }
+  onSnapshot(userRef, (docSnap) => {
+    const data = docSnap.exists() ? docSnap.data() : {};
+    applyAvatarToElement(document.getElementById("avatar-month-view"), currentUser, data.avatar || null);
+
+    currentUserMonths = Array.isArray(data.uniMonths) ? data.uniMonths : getInitialStudentMonths();
+    currentUserSemesters = (Array.isArray(data.semesterOptions) && data.semesterOptions.length > 0)
+      ? data.semesterOptions
+      : [...DEFAULT_SEMESTERS];
+
+    populateSemesterDropdown();
+    updateSemFilterDropdown();
+    renderMonthCards();
   });
+}
 
-  if (uncategorizedExpense > 0) {
-    categoryMap["Lain-lain"] = { budget: 0, expense: uncategorizedExpense };
-  }
-
-  // Kira metrik keseluruhan
-  let totalBudget = 0;
-  let totalExpense = 0;
-  let topCatName = "-";
-  let topCatAmt = 0;
-
-  const categoryEntries = Object.entries(categoryMap);
-  categoryEntries.forEach(([name, vals]) => {
-    totalBudget += vals.budget;
-    totalExpense += vals.expense;
-    if (vals.expense > topCatAmt) {
-      topCatAmt = vals.expense;
-      topCatName = name;
-    }
-  });
-
-  const totalBalance = totalBudget - totalExpense;
-  const totalPct = totalBudget > 0 ? Math.round((totalExpense / totalBudget) * 100) : 0;
-
-  // Papar pada 4 Kad Metrik
-  document.getElementById("repTotalBudget").textContent = `RM ${totalBudget.toFixed(2)}`;
-  document.getElementById("repTotalExpense").textContent = `RM ${totalExpense.toFixed(2)}`;
-  document.getElementById("repTopCategory").textContent = topCatName;
-  document.getElementById("repTopCategoryAmt").textContent = `RM ${topCatAmt.toFixed(2)}`;
-  document.getElementById("repUsagePct").textContent = `${totalPct}% Bajet Digunakan`;
-
-  const balEl = document.getElementById("repTotalBalance");
-  const statusEl = document.getElementById("reportStatusBadge");
-  balEl.textContent = `RM ${totalBalance.toFixed(2)}`;
-
-  if (totalBalance < 0) {
-    balEl.className = "text-xl sm:text-2xl font-extrabold text-rose-400 mt-1.5";
-    statusEl.textContent = "⚠️ Melebihi Bajet";
-    statusEl.className = "text-base sm:text-lg font-extrabold text-rose-400 mt-0.5";
-  } else {
-    balEl.className = "text-xl sm:text-2xl font-extrabold text-emerald-400 mt-1.5";
-    statusEl.textContent = "✅ Bajet Terkawal";
-    statusEl.className = "text-base sm:text-lg font-extrabold text-emerald-400 mt-0.5";
-  }
-
-  // Render Jadual 1: Ringkasan Kategori
-  const catBody = document.getElementById("repCategoryBody");
-  if (categoryEntries.length === 0) {
-    catBody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-slate-400">Tiada data kategori direkodkan.</td></tr>`;
-  } else {
-    catBody.innerHTML = categoryEntries.map(([name, vals]) => {
-      const baki = vals.budget - vals.expense;
-      const pct = vals.budget > 0 ? Math.round((vals.expense / vals.budget) * 100) : (vals.expense > 0 ? 100 : 0);
-      const bakiColor = baki < 0 ? "text-rose-400 font-extrabold" : "text-emerald-400 font-extrabold";
-      return `
-        <tr>
-          <td class="print-text-dark py-3.5 px-6 font-bold text-slate-100">${name}</td>
-          <td class="print-text-muted py-3.5 px-6 text-right text-slate-400">${vals.budget.toFixed(2)}</td>
-          <td class="print-text-dark py-3.5 px-6 text-right font-semibold text-white">${vals.expense.toFixed(2)}</td>
-          <td class="py-3.5 px-6 text-right ${bakiColor}">${baki.toFixed(2)}</td>
-          <td class="print-text-muted py-3.5 px-6 text-right text-slate-400 font-semibold">${pct}%</td>
-        </tr>
-      `;
-    }).join("") + `
-      <tr class="print-bg-light bg-slate-800/80 font-extrabold text-white border-t-2 border-slate-700">
-        <td class="print-text-dark py-3.5 px-6">JUMLAH KESELURUHAN</td>
-        <td class="print-text-dark py-3.5 px-6 text-right">${totalBudget.toFixed(2)}</td>
-        <td class="py-3.5 px-6 text-right text-rose-400">${totalExpense.toFixed(2)}</td>
-        <td class="py-3.5 px-6 text-right ${totalBalance < 0 ? 'text-rose-400' : 'text-emerald-400'}">${totalBalance.toFixed(2)}</td>
-        <td class="print-text-dark py-3.5 px-6 text-right">${totalPct}%</td>
-      </tr>
-    `;
-  }
-
-  // Susun transaksi ikut tarikh (awal ke akhir bulan untuk penyata)
-  allTransactions.sort((a, b) => {
-    const dA = a.date || "";
-    const dB = b.date || "";
-    if (dA !== dB) return dA.localeCompare(dB);
-    return (a.createdAt || 0) - (b.createdAt || 0);
-  });
-
-  // Render Jadual 2: Senarai Transaksi
-  document.getElementById("repTxCount").textContent = `${allTransactions.length} transaksi`;
-  const txBody = document.getElementById("repTransactionBody");
-  const colSpan = mode === "semester" ? 7 : 6;
-
-  if (allTransactions.length === 0) {
-    txBody.innerHTML = `<tr><td colspan="${colSpan}" class="py-10 text-center text-slate-400">Tiada rekod perbelanjaan untuk tempoh ini.</td></tr>`;
-  } else {
-    txBody.innerHTML = allTransactions.map((tx, idx) => `
-      <tr>
-        <td class="print-text-muted py-3 px-4 text-xs font-bold text-slate-500">${idx + 1}</td>
-        <td class="print-text-dark py-3 px-4 text-xs font-bold text-slate-300 whitespace-nowrap">${formatDisplayDate(tx.date)}</td>
-        ${mode === "semester" ? `<td class="print-text-muted py-3 px-4 text-xs text-slate-400 whitespace-nowrap">${tx.monthTag || "-"}</td>` : ""}
-        <td class="print-text-dark py-3 px-4 font-semibold text-slate-100">${tx.item}</td>
-        <td class="print-text-muted py-3 px-4 text-xs font-bold text-indigo-300">${tx.category}</td>
-        <td class="print-text-muted py-3 px-4 text-xs uppercase text-slate-400">${tx.place || "-"}</td>
-        <td class="print-text-dark py-3 px-6 text-right font-bold text-white">${Number(tx.price).toFixed(2)}</td>
-      </tr>
-    `).join("") + `
-      <tr class="print-bg-light bg-slate-800/80 font-extrabold text-white border-t border-slate-700">
-        <td colspan="${colSpan - 1}" class="print-text-dark py-3.5 px-4 text-right text-xs uppercase tracking-wider text-slate-300">Jumlah Perbelanjaan</td>
-        <td class="py-3.5 px-6 text-right text-rose-400">RM ${totalExpense.toFixed(2)}</td>
-      </tr>
-    `;
+function populateSemesterDropdown() {
+  const select = document.getElementById("selectSemesterDropdown");
+  if (!select) return;
+  const prevVal = select.value;
+  select.innerHTML = currentUserSemesters.map(sem =>
+    `<option value="${sem.replace(/"/g, '&quot;')}">${sem}</option>`
+  ).join("");
+  if (currentUserSemesters.includes(prevVal)) {
+    select.value = prevVal;
   }
 }
 
-generateReport();
+function updateSemFilterDropdown() {
+  const select = document.getElementById("semFilterSelect");
+  const prevVal = select.value;
+  const semesters = [...new Set([
+    ...currentUserSemesters,
+    ...currentUserMonths.map(m => String(m.semester || "").trim()).filter(Boolean)
+  ])];
+
+  select.innerHTML = `<option value="ALL">Semua Semester (${currentUserMonths.length})</option>` +
+    semesters.map(s => `<option value="${s.replace(/"/g, '&quot;')}">${s}</option>`).join("");
+
+  if (prevVal === "ALL" || semesters.includes(prevVal)) {
+    select.value = prevVal;
+  } else {
+    select.value = "ALL";
+  }
+}
+
+window.renderMonthCards = async function() {
+  const selectedSem = document.getElementById("semFilterSelect").value;
+  const grid = document.getElementById("monthsGrid");
+
+  const visibleMonths = selectedSem === "ALL"
+    ? currentUserMonths
+    : currentUserMonths.filter(m => String(m.semester) === selectedSem);
+
+  if (visibleMonths.length === 0) {
+    grid.innerHTML = `
+      <div class="col-span-full glass-card bg-slate-900/80 border border-slate-800 rounded-3xl p-10 text-center">
+        <p class="text-slate-400 text-sm mb-3">Tiada rekod semester & bulan dijumpai. Klik <strong>+ Tambah Bulan</strong> di atas.</p>
+      </div>
+    `;
+    return;
+  }
+
+  grid.innerHTML = visibleMonths.map(m => {
+    const semText = m.semester || "Sem 1";
+    const fullLabel = `${semText} • ${m.month} ${m.year}`.trim();
+    const safeLabel = fullLabel.replace(/'/g, "\\'");
+    return `
+      <div onclick="selectMonth('${m.id}', '${safeLabel}')" class="group relative glass-card bg-slate-900/80 hover:bg-slate-800/90 rounded-2xl border border-slate-800 hover:border-indigo-500/50 p-5 cursor-pointer transition-all hover:-translate-y-1 shadow-sm">
+        <div class="flex items-center justify-between gap-2 mb-3">
+          <span class="text-xs font-extrabold px-2.5 py-1 rounded-lg bg-indigo-500/15 text-indigo-300 truncate">
+            ${semText}
+          </span>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button type="button" onclick="openMonthReport(event, '${m.id}', '${safeLabel}')" title="Cetak / Download PDF Report" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-emerald-600 text-emerald-300 hover:text-white flex items-center justify-center text-xs transition border border-slate-700">
+              📄
+            </button>
+            <button type="button" onclick="openEditMonthModal(event, '${m.id}')" title="Edit Semester / Bulan / Tahun" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-indigo-600 text-slate-300 hover:text-white flex items-center justify-center text-xs transition border border-slate-700">
+              ✏️
+            </button>
+          </div>
+        </div>
+        <h3 class="text-lg font-extrabold text-white leading-snug">${m.month} ${m.year}</h3>
+        <p id="month-preview-${m.id}" class="text-xs text-slate-400 mt-1.5 font-medium">Klik untuk urus bajet</p>
+      </div>
+    `;
+  }).join("");
+
+  for (const m of visibleMonths) {
+    const mSnap = await getDoc(doc(db, "users", currentUser, "months", m.id));
+    if (mSnap.exists()) {
+      const cats = extractCategoriesFromDoc(mSnap.data());
+      const totB = cats.reduce((sum, c) => sum + Number(c.budget || 0), 0);
+      const txSnap = await getDocs(collection(db, "users", currentUser, "months", m.id, "transactions"));
+      let exp = 0;
+      txSnap.forEach(d => exp += Number(d.data().price || 0));
+      const bal = totB - exp;
+      const balColorClass = bal < 0 ? "text-rose-400" : "text-emerald-400";
+      const previewEl = document.getElementById(`month-preview-${m.id}`);
+      if (previewEl) {
+        previewEl.innerHTML = `Baki: <span class="${balColorClass} font-bold">RM ${bal.toFixed(2)}</span>`;
+      }
+    }
+  }
+};
+
+window.selectMonth = function(monthId, monthLabel) {
+  window.location.href = `dashboard.html?user=${encodeURIComponent(currentUser)}&month=${encodeURIComponent(monthId)}&label=${encodeURIComponent(monthLabel)}`;
+};
+
+window.openMonthReport = function(event, monthId, monthLabel) {
+  if (event) event.stopPropagation();
+  window.location.href = `report.html?user=${encodeURIComponent(currentUser)}&month=${encodeURIComponent(monthId)}&label=${encodeURIComponent(monthLabel)}&autoprint=1`;
+};
+
+// =========================================================================
+// MODAL URUS SENARAI SEMESTER
+// =========================================================================
+window.openSemesterManagerModal = function() {
+  tempDraftSemesters = currentUserSemesters.map(s => ({ oldName: s, name: s }));
+  renderEditableSemesters();
+  document.getElementById("semesterManagerModal").classList.remove("hidden");
+};
+
+window.closeSemesterManagerModal = function() {
+  document.getElementById("semesterManagerModal").classList.add("hidden");
+};
+
+function renderEditableSemesters() {
+  const container = document.getElementById("editableSemestersList");
+  container.innerHTML = tempDraftSemesters.map((item, idx) => `
+    <div class="flex items-center gap-2 bg-slate-800/70 p-2 rounded-2xl border border-slate-700/70">
+      <input type="text" value="${item.name.replace(/"/g, '&quot;')}"
+        onchange="updateDraftSemesterName(${idx}, this.value)"
+        class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm font-semibold text-white" />
+      <button type="button" onclick="removeDraftSemester(${idx})" title="Padam Semester" class="p-2 rounded-xl text-rose-400 hover:bg-rose-500/10">🗑️</button>
+    </div>
+  `).join("");
+}
+
+window.updateDraftSemesterName = function(idx, val) {
+  const trimmed = val.trim();
+  if (trimmed) tempDraftSemesters[idx].name = trimmed;
+};
+
+window.removeDraftSemester = function(idx) {
+  if (tempDraftSemesters.length <= 1) {
+    alert("Sekurang-kurangnya 1 pilihan semester perlu dikekalkan.");
+    return;
+  }
+  tempDraftSemesters.splice(idx, 1);
+  renderEditableSemesters();
+};
+
+window.addSemesterOption = function() {
+  const input = document.getElementById("newSemesterInput");
+  const val = input.value.trim();
+  if (!val) return alert("Sila masukkan nama semester baharu.");
+  if (tempDraftSemesters.some(s => s.name.toLowerCase() === val.toLowerCase())) {
+    return alert("Nama semester ini sudah ada dalam senarai.");
+  }
+  tempDraftSemesters.push({ oldName: null, name: val });
+  input.value = "";
+  renderEditableSemesters();
+};
+
+window.saveSemesterOptions = async function() {
+  const updatedSemList = tempDraftSemesters.map(s => s.name);
+  const updatedMonths = currentUserMonths.map(m => {
+    const match = tempDraftSemesters.find(s => s.oldName && s.oldName === m.semester && s.oldName !== s.name);
+    return match ? { ...m, semester: match.name } : m;
+  });
+
+  await setDoc(doc(db, "users", currentUser), {
+    semesterOptions: updatedSemList,
+    uniMonths: updatedMonths
+  }, { merge: true });
+
+  closeSemesterManagerModal();
+};
+
+// =========================================================================
+// MODAL TAMBAH / EDIT / PADAM KAD BULAN
+// =========================================================================
+window.openAddMonthModal = function() {
+  populateSemesterDropdown();
+  document.getElementById("monthModalTitle").textContent = "Tambah Bulan Baharu";
+  document.getElementById("editMonthId").value = "";
+  if (currentUserSemesters.length > 0) {
+    document.getElementById("selectSemesterDropdown").value = currentUserSemesters[0];
+  }
+  document.getElementById("selectMonthName").value = "January";
+  document.getElementById("inputMonthYear").value = new Date().getFullYear();
+  document.getElementById("deleteMonthBtn").classList.add("hidden");
+  document.getElementById("monthFormModal").classList.remove("hidden");
+};
+
+window.openEditMonthModal = function(event, monthId) {
+  if (event) event.stopPropagation();
+  const target = currentUserMonths.find(m => m.id === monthId);
+  if (!target) return;
+
+  populateSemesterDropdown();
+  const semSelect = document.getElementById("selectSemesterDropdown");
+  if (target.semester && !currentUserSemesters.includes(target.semester)) {
+    const opt = document.createElement("option");
+    opt.value = target.semester;
+    opt.textContent = target.semester;
+    semSelect.appendChild(opt);
+  }
+
+  document.getElementById("monthModalTitle").textContent = "Edit Semester, Bulan & Tahun";
+  document.getElementById("editMonthId").value = target.id;
+  semSelect.value = target.semester || currentUserSemesters[0];
+  document.getElementById("selectMonthName").value = target.month || "January";
+  document.getElementById("inputMonthYear").value = target.year || "";
+  document.getElementById("deleteMonthBtn").classList.remove("hidden");
+  document.getElementById("monthFormModal").classList.remove("hidden");
+};
+
+window.closeMonthModal = function() {
+  document.getElementById("monthFormModal").classList.add("hidden");
+};
+
+window.saveMonthItem = async function(e) {
+  e.preventDefault();
+  const editId = document.getElementById("editMonthId").value;
+  const semester = document.getElementById("selectSemesterDropdown").value;
+  const month = document.getElementById("selectMonthName").value;
+  const year = document.getElementById("inputMonthYear").value.trim();
+  if (!semester || !month || !year) return;
+
+  const updatedList = [...currentUserMonths];
+  if (editId) {
+    const idx = updatedList.findIndex(m => m.id === editId);
+    if (idx !== -1) updatedList[idx] = { ...updatedList[idx], semester, month, year };
+  } else {
+    const newId = `m_${Date.now()}`;
+    updatedList.push({ id: newId, semester, month, year });
+  }
+
+  await setDoc(doc(db, "users", currentUser), { uniMonths: updatedList }, { merge: true });
+  closeMonthModal();
+};
+
+window.deleteMonthFromModal = async function() {
+  const editId = document.getElementById("editMonthId").value;
+  if (!editId) return;
+
+  if (currentUserMonths.length <= 1) {
+    alert("Sekurang-kurangnya 1 rekod bulan perlu dikekalkan.");
+    return;
+  }
+
+  if (!confirm("Padam kad semester & bulan ini? (Semua transaksi di dalamnya juga akan dipadam)")) return;
+
+  const updatedList = currentUserMonths.filter(m => m.id !== editId);
+  await setDoc(doc(db, "users", currentUser), { uniMonths: updatedList }, { merge: true });
+
+  const txSnap = await getDocs(collection(db, "users", currentUser, "months", editId, "transactions"));
+  for (const d of txSnap.docs) {
+    await deleteDoc(doc(db, "users", currentUser, "months", editId, "transactions", d.id));
+  }
+  await deleteDoc(doc(db, "users", currentUser, "months", editId));
+
+  closeMonthModal();
+};
+
+initUserSemesterPage();
