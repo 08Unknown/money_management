@@ -54,7 +54,7 @@ document.getElementById("backToMonthsBtn").href = `semester.html?user=${encodeUR
 document.getElementById("txDate").value = getTodayISO();
 
 // =========================================================================
-// 3 BAR MENU SWITCHER (PADAT & SEBARIS)
+// 3 BAR MENU SWITCHER
 // =========================================================================
 window.switchMainMenu = function(menuKey) {
   const menus = ["summary", "record", "list"];
@@ -221,7 +221,11 @@ window.renderAllListTable = function() {
     return matchCat && matchSearch;
   });
 
+  const totalFiltered = filtered.reduce((sum, t) => sum + Number(t.price || 0), 0);
   document.getElementById("recordCount").textContent = `${filtered.length} rekod`;
+  const totalEl = document.getElementById("allListTotalDisplay");
+  if (totalEl) totalEl.textContent = `RM ${totalFiltered.toFixed(2)}`;
+
   const tbody = document.getElementById("allListTableBody");
 
   if (filtered.length === 0) {
@@ -234,8 +238,6 @@ window.renderAllListTable = function() {
     `;
     return;
   }
-
-  const totalFiltered = filtered.reduce((sum, t) => sum + Number(t.price || 0), 0);
 
   tbody.innerHTML = filtered.map((tx, index) => `
     <tr class="hover:bg-slate-800/40 transition">
@@ -250,12 +252,7 @@ window.renderAllListTable = function() {
       <td class="py-2.5 px-4 text-slate-400 text-xs uppercase font-medium">${tx.place || "-"}</td>
       <td class="py-2.5 px-5 text-right font-bold text-white">${Number(tx.price).toFixed(2)}</td>
     </tr>
-  `).join("") + `
-    <tr class="bg-slate-800/80 font-extrabold text-white border-t border-slate-700">
-      <td colspan="5" class="py-2.5 px-4 text-right text-xs uppercase tracking-wider text-slate-300">Jumlah Dipaparkan</td>
-      <td class="py-2.5 px-5 text-right text-rose-400">RM ${totalFiltered.toFixed(2)}</td>
-    </tr>
-  `;
+  `).join("");
 };
 
 // =========================================================================
