@@ -148,27 +148,14 @@
         </div>
       </div>
 
-      <!-- TABLE 2: DETAILED TRANSACTION LIST -->
+      <!-- SECTION 2: DETAILED TRANSACTION RECORDS GROUPED BY CATEGORY -->
       <div>
-        <div class="flex items-center justify-between mb-3">
-          <h3 class="print-text-dark text-base font-extrabold text-white">2. Detailed Transaction Records</h3>
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="print-text-dark text-base font-extrabold text-white">2. Detailed Transaction Records (By Category)</h3>
           <span id="repTxCount" class="print-text-muted text-xs font-bold text-slate-400">0 transactions</span>
         </div>
-        <div class="overflow-x-auto rounded-2xl border border-slate-800">
-          <table class="w-full text-sm text-left">
-            <thead class="print-bg-light bg-slate-800/80 text-slate-300 font-bold border-b border-slate-800">
-              <tr>
-                <th class="print-text-dark py-3 px-4 w-12">No.</th>
-                <th class="print-text-dark py-3 px-4">Date</th>
-                <th class="print-text-dark py-3 px-4">Item / Description</th>
-                <th class="print-text-dark py-3 px-4">Category</th>
-                <th class="print-text-dark py-3 px-4">Place / Note</th>
-                <th class="print-text-dark py-3 px-5 text-right">Price (RM)</th>
-              </tr>
-            </thead>
-            <tbody id="repTransactionBody" class="divide-y divide-slate-800">
-            </tbody>
-          </table>
+
+        <div id="repGroupedTransactions" class="space-y-5">
         </div>
       </div>
 
