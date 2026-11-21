@@ -12,7 +12,8 @@ import {
   formatDisplayDate,
   USERS,
   extractCategoriesFromDoc,
-  applyAvatarToElement
+  applyAvatarToElement,
+  requireUserAccess
 } from "./state.js";
 
 initBackground();
@@ -21,18 +22,19 @@ const currentUser = getQueryParam("user");
 const monthId = getQueryParam("month");
 const monthLabel = getQueryParam("label") || "Monthly Report";
 
-if (!currentUser || !USERS.includes(currentUser) || !monthId) {
-  window.location.href = "index.html";
-}
-
-const backUrl = `semester.html?user=${encodeURIComponent(currentUser)}`;
+const backUrl = `semester.html?user=${encodeURIComponent(currentUser || "")}`;
 document.getElementById("backToSemesterBtn").href = backUrl;
-document.getElementById("reportStudentName").textContent = currentUser;
+document.getElementById("reportStudentName").textContent = currentUser || "";
 document.getElementById("reportGeneratedDate").textContent = formatDisplayDate(getTodayISO());
 document.getElementById("reportTypeTag").textContent = "Monthly Financial Statement";
 document.getElementById("reportPeriodTitle").textContent = monthLabel;
 
 async function generateReport() {
+  if (!monthId || !(await requireUserAccess(currentUser))) {
+    window.location.href = "index.html";
+    return;
+  }
+
   const userSnap = await getDoc(doc(db, "users", currentUser));
   const userData = userSnap.exists() ? userSnap.data() : {};
   applyAvatarToElement(document.getElementById("avatar-report"), currentUser, userData.avatar || null);
