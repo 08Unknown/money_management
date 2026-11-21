@@ -14,7 +14,8 @@ import {
   USERS,
   DEFAULT_CATEGORIES,
   extractCategoriesFromDoc,
-  applyAvatarToElement
+  applyAvatarToElement,
+  requireUserAccess
 } from "./state.js";
 import { setupTransaksiHandlers } from "./transaksi.js";
 import { setupKategoriHandlers } from "./kategori.js";
@@ -24,10 +25,6 @@ initBackground();
 const currentUser = getQueryParam("user");
 const currentMonthId = getQueryParam("month");
 const currentMonthLabel = getQueryParam("label") || "Monthly Records";
-
-if (!currentUser || !USERS.includes(currentUser) || !currentMonthId) {
-  window.location.href = "index.html";
-}
 
 let currentTab = "ALL";
 let currentCategories = [...DEFAULT_CATEGORIES];
@@ -48,9 +45,9 @@ setupKategoriHandlers(getState, () => {
   currentTab = "ALL";
 });
 
-document.getElementById("userTitle").textContent = currentUser;
+document.getElementById("userTitle").textContent = currentUser || "";
 document.getElementById("activeMonthBadge").textContent = currentMonthLabel;
-document.getElementById("backToMonthsBtn").href = `semester.html?user=${encodeURIComponent(currentUser)}`;
+document.getElementById("backToMonthsBtn").href = `semester.html?user=${encodeURIComponent(currentUser || "")}`;
 document.getElementById("txDate").value = getTodayISO();
 
 // =========================================================================
@@ -259,6 +256,11 @@ window.renderAllListTable = function() {
 // LOAD REALTIME DATA FROM FIREBASE
 // =========================================================================
 async function initDashboard() {
+  if (!currentMonthId || !(await requireUserAccess(currentUser))) {
+    window.location.href = "index.html";
+    return;
+  }
+
   onSnapshot(doc(db, "users", currentUser), (uSnap) => {
     const data = uSnap.exists() ? uSnap.data() : {};
     applyAvatarToElement(document.getElementById("avatar-dash"), currentUser, data.avatar || null);
