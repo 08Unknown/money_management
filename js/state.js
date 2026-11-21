@@ -38,14 +38,17 @@ export async function requireUserAccess(user) {
 // =========================================================================
 export function initBackground() {
   const bgLayer = document.getElementById("customBgLayer");
-  if (bgLayer) {
-    bgLayer.style.backgroundImage = `url("pc.jpg")`;
-    bgLayer.style.opacity = "0.24";
-  }
-}
+  if (!bgLayer) return;
 
-export function getQueryParam(param) {
-  return new URLSearchParams(window.location.search).get(param);
+  const updateBg = () => {
+    const isMobile = window.innerWidth < 768;
+    const bgFile = isMobile ? "phone.jpg" : "pc.jpg";
+    bgLayer.style.backgroundImage = `url("${bgFile}")`;
+    bgLayer.style.opacity = "0.24";
+  };
+
+  updateBg();
+  window.addEventListener("resize", updateBg);
 }
 
 export function getTodayISO() {
