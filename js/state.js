@@ -51,6 +51,10 @@ export function initBackground() {
   window.addEventListener("resize", updateBg);
 }
 
+export function getQueryParam(param) {
+  return new URLSearchParams(window.location.search).get(param);
+}
+
 export function getTodayISO() {
   const d = new Date();
   const year = d.getFullYear();
