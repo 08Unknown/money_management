@@ -21,44 +21,57 @@ import {
 
 initBackground();
 
-const currentUser = getQueryParam("user");
+// Ambil nama user dari URL, atau fallback dari sessionStorage jika hilang
+const urlUser = getQueryParam("user");
+const currentUser = (urlUser && USERS.includes(urlUser.toLowerCase()))
+  ? urlUser.toLowerCase()
+  : USERS.find(u => sessionStorage.getItem(`umm_unlocked_${u}`) === "true");
 
 let currentUserSemesters = [...DEFAULT_SEMESTERS];
 let currentUserMonths = [];
 let tempDraftSemesters = [];
 
-document.getElementById("monthViewUserTitle").textContent = currentUser || "";
+const titleEl = document.getElementById("monthViewUserTitle");
+if (titleEl && currentUser) {
+  titleEl.textContent = currentUser;
+}
 
 async function initUserSemesterPage() {
-  if (!(await requireUserAccess(currentUser))) return;
+  const allowed = await requireUserAccess(currentUser);
+  if (!allowed) return;
 
-  const userRef = doc(db, "users", currentUser);
-  const snap = await getDoc(userRef);
-  const updates = {};
+  try {
+    const userRef = doc(db, "users", currentUser);
+    const snap = await getDoc(userRef);
+    const updates = {};
 
-  if (!snap.exists() || !Array.isArray(snap.data().uniMonths)) {
-    updates.uniMonths = getInitialStudentMonths();
+    if (!snap.exists() || !Array.isArray(snap.data().uniMonths)) {
+      updates.uniMonths = getInitialStudentMonths();
+    }
+    if (!snap.exists() || !Array.isArray(snap.data().semesterOptions) || snap.data().semesterOptions.length === 0) {
+      updates.semesterOptions = [...DEFAULT_SEMESTERS];
+    }
+    if (Object.keys(updates).length > 0) {
+      await setDoc(userRef, updates, { merge: true });
+    }
+
+    onSnapshot(userRef, (docSnap) => {
+      const data = docSnap.exists() ? docSnap.data() : {};
+      applyAvatarToElement(document.getElementById("avatar-month-view"), currentUser, data.avatar || null);
+
+      currentUserMonths = Array.isArray(data.uniMonths) ? data.uniMonths : getInitialStudentMonths();
+      currentUserSemesters = (Array.isArray(data.semesterOptions) && data.semesterOptions.length > 0)
+        ? data.semesterOptions
+        : [...DEFAULT_SEMESTERS];
+
+      populateSemesterDropdown();
+      updateSemFilterDropdown();
+      renderMonthCards();
+    });
+  } catch (err) {
+    console.error("Semester page load error:", err);
+    alert("Error loading data: " + err.message);
   }
-  if (!snap.exists() || !Array.isArray(snap.data().semesterOptions) || snap.data().semesterOptions.length === 0) {
-    updates.semesterOptions = [...DEFAULT_SEMESTERS];
-  }
-  if (Object.keys(updates).length > 0) {
-    await setDoc(userRef, updates, { merge: true });
-  }
-
-  onSnapshot(userRef, (docSnap) => {
-    const data = docSnap.exists() ? docSnap.data() : {};
-    applyAvatarToElement(document.getElementById("avatar-month-view"), currentUser, data.avatar || null);
-
-    currentUserMonths = Array.isArray(data.uniMonths) ? data.uniMonths : getInitialStudentMonths();
-    currentUserSemesters = (Array.isArray(data.semesterOptions) && data.semesterOptions.length > 0)
-      ? data.semesterOptions
-      : [...DEFAULT_SEMESTERS];
-
-    populateSemesterDropdown();
-    updateSemFilterDropdown();
-    renderMonthCards();
-  });
 }
 
 function populateSemesterDropdown() {
@@ -75,6 +88,7 @@ function populateSemesterDropdown() {
 
 function updateSemFilterDropdown() {
   const select = document.getElementById("semFilterSelect");
+  if (!select) return;
   const prevVal = select.value;
   const semesters = [...new Set([
     ...currentUserSemesters,
@@ -158,12 +172,12 @@ window.renderMonthCards = async function() {
 };
 
 window.selectMonth = function(monthId, monthLabel) {
-  window.location.href = `dashboard.html?user=${encodeURIComponent(currentUser)}&month=${encodeURIComponent(monthId)}&label=${encodeURIComponent(monthLabel)}`;
+  window.location.assign(`dashboard.html?user=${encodeURIComponent(currentUser)}&month=${encodeURIComponent(monthId)}&label=${encodeURIComponent(monthLabel)}`);
 };
 
 window.openMonthReport = function(event, monthId, monthLabel) {
   if (event) event.stopPropagation();
-  window.location.href = `report.html?user=${encodeURIComponent(currentUser)}&month=${encodeURIComponent(monthId)}&label=${encodeURIComponent(monthLabel)}`;
+  window.location.assign(`report.html?user=${encodeURIComponent(currentUser)}&month=${encodeURIComponent(monthId)}&label=${encodeURIComponent(monthLabel)}`);
 };
 
 // =========================================================================
