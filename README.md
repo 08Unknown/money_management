@@ -30,6 +30,16 @@ A modern, responsive web application built for university students to track seme
 
 ---
 
+## 👤 Pengarang / Pembangun
+
+* **Nama:** NUR ANISA SOFIA BINTI MOHD KHAIRI
+* **Institusi:** UNIVERSITI PENDIDIKAN SULTAN IDRIS (UPSI)
+* **Program:** DIPLOMA IN COMPUTER SCIENCE (YEAR 1)
+* **Persatuan:** TIMBALAN YDP PERSATUAN SAINS KOMPUTER (TYDP PSK)
+* **LinkedIn:** https://www.linkedin.com/in/anisa-sofia-2ab598449?utm_source=share_via&utm_content=profile&utm_medium=member_android
+
+---
+
 ## 📂 Modular Project Structure
 
 ```text
