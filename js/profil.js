@@ -27,16 +27,20 @@ let dragStartX = 0;
 let dragStartY = 0;
 
 async function initProfiles() {
-  await ensureFirebaseAuth();
+  try {
+    await ensureFirebaseAuth();
 
-  USERS.forEach(user => {
-    onSnapshot(doc(db, "users", user), (docSnap) => {
-      const data = docSnap.exists() ? docSnap.data() : {};
-      userAvatars[user] = data.avatar || null;
-      userPins[user] = data.pin || null;
-      applyAvatarToElement(document.getElementById(`avatar-home-${user}`), user, userAvatars[user]);
+    USERS.forEach(user => {
+      onSnapshot(doc(db, "users", user), (docSnap) => {
+        const data = docSnap.exists() ? docSnap.data() : {};
+        userAvatars[user] = data.avatar || null;
+        userPins[user] = data.pin || null;
+        applyAvatarToElement(document.getElementById(`avatar-home-${user}`), user, userAvatars[user]);
+      });
     });
-  });
+  } catch (err) {
+    console.error("Failed to initialize profiles:", err);
+  }
 }
 
 // =========================================================================
@@ -48,41 +52,46 @@ async function requestProfileAccess(user, actionType) {
     return;
   }
 
-  await ensureFirebaseAuth();
-  const snap = await getDoc(doc(db, "users", user));
-  const savedPin = snap.exists() ? (snap.data().pin || null) : null;
-  userPins[user] = savedPin;
+  try {
+    await ensureFirebaseAuth();
+    const snap = await getDoc(doc(db, "users", user));
+    const savedPin = snap.exists() ? (snap.data().pin || null) : null;
+    userPins[user] = savedPin;
 
-  pendingUser = user;
-  pendingAction = actionType;
-  isSettingNewPin = !savedPin;
+    pendingUser = user;
+    pendingAction = actionType;
+    isSettingNewPin = !savedPin;
 
-  const titleEl = document.getElementById("pinModalTitle");
-  const subtitleEl = document.getElementById("pinModalSubtitle");
-  const confirmGroup = document.getElementById("pinConfirmGroup");
-  const submitBtn = document.getElementById("pinSubmitBtn");
-  const errorEl = document.getElementById("pinErrorMsg");
+    const titleEl = document.getElementById("pinModalTitle");
+    const subtitleEl = document.getElementById("pinModalSubtitle");
+    const confirmGroup = document.getElementById("pinConfirmGroup");
+    const submitBtn = document.getElementById("pinSubmitBtn");
+    const errorEl = document.getElementById("pinErrorMsg");
 
-  document.getElementById("pinCodeInput").value = "";
-  document.getElementById("pinConfirmInput").value = "";
-  errorEl.classList.add("hidden");
+    document.getElementById("pinCodeInput").value = "";
+    document.getElementById("pinConfirmInput").value = "";
+    errorEl.classList.add("hidden");
+    submitBtn.disabled = false;
 
-  if (isSettingNewPin) {
-    titleEl.textContent = "Create 4-Digit PIN";
-    subtitleEl.innerHTML = `First-time setup for <strong class="text-white capitalize">${user}</strong>. Set a 4-digit PIN to protect your records.`;
-    confirmGroup.classList.remove("hidden");
-    document.getElementById("pinConfirmInput").required = true;
-    submitBtn.textContent = "Save PIN & Enter";
-  } else {
-    titleEl.textContent = "Enter Profile PIN";
-    subtitleEl.innerHTML = `Enter the 4-digit PIN for <strong class="text-white capitalize">${user}</strong> to continue.`;
-    confirmGroup.classList.add("hidden");
-    document.getElementById("pinConfirmInput").required = false;
-    submitBtn.textContent = "Unlock";
+    if (isSettingNewPin) {
+      titleEl.textContent = "Create 4-Digit PIN";
+      subtitleEl.innerHTML = `First-time setup for <strong class="text-white capitalize">${user}</strong>. Set a 4-digit PIN to protect your records.`;
+      confirmGroup.classList.remove("hidden");
+      document.getElementById("pinConfirmInput").required = true;
+      submitBtn.textContent = "Save PIN & Enter";
+    } else {
+      titleEl.textContent = "Enter Profile PIN";
+      subtitleEl.innerHTML = `Enter the 4-digit PIN for <strong class="text-white capitalize">${user}</strong> to continue.`;
+      confirmGroup.classList.add("hidden");
+      document.getElementById("pinConfirmInput").required = false;
+      submitBtn.textContent = "Unlock";
+    }
+
+    document.getElementById("pinModal").classList.remove("hidden");
+  } catch (err) {
+    alert("Connection error. Please check your internet and try again.");
+    console.error(err);
   }
-
-  document.getElementById("pinModal").classList.remove("hidden");
-  setTimeout(() => document.getElementById("pinCodeInput").focus(), 50);
 }
 
 window.closePinModal = function() {
@@ -95,15 +104,26 @@ window.submitPinForm = async function(e) {
   e.preventDefault();
   if (!pendingUser) return;
 
-  const pinVal = document.getElementById("pinCodeInput").value.trim();
-  const confirmVal = document.getElementById("pinConfirmInput").value.trim();
+  const pinInput = document.getElementById("pinCodeInput");
+  const confirmInput = document.getElementById("pinConfirmInput");
+  const submitBtn = document.getElementById("pinSubmitBtn");
   const errorEl = document.getElementById("pinErrorMsg");
+
+  const pinVal = pinInput.value.trim();
+  const confirmVal = confirmInput.value.trim();
 
   if (!/^\d{4}$/.test(pinVal)) {
     errorEl.textContent = "PIN must be exactly 4 digits (0–9).";
     errorEl.classList.remove("hidden");
     return;
   }
+
+  // Blur inputs to close mobile keyboard cleanly
+  pinInput.blur();
+  confirmInput.blur();
+
+  const targetUser = pendingUser;
+  const targetAction = pendingAction;
 
   if (isSettingNewPin) {
     if (pinVal !== confirmVal) {
@@ -112,28 +132,34 @@ window.submitPinForm = async function(e) {
       return;
     }
 
-    await setDoc(doc(db, "users", pendingUser), { pin: pinVal }, { merge: true });
-    userPins[pendingUser] = pinVal;
-    unlockUserSession(pendingUser);
-
-    const targetUser = pendingUser;
-    const targetAction = pendingAction;
-    window.closePinModal();
-    executeUnlockedAction(targetUser, targetAction);
+    try {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Saving...";
+      await setDoc(doc(db, "users", targetUser), { pin: pinVal }, { merge: true });
+      userPins[targetUser] = pinVal;
+      unlockUserSession(targetUser);
+      window.closePinModal();
+      executeUnlockedAction(targetUser, targetAction);
+    } catch (err) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Save PIN & Enter";
+      errorEl.textContent = "Failed to save PIN. Please try again.";
+      errorEl.classList.remove("hidden");
+    }
     return;
   }
 
-  if (pinVal !== String(userPins[pendingUser])) {
+  if (pinVal !== String(userPins[targetUser])) {
     errorEl.textContent = "Incorrect PIN. Access denied.";
     errorEl.classList.remove("hidden");
-    document.getElementById("pinCodeInput").value = "";
-    document.getElementById("pinCodeInput").focus();
+    pinInput.value = "";
+    pinInput.focus();
     return;
   }
 
-  unlockUserSession(pendingUser);
-  const targetUser = pendingUser;
-  const targetAction = pendingAction;
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Unlocking...";
+  unlockUserSession(targetUser);
   window.closePinModal();
   executeUnlockedAction(targetUser, targetAction);
 };
@@ -142,7 +168,7 @@ function executeUnlockedAction(user, actionType) {
   if (actionType === "openAvatar") {
     launchAvatarCropperModal(user);
   } else {
-    window.location.href = `semester.html?user=${encodeURIComponent(user)}`;
+    window.location.assign(`semester.html?user=${encodeURIComponent(user)}`);
   }
 }
 
