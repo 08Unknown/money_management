@@ -12,7 +12,7 @@ A modern, responsive web application built for university students to track seme
 
 ## 🚀 Pautan Rasmi
 
-* 🌐 **Demo Laman Web:** https://08unknown.github.io/MOD-ESports-Portal/
+* 🌐 **Demo Laman Web:** https://08unknown.github.io/money_management/
 
 ---
 
