@@ -39,7 +39,7 @@ export async function requireUserAccess(user) {
 export function initBackground() {
   const bgLayer = document.getElementById("customBgLayer");
   if (bgLayer) {
-    bgLayer.style.backgroundImage = `url("background.png")`;
+    bgLayer.style.backgroundImage = `url("pc.jpg")`;
     bgLayer.style.opacity = "0.24";
   }
 }
