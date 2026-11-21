@@ -1,75 +1,191 @@
-import { doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { db } from "./sambungan.js";
-import { initBackground, INITIALS, USERS, applyAvatarToElement } from "./state.js";
+import { doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { db, ensureFirebaseAuth } from "./sambungan.js";
+import {
+  initBackground,
+  USERS,
+  applyAvatarToElement,
+  isUserUnlocked,
+  unlockUserSession
+} from "./state.js";
 
 initBackground();
 
 const userAvatars = { anisa: null, alya: null, bacirah: null };
+const userPins = { anisa: null, alya: null, bacirah: null };
 
-// Papar gambar profil semasa dari Firebase
-USERS.forEach((u) => {
-  onSnapshot(doc(db, "users", u), (uSnap) => {
-    const data = uSnap.exists() ? uSnap.data() : {};
-    userAvatars[u] = data.avatar || null;
-    applyAvatarToElement(document.getElementById(`avatar-home-${u}`), u, userAvatars[u]);
-  });
-});
+let pendingUser = null;
+let pendingAction = null; // "openProfile" or "openAvatar"
+let isSettingNewPin = false;
 
-// Buka halaman semester untuk profil yang dipilih
-window.selectUser = function(userId) {
-  window.location.href = `semester.html?user=${encodeURIComponent(userId)}`;
-};
-
-// =========================================================================
-// CROP GAMBAR PROFIL
-// =========================================================================
 let cropTargetUser = null;
 let cropImg = null;
-let cropScale = 1;
+let cropZoom = 1;
 let cropOffsetX = 0;
 let cropOffsetY = 0;
 let isDraggingCrop = false;
 let dragStartX = 0;
 let dragStartY = 0;
 
-window.openAvatarCropper = function(event, userId) {
+async function initProfiles() {
+  await ensureFirebaseAuth();
+
+  USERS.forEach(user => {
+    onSnapshot(doc(db, "users", user), (docSnap) => {
+      const data = docSnap.exists() ? docSnap.data() : {};
+      userAvatars[user] = data.avatar || null;
+      userPins[user] = data.pin || null;
+      applyAvatarToElement(document.getElementById(`avatar-home-${user}`), user, userAvatars[user]);
+    });
+  });
+}
+
+// =========================================================================
+// PIN GATEWAY (VERIFY OR SET 4-DIGIT PIN IN FIREBASE)
+// =========================================================================
+async function requestProfileAccess(user, actionType) {
+  if (isUserUnlocked(user)) {
+    executeUnlockedAction(user, actionType);
+    return;
+  }
+
+  await ensureFirebaseAuth();
+  const snap = await getDoc(doc(db, "users", user));
+  const savedPin = snap.exists() ? (snap.data().pin || null) : null;
+  userPins[user] = savedPin;
+
+  pendingUser = user;
+  pendingAction = actionType;
+  isSettingNewPin = !savedPin;
+
+  const titleEl = document.getElementById("pinModalTitle");
+  const subtitleEl = document.getElementById("pinModalSubtitle");
+  const confirmGroup = document.getElementById("pinConfirmGroup");
+  const submitBtn = document.getElementById("pinSubmitBtn");
+  const errorEl = document.getElementById("pinErrorMsg");
+
+  document.getElementById("pinCodeInput").value = "";
+  document.getElementById("pinConfirmInput").value = "";
+  errorEl.classList.add("hidden");
+
+  if (isSettingNewPin) {
+    titleEl.textContent = "Create 4-Digit PIN";
+    subtitleEl.innerHTML = `First-time setup for <strong class="text-white capitalize">${user}</strong>. Set a 4-digit PIN to protect your records.`;
+    confirmGroup.classList.remove("hidden");
+    document.getElementById("pinConfirmInput").required = true;
+    submitBtn.textContent = "Save PIN & Enter";
+  } else {
+    titleEl.textContent = "Enter Profile PIN";
+    subtitleEl.innerHTML = `Enter the 4-digit PIN for <strong class="text-white capitalize">${user}</strong> to continue.`;
+    confirmGroup.classList.add("hidden");
+    document.getElementById("pinConfirmInput").required = false;
+    submitBtn.textContent = "Unlock";
+  }
+
+  document.getElementById("pinModal").classList.remove("hidden");
+  setTimeout(() => document.getElementById("pinCodeInput").focus(), 50);
+}
+
+window.closePinModal = function() {
+  document.getElementById("pinModal").classList.add("hidden");
+  pendingUser = null;
+  pendingAction = null;
+};
+
+window.submitPinForm = async function(e) {
+  e.preventDefault();
+  if (!pendingUser) return;
+
+  const pinVal = document.getElementById("pinCodeInput").value.trim();
+  const confirmVal = document.getElementById("pinConfirmInput").value.trim();
+  const errorEl = document.getElementById("pinErrorMsg");
+
+  if (!/^\d{4}$/.test(pinVal)) {
+    errorEl.textContent = "PIN must be exactly 4 digits (0–9).";
+    errorEl.classList.remove("hidden");
+    return;
+  }
+
+  if (isSettingNewPin) {
+    if (pinVal !== confirmVal) {
+      errorEl.textContent = "PINs do not match. Please try again.";
+      errorEl.classList.remove("hidden");
+      return;
+    }
+
+    await setDoc(doc(db, "users", pendingUser), { pin: pinVal }, { merge: true });
+    userPins[pendingUser] = pinVal;
+    unlockUserSession(pendingUser);
+
+    const targetUser = pendingUser;
+    const targetAction = pendingAction;
+    window.closePinModal();
+    executeUnlockedAction(targetUser, targetAction);
+    return;
+  }
+
+  if (pinVal !== String(userPins[pendingUser])) {
+    errorEl.textContent = "Incorrect PIN. Access denied.";
+    errorEl.classList.remove("hidden");
+    document.getElementById("pinCodeInput").value = "";
+    document.getElementById("pinCodeInput").focus();
+    return;
+  }
+
+  unlockUserSession(pendingUser);
+  const targetUser = pendingUser;
+  const targetAction = pendingAction;
+  window.closePinModal();
+  executeUnlockedAction(targetUser, targetAction);
+};
+
+function executeUnlockedAction(user, actionType) {
+  if (actionType === "openAvatar") {
+    launchAvatarCropperModal(user);
+  } else {
+    window.location.href = `semester.html?user=${encodeURIComponent(user)}`;
+  }
+}
+
+window.selectUser = function(user) {
+  requestProfileAccess(user, "openProfile");
+};
+
+// =========================================================================
+// AVATAR CROPPER
+// =========================================================================
+window.openAvatarCropper = function(event, user) {
   if (event) event.stopPropagation();
-  cropTargetUser = userId;
-  document.getElementById("cropUserName").textContent = userId;
+  requestProfileAccess(user, "openAvatar");
+};
+
+function launchAvatarCropperModal(user) {
+  cropTargetUser = user;
+  document.getElementById("cropUserName").textContent = user;
   document.getElementById("avatarFileInput").value = "";
-  cropImg = null;
-  cropScale = 1;
+  cropZoom = 1;
   cropOffsetX = 0;
   cropOffsetY = 0;
   document.getElementById("cropZoomRange").value = 1;
   document.getElementById("zoomLabel").textContent = "1.0x";
 
-  const canvas = document.getElementById("avatarCanvas");
-  const ctx = canvas.getContext("2d");
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  if (userAvatars[userId]) {
-    const existing = new Image();
-    existing.onload = function() {
-      cropImg = existing;
+  const existing = userAvatars[user];
+  if (existing) {
+    const img = new Image();
+    img.onload = () => {
+      cropImg = img;
       drawCropCanvas();
     };
-    existing.src = userAvatars[userId];
+    img.src = existing;
   } else {
-    ctx.fillStyle = "#1e293b";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#818cf8";
-    ctx.font = "bold 48px Plus Jakarta Sans, sans-serif";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(INITIALS[userId], canvas.width / 2, canvas.height / 2);
+    cropImg = null;
+    drawCropCanvas();
   }
-
   document.getElementById("avatarCropModal").classList.remove("hidden");
-};
+}
 
 window.closeAvatarCropper = function() {
   document.getElementById("avatarCropModal").classList.add("hidden");
+  cropTargetUser = null;
 };
 
 window.handleAvatarFileSelect = function(e) {
@@ -80,13 +196,10 @@ window.handleAvatarFileSelect = function(e) {
     const img = new Image();
     img.onload = function() {
       cropImg = img;
-      const canvas = document.getElementById("avatarCanvas");
-      cropScale = Math.max(canvas.width / img.width, canvas.height / img.height);
+      cropZoom = 1;
       cropOffsetX = 0;
       cropOffsetY = 0;
-      document.getElementById("cropZoomRange").min = (cropScale * 0.5).toFixed(2);
-      document.getElementById("cropZoomRange").max = (cropScale * 3).toFixed(2);
-      document.getElementById("cropZoomRange").value = cropScale;
+      document.getElementById("cropZoomRange").value = 1;
       document.getElementById("zoomLabel").textContent = "1.0x";
       drawCropCanvas();
     };
@@ -96,19 +209,30 @@ window.handleAvatarFileSelect = function(e) {
 };
 
 window.updateCropZoom = function(val) {
-  cropScale = parseFloat(val);
-  document.getElementById("zoomLabel").textContent = Number(val).toFixed(1) + "x";
+  cropZoom = parseFloat(val);
+  document.getElementById("zoomLabel").textContent = `${cropZoom.toFixed(1)}x`;
   drawCropCanvas();
 };
 
 function drawCropCanvas() {
-  if (!cropImg) return;
   const canvas = document.getElementById("avatarCanvas");
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  const drawW = cropImg.width * cropScale;
-  const drawH = cropImg.height * cropScale;
+  ctx.fillStyle = "#1e293b";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  if (!cropImg) {
+    ctx.fillStyle = "#94a3b8";
+    ctx.font = "bold 13px Plus Jakarta Sans, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("Choose an image above", canvas.width / 2, canvas.height / 2);
+    return;
+  }
+
+  const baseScale = Math.max(canvas.width / cropImg.width, canvas.height / cropImg.height);
+  const drawW = cropImg.width * baseScale * cropZoom;
+  const drawH = cropImg.height * baseScale * cropZoom;
   const x = (canvas.width - drawW) / 2 + cropOffsetX;
   const y = (canvas.height - drawH) / 2 + cropOffsetY;
 
@@ -127,7 +251,9 @@ window.addEventListener("mousemove", (e) => {
   cropOffsetY = e.clientY - dragStartY;
   drawCropCanvas();
 });
-window.addEventListener("mouseup", () => { isDraggingCrop = false; });
+window.addEventListener("mouseup", () => {
+  isDraggingCrop = false;
+});
 
 cropBox.addEventListener("touchstart", (e) => {
   if (e.touches.length === 1) {
@@ -135,34 +261,34 @@ cropBox.addEventListener("touchstart", (e) => {
     dragStartX = e.touches[0].clientX - cropOffsetX;
     dragStartY = e.touches[0].clientY - cropOffsetY;
   }
-});
+}, { passive: true });
 window.addEventListener("touchmove", (e) => {
   if (!isDraggingCrop || e.touches.length !== 1) return;
   cropOffsetX = e.touches[0].clientX - dragStartX;
   cropOffsetY = e.touches[0].clientY - dragStartY;
   drawCropCanvas();
+}, { passive: true });
+window.addEventListener("touchend", () => {
+  isDraggingCrop = false;
 });
-window.addEventListener("touchend", () => { isDraggingCrop = false; });
 
 window.saveCroppedAvatar = async function() {
-  if (!cropTargetUser || !cropImg) {
-    closeAvatarCropper();
+  if (!cropTargetUser) return;
+  if (!cropImg) {
+    alert("Please choose an image first.");
     return;
   }
   const canvas = document.getElementById("avatarCanvas");
   const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.82);
 
-  await setDoc(doc(db, "users", cropTargetUser), {
-    avatar: compressedDataUrl
-  }, { merge: true });
-
-  closeAvatarCropper();
+  await setDoc(doc(db, "users", cropTargetUser), { avatar: compressedDataUrl }, { merge: true });
+  window.closeAvatarCropper();
 };
 
 window.removeAvatar = async function() {
   if (!cropTargetUser) return;
-  await setDoc(doc(db, "users", cropTargetUser), {
-    avatar: null
-  }, { merge: true });
-  closeAvatarCropper();
+  await setDoc(doc(db, "users", cropTargetUser), { avatar: null }, { merge: true });
+  window.closeAvatarCropper();
 };
+
+initProfiles();
