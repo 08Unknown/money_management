@@ -41,7 +41,7 @@ A modern, responsive web application built for university students to track seme
 * **Name:** NUR ANISA SOFIA BINTI MOHD KHAIRI
 * **Institution:** UNIVERSITI PENDIDIKAN SULTAN IDRIS (UPSI)
 * **Program:** DIPLOMA IN COMPUTER SCIENCE (YEAR 2)
-* **Club:** TIMBALAN YDP PERSATUAN SAINS KOMPUTER (TYDP PSK)
+* **Club:** VICE PRESIDENT OF THE COMPUTER SCIENCE SOCIETY
 * **LinkedIn:** https://www.linkedin.com/in/anisa-sofia-2ab598449?utm_source=share_via&utm_content=profile&utm_medium=member_android
 
 ---
