@@ -10,9 +10,9 @@ A modern, responsive web application built for university students to track seme
 
 ---
 
-## 🚀 Pautan Rasmi
+## 🚀 Official Links
 
-* 🌐 **Demo Laman Web:** https://08unknown.github.io/money_management/
+* 🌐 **Website Demo:** https://08unknown.github.io/money_management/
 
 ---
 
@@ -36,7 +36,7 @@ A modern, responsive web application built for university students to track seme
 
 ---
 
-## 👤 Pengarang / Pembangun
+## 👤 Author / Developer
 
 * **Name:** NUR ANISA SOFIA BINTI MOHD KHAIRI
 * **Institution:** UNIVERSITI PENDIDIKAN SULTAN IDRIS (UPSI)
