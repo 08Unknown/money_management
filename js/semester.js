@@ -15,23 +15,23 @@ import {
   DEFAULT_SEMESTERS,
   getInitialStudentMonths,
   extractCategoriesFromDoc,
-  applyAvatarToElement
+  applyAvatarToElement,
+  requireUserAccess
 } from "./state.js";
 
 initBackground();
 
 const currentUser = getQueryParam("user");
-if (!currentUser || !USERS.includes(currentUser)) {
-  window.location.href = "index.html";
-}
 
 let currentUserSemesters = [...DEFAULT_SEMESTERS];
 let currentUserMonths = [];
 let tempDraftSemesters = [];
 
-document.getElementById("monthViewUserTitle").textContent = currentUser;
+document.getElementById("monthViewUserTitle").textContent = currentUser || "";
 
 async function initUserSemesterPage() {
+  if (!(await requireUserAccess(currentUser))) return;
+
   const userRef = doc(db, "users", currentUser);
   const snap = await getDoc(userRef);
   const updates = {};
